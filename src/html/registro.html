@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/registro.css">
+    <title>JobConnect - Login & Registration</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Job<span>Connect</span></div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <nav id="nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Find Jobs</a></li>
+                    <li><a href="#">Companies</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Login/Register Container -->
+            <div class="auth-container" id="authContainer">
+                <!-- Left Side - Image & Text -->
+                <div class="auth-image">
+                    <h2>Welcome to JobConnect</h2>
+                    <p>Find your dream job or discover top talent for your company.</p>
+                    <button class="auth-image-btn" id="switchFormBtn">Create an Account</button>
+                </div>
+                
+                <!-- Right Side - Form -->
+                <div class="auth-form">
+                    <div class="form-tabs">
+                        <div class="form-tab active" id="loginTab">Login</div>
+                        <div class="form-tab" id="registerTab">Register</div>
+                    </div>
+                
+                    <!-- Login Form -->
+                    <div class="form-content active" id="loginForm">
+                        <h1>Welcome Back</h1>
+                        <form id="loginFormElement">
+                            <div class="input-group">
+                                <label for="loginEmail">Email Address</label>
+                                <input type="email" id="loginEmail" placeholder="Enter your email">
+                                <span class="input-error">Please enter a valid email address</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="loginPassword">Password</label>
+                                <div class="password-field">
+                                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                                    <span class="password-toggle" id="loginPasswordToggle">👁️</span>
+                                </div>
+                                <span class="input-error">Password is required</span>
+                            </div>
+                            
+                            <div class="remember-forgot">
+                                <div class="remember-me">
+                                    <input type="checkbox" id="rememberMe">
+                                    <label for="rememberMe">Remember me</label>
+                                </div>
+                                <a href="#" class="forgot-password">Forgot Password?</a>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">Log In</button>
+                        </form>
+                        
+                        <div class="auth-divider">
+                            <span>OR</span>
+                        </div>
+                        
+                        <div class="social-login">
+                            <button class="social-btn">
+                                <i>G</i> Google
+                            </button>
+                            <button class="social-btn">
+                                <i>f</i> Facebook
+                            </button>
+                            <button class="social-btn">
+                                <i>in</i> LinkedIn
+                            </button>
+                        </div>
+                        
+                        <div class="auth-footer">
+                            Don't have an account? <a href="#" id="toRegisterLink">Sign up</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Register Form -->
+                    <div class="form-content" id="registerForm">
+                        <h1>Create an Account</h1>
+                        <form id="registerFormElement">
+                            <div class="input-group">
+                                <label for="registerName">Full Name</label>
+                                <input type="text" id="registerName" placeholder="Enter your full name">
+                                <span class="input-error">Full name is required</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="registerEmail">Email Address</label>
+                                <input type="email" id="registerEmail" placeholder="Enter your email">
+                                <span class="input-error">Please enter a valid email address</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="registerPassword">Password</label>
+                                <div class="password-field">
+                                    <input type="password" id="registerPassword" placeholder="Create a password">
+                                    <span class="password-toggle" id="registerPasswordToggle">👁️</span>
+                                </div>
+                                <span class="input-error">Password must be at least 8 characters</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="registerConfirmPassword">Confirm Password</label>
+                                <div class="password-field">
+                                    <input type="password" id="registerConfirmPassword" placeholder="Confirm your password">
+                                    <span class="password-toggle" id="registerConfirmPasswordToggle">👁️</span>
+                                </div>
+                                <span class="input-error">Passwords do not match</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="accountType">Account Type</label>
+                                <select id="accountType">
+                                    <option value="jobseeker">Job Seeker</option>
+                                    <option value="employer">Employer</option>
+                                </select>
+                            </div>
+                            
+                            <div class="remember-forgot">
+                                <div class="remember-me">
+                                    <input type="checkbox" id="termsAgreement">
+                                    <label for="termsAgreement">I agree to the <a href="#">Terms & Conditions</a></label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">Create Account</button>
+                        </form>
+                        
+                        <div class="auth-divider">
+                            <span>OR</span>
+                        </div>
+                        
+                        <div class="social-login">
+                            <button class="social-btn">
+                                <i>G</i> Google
+                            </button>
+                            <button class="social-btn">
+                                <i>f</i> Facebook
+                            </button>
+                            <button class="social-btn">
+                                <i>in</i> LinkedIn
+                            </button>
+                        </div>
+                        
+                        <div class="auth-footer">
+                            Already have an account? <a href="#" id="toLoginLink">Log in</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                &copy; 2025 JobConnect. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
