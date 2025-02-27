@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>JobConnect - Find Your Dream Job</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Job<span>Connect</span></div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <nav id="nav">
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="#">Find Jobs</a></li>
+                    <li><a href="#">Companies</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button href="registro.html" class="login-btn">Log In</button>
+                <button href="registro.html" class="signup-btn">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Find Your Dream Job Today</h1>
+            <p>Discover thousands of job opportunities with all the information you need. It's your future. Come find it. Manage all your job applications from start to finish.</p>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-container">
+        <form class="search-form">
+            <div class="search-input">
+                <i>🔎</i>
+                <input type="text" placeholder="Job title, keywords, or company">
+            </div>
+            <div class="search-input">
+                <i>📍</i>
+                <input type="text" placeholder="City or location">
+            </div>
+            <div class="search-input">
+                <i>🏢</i>
+                <select>
+                    <option value="">All Categories</option>
+                    <option value="technology">Technology</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="education">Education</option>
+                    <option value="marketing">Marketing</option>
+                </select>
+            </div>
+            <button class="search-btn">Search Jobs</button>
+        </form>
+    </section>
+
+    <!-- Job Listings Section -->
+    <section class="jobs-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Jobs</h2>
+                <a href="#">View All Jobs →</a>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Full Time</button>
+                <button class="filter-btn">Part Time</button>
+                <button class="filter-btn">Remote</button>
+                <button class="filter-btn">Internship</button>
+                <button class="filter-btn">Contract</button>
+            </div>
+            <div class="job-listings">
+                <!-- Job Card 1 -->
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <img src="/api/placeholder/50/50" alt="Company Logo" class="company-logo">
+                        <div>
+                            <h3 class="job-title">Senior Web Developer</h3>
+                            <p class="company-name">TechCorp Inc.</p>
+                        </div>
+                    </div>
+                    <div class="job-card-body">
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <i>💼</i> Full Time
+                            </div>
+                            <div class="job-detail">
+                                <i>📍</i> New York
+                            </div>
+                            <div class="job-detail">
+                                <i>💰</i> $90k - $120k
+                            </div>
+                        </div>
+                        <p class="job-description">We are looking for an experienced web developer to join our team and help us build innovative solutions for our clients. The ideal candidate will have at least 5 years of experience in web development.</p>
+                        <div class="job-tags">
+                            <span class="job-tag">JavaScript</span>
+                            <span class="job-tag">React</span>
+                            <span class="job-tag">Node.js</span>
+                            <span class="job-tag">AWS</span>
+                        </div>
+                    </div>
+                    <div class="job-card-footer">
+                        <span class="posted-date">Posted 2 days ago</span>
+                        <button class="apply-btn">Apply Now</button>
+                    </div>
+                </div>
+                
+                <!-- Job Card 2 -->
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <img src="/api/placeholder/50/50" alt="Company Logo" class="company-logo">
+                        <div>
+                            <h3 class="job-title">Marketing Manager</h3>
+                            <p class="company-name">BrandGrow Solutions</p>
+                        </div>
+                    </div>
+                    <div class="job-card-body">
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <i>💼</i> Full Time
+                            </div>
+                            <div class="job-detail">
+                                <i>📍</i> Remote
+                            </div>
+                            <div class="job-detail">
+                                <i>💰</i> $70k - $90k
+                            </div>
+                        </div>
+                        <p class="job-description">We're seeking a creative and analytical Marketing Manager to lead our digital marketing efforts. You'll be responsible for developing and implementing marketing strategies to increase brand awareness.</p>
+                        <div class="job-tags">
+                            <span class="job-tag">Digital Marketing</span>
+                            <span class="job-tag">SEO</span>
+                            <span class="job-tag">Content Strategy</span>
+                        </div>
+                    </div>
+                    <div class="job-card-footer">
+                        <span class="posted-date">Posted 1 week ago</span>
+                        <button class="apply-btn">Apply Now</button>
+                    </div>
+                </div>
+                
+                <!-- Job Card 3 -->
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <img src="/api/placeholder/50/50" alt="Company Logo" class="company-logo">
+                        <div>
+                            <h3 class="job-title">UX/UI Designer</h3>
+                            <p class="company-name">CreativeMinds Agency</p>
+                        </div>
+                    </div>
+                    <div class="job-card-body">
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <i>💼</i> Contract
+                            </div>
+                            <div class="job-detail">
+                                <i>📍</i> San Francisco
+                            </div>
+                            <div class="job-detail">
+                                <i>💰</i> $75k - $95k
+                            </div>
+                        </div>
+                        <p class="job-description">Join our creative team as a UX/UI Designer to create intuitive and engaging user experiences. You'll work on various projects for clients across different industries.</p>
+                        <div class="job-tags">
+                            <span class="job-tag">Figma</span>
+                            <span class="job-tag">Adobe XD</span>
+                            <span class="job-tag">User Research</span>
+                            <span class="job-tag">Prototyping</span>
+                        </div>
+                    </div>
+                    <div class="job-card-footer">
+                        <span class="posted-date">Posted 3 days ago</span>
+                        <button class="apply-btn">Apply Now</button>
+                    </div>
+                </div>
+                
+                <!-- Job Card 4 -->
+                <div class="job-card">
+                    <div class="job-card-header">
+                        <img src="/api/placeholder/50/50" alt="Company Logo" class="company-logo">
+                        <div>
+                            <h3 class="job-title">Data Scientist</h3>
+                            <p class="company-name">DataInsight Technologies</p>
+                        </div>
+                    </div>
+                    <div class="job-card-body">
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <i>💼</i> Full Time
+                            </div>
+                            <div class="job-detail">
+                                <i>📍</i> Boston
+                            </div>
+                            <div class="job-detail">
+                                <i>💰</i> $110k - $140k
+                            </div>
+                        </div>
+                        <p class="job-description">We are looking for a Data Scientist to join our growing team. You'll analyze complex datasets, build predictive models, and help extract valuable insights from our data.</p>
+                        <div class="job-tags">
+                            <span class="job-tag">Python</span>
+                            <span class="job-tag">Machine Learning</span>
+                            <span class="job-tag">SQL</span>
+                            <span class="job-tag">TensorFlow</span>
+                        </div>
+                    </div>
+                    <div class="job-card-footer">
+                        <span class="posted-date">Posted 5 days ago</span>
+                        <button class="apply-btn">Apply Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Companies Section -->
+    <section class="companies-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Companies</h2>
+                <a href="#">View All Companies →</a>
+            </div>
+            <div class="company-cards">
+                <!-- Company Card 1 -->
+                <div class="company-card">
+                
+</body>
+</html>
