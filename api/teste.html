@@ -186,6 +186,8 @@
     <script>
         // URL base da API
         const API_URL = 'http://localhost:3000/api/users';
+        const API_URL_CadastroUser = 'http://localhost:3000/api/users/cadastro';
+
 
         // Função para mostrar mensagens
         function showMessage(text, isError = false) {
@@ -277,7 +279,7 @@
                 age: parseInt(document.getElementById('age').value)
             };
             
-            fetch(API_URL, {
+            fetch(API_URL_CadastroUser, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
