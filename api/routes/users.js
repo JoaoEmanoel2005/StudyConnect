@@ -50,6 +50,11 @@ module.exports = function(connection) {
     const user = {
       name: req.body.name,
       email: req.body.email,
+     /* senha: req.body.senha,
+      cpf: req.body.cpf,
+      codigo_recuperacao: req.body.codigo_recuperacao,
+      nascimento: req.body.nascimento,
+      cidade: req.body.cidade,  */
       age: req.body.age
     };
 
@@ -80,8 +85,14 @@ module.exports = function(connection) {
     }
 
     connection.query(
-      'UPDATE users SET name = ?, email = ?, age = ? WHERE id = ?',
-      [req.body.name, req.body.email, req.body.age, req.params.id],
+      'UPDATE users SET name = ?, email = ?, age = ? WHERE id = ?', //depois adiciona os atributo comentados
+      [req.body.name, req.body.email, req.body.age, req.params.id
+      /* req.body.senha,
+      req.body.cpf,
+      req.body.codigo_recuperacao,
+      req.body.nascimento,
+      req.body.cidade,  */
+      ],
       (err, result) => {
         if (err) {
           res.status(500).send({
