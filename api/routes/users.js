@@ -3,7 +3,7 @@ const router = express.Router();
 
 module.exports = function(connection) {
   // Buscar todos os usuários
-  router.get('/', (req, res) => {
+  router.get('/todos', (req, res) => {
     connection.query('SELECT * FROM users', (err, results) => {
       if (err) {
         res.status(500).send({
@@ -70,7 +70,7 @@ module.exports = function(connection) {
   });
 
   // Atualizar um usuário
-  router.put('/:id', (req, res) => {
+  router.put('/atualizar/:id', (req, res) => {
     // Validar requisição
     if (!req.body) {
       res.status(400).send({
@@ -106,7 +106,7 @@ module.exports = function(connection) {
   });
 
   // Excluir um usuário
-  router.delete('/:id', (req, res) => {
+  router.delete('/deletar/:id', (req, res) => {
     connection.query('DELETE FROM users WHERE id = ?', [req.params.id], (err, result) => {
       if (err) {
         res.status(500).send({

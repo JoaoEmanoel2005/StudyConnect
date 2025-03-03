@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
-app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 
 // Definir porta e iniciar servidor
 const PORT = process.env.PORT || 3000;
