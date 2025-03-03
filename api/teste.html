@@ -185,8 +185,8 @@
 
     <script>
         // URL base da API
-        const API_URL = 'http://localhost:3000/api/users';
-        const API_URL_CadastroUser = 'http://localhost:3000/api/users/cadastro';
+        const API_URL = 'http://localhost:3000/users';
+        
 
 
         // Função para mostrar mensagens
@@ -204,7 +204,7 @@
 
         // Função para carregar todos os usuários
         function loadUsers() {
-            fetch(API_URL)
+            fetch(`${API_URL}/todos`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Falha ao carregar usuários');
@@ -279,7 +279,7 @@
                 age: parseInt(document.getElementById('age').value)
             };
             
-            fetch(API_URL_CadastroUser, {
+            fetch(`${API_URL}/cadastro`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -343,7 +343,7 @@
                 age: parseInt(document.getElementById('updateAge').value)
             };
             
-            fetch(`${API_URL}/${userId}`, {
+            fetch(`${API_URL}/atualizar/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -371,7 +371,7 @@
             
             const userId = document.getElementById('deleteId').value;
             
-            fetch(`${API_URL}/${userId}`, {
+            fetch(`${API_URL}/deletar/${userId}`, {
                 method: 'DELETE'
             })
             .then(response => {
