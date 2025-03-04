@@ -38,14 +38,17 @@ app.get('/', (req, res) => {
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
-const instituicoesRoutes = require('./routes/instituicoes')(connection);
-const vestibularRoutes = require('./routes/vestibular')(connection);
-const cursosRoutes = require('./routes/cursos')(connection);
-
 app.use('/users', userRoutes);
-app.use('/vestibular', vestibularRoutes);
-app.use('/cursos', cursosRoutes);
+
+const instituicoesRoutes = require('./routes/instituicoes')(connection);
 app.use('/instituicoes', instituicoesRoutes);
+
+const vestibularRoutes = require('./routes/vestibular')(connection);
+app.use('/vestibular', vestibularRoutes);
+
+const cursosRoutes = require('./routes/cursos')(connection);
+app.use('/cursos', cursosRoutes);
+
 
 
 

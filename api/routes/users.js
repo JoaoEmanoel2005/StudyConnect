@@ -48,18 +48,33 @@ module.exports = function(connection) {
 
     // Criar um usuário
     const user = {
-      name: req.body.name,
+      nome: req.body.nome,
       email: req.body.email,
-     /* senha: req.body.senha,
+      senha: req.body.senha,
       cpf: req.body.cpf,
       codigo_recuperacao: req.body.codigo_recuperacao,
       nascimento: req.body.nascimento,
-      cidade: req.body.cidade,  */
-      age: req.body.age
+      cidade: req.body.cidade, 
     };
 
+/*
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    codigo_recuperacao VARCHAR(50),
+    nascimento DATE,
+    cidade VARCHAR(100),
+    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+*/
+
     // Inserir no banco de dados
-    connection.query('INSERT INTO users SET ?', user, (err, result) => {
+    connection.query('INSERT INTO usuarios SET ?', user, (err, result) => {
       if (err) {
         res.status(500).send({
           message: err.message || "Ocorreu um erro ao criar o usuário."
@@ -85,13 +100,8 @@ module.exports = function(connection) {
     }
 
     connection.query(
-      'UPDATE users SET name = ?, email = ?, age = ? WHERE id = ?', //depois adiciona os atributo comentados
-      [req.body.name, req.body.email, req.body.age, req.params.id
-      /* req.body.senha,
-      req.body.cpf,
-      req.body.codigo_recuperacao,
-      req.body.nascimento,
-      req.body.cidade,  */
+      'UPDATE usuarios SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
+      [req.body.nome, req.body.email, req.body.senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id
       ],
       (err, result) => {
         if (err) {
