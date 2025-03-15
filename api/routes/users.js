@@ -208,94 +208,125 @@ module.exports = function(connection) {
       });
     });
 });
+/**
+ * @swagger
+ * /users/atualizar/{id}/{nome}/{email}/{senha}/{cpf}/{codigo_recuperacao}/{nascimento}/{cidade}:
+ *   put:
+ *     summary: Atualiza um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do usuário
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: nome
+ *         required: true
+ *         description: Nome do usuário
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         description: E-mail do usuário
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: senha
+ *         required: true
+ *         description: Senha do usuário
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: cpf
+ *         required: true
+ *         description: CPF do usuário
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: codigo_recuperacao
+ *         required: true
+ *         description: Código de recuperação
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: nascimento
+ *         required: true
+ *         description: Data de nascimento do usuário
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: path
+ *         name: cidade
+ *         required: true
+ *         description: Cidade do usuário
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 nome:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 cpf:
+ *                   type: string
+ *       404:
+ *         description: Usuário não encontrado
+ */
+router.put('/atualizar/:id/:nome/:email/:senha/:cpf/:codigo_recuperacao/:nascimento/:cidade', (req, res) => {
+  // Verificando se os parâmetros de URL estão presentes
+  const { id, nome, email, senha, cpf, codigo_recuperacao, nascimento, cidade } = req.params;
 
-  /**
-   * @swagger
-   * /users/atualizar/{id}:
-   *   put:
-   *     summary: Atualiza um usuário
-   *     tags: [Users]
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: ID do usuário
-   *         schema:
-   *           type: integer
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               nome:
-   *                 type: string
-   *               email:
-   *                 type: string
-   *               senha:
-   *                 type: string
-   *               cpf:
-   *                 type: string
-   *               codigo_recuperacao:
-   *                 type: string
-   *               nascimento:
-   *                 type: string
-   *                 format: date
-   *               cidade:
-   *                 type: string
-   *     responses:
-   *       200:
-   *         description: Usuário atualizado com sucesso
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 id:
-   *                   type: integer
-   *                 nome:
-   *                   type: string
-   *                 email:
-   *                   type: string
-   *                 cpf:
-   *                   type: string
-   *       404:
-   *         description: Usuário não encontrado
-   */
-  router.put('/atualizar/:id', (req, res) => {
-    if (!req.body) {
-      res.status(400).send({
-        message: "O conteúdo não pode estar vazio!"
-      });
-      return;
-    }
+  if (!id || !nome || !email || !senha || !cpf || !codigo_recuperacao || !nascimento || !cidade) {
+    res.status(400).send({
+      message: "Todos os parâmetros são obrigatórios!"
+    });
+    return;
+  }
 
-    connection.query(
-      'UPDATE usuarios SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
-      [req.body.nome, req.body.email, req.body.senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
-      (err, result) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message || `Erro ao atualizar usuário com id ${req.params.id}`
-          });
-          return;
-        }
-
-        if (result.affectedRows === 0) {
-          res.status(404).send({
-            message: `Usuário com id ${req.params.id} não encontrado.`
-          });
-          return;
-        }
-
-        res.send({
-          id: req.params.id,
-          ...req.body
+  // Atualizando os dados no banco
+  connection.query(
+    'UPDATE usuarios SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
+    [nome, email, senha, cpf, codigo_recuperacao, nascimento, cidade, id],
+    (err, result) => {
+      if (err) {
+        res.status(500).send({
+          message: err.message || `Erro ao atualizar usuário com id ${id}`
         });
+        return;
       }
-    );
-  });
+
+      if (result.affectedRows === 0) {
+        res.status(404).send({
+          message: `Usuário com id ${id} não encontrado.`
+        });
+        return;
+      }
+
+      res.send({
+        id,
+        nome,
+        email,
+        cpf,
+        codigo_recuperacao,
+        nascimento,
+        cidade
+        
+      });
+    }
+  );
+});
+
 
   /**
    * @swagger
@@ -317,7 +348,7 @@ module.exports = function(connection) {
    *         description: Usuário não encontrado
    */
   router.delete('/deletar/:id', (req, res) => {
-    connection.query('DELETE FROM users WHERE id = ?', [req.params.id], (err, result) => {
+    connection.query('DELETE FROM usuarios WHERE id = ?', [req.params.id], (err, result) => {
       if (err) {
         res.status(500).send({
           message: err.message || `Erro ao excluir usuário com id ${req.params.id}`
