@@ -3,398 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste da API CRUD</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button.delete {
-            background-color: #f44336;
-        }
-        button.delete:hover {
-            background-color: #d32f2f;
-        }
-        button.update {
-            background-color: #2196F3;
-        }
-        button.update:hover {
-            background-color: #0b7dda;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        #message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            display: none;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-    </style>
+    <title>Cadastro de Usuário</title>
 </head>
 <body>
-    <h1>Teste da API CRUD</h1>
-    
-    <div id="message"></div>
 
-    <div class="section">
-        <h2>Criar Novo Usuário</h2>
-        <form id="createForm">
-            <div class="form-group">
-                <label for="name">Nome:</label>
-                <input type="text" id="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-                <label for="age">Idade:</label>
-                <input type="number" id="age" required>
-            </div>
-            <button type="submit">Criar Usuário</button>
-        </form>
-    </div>
+    <h1>Cadastro de Usuário</h1>
 
-    <div class="section">
-        <h2>Buscar Usuário por ID</h2>
-        <form id="findUserForm">
-            <div class="form-group">
-                <label for="userId">ID do Usuário:</label>
-                <input type="number" id="userId" required>
-            </div>
-            <button type="submit">Buscar</button>
-        </form>
-        <div id="userResult"></div>
-    </div>
+    <form id="cadastroForm" method="POST">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br><br>
 
-    <div class="section">
-        <h2>Atualizar Usuário</h2>
-        <form id="updateForm">
-            <div class="form-group">
-                <label for="updateId">ID do Usuário:</label>
-                <input type="number" id="updateId" required>
-            </div>
-            <div class="form-group">
-                <label for="updateName">Nome:</label>
-                <input type="text" id="updateName" required>
-            </div>
-            <div class="form-group">
-                <label for="updateEmail">Email:</label>
-                <input type="email" id="updateEmail" required>
-            </div>
-            <div class="form-group">
-                <label for="updateAge">Idade:</label>
-                <input type="number" id="updateAge" required>
-            </div>
-            <button type="submit">Atualizar Usuário</button>
-        </form>
-    </div>
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" required><br><br>
 
-    <div class="section">
-        <h2>Excluir Usuário</h2>
-        <form id="deleteForm">
-            <div class="form-group">
-                <label for="deleteId">ID do Usuário:</label>
-                <input type="number" id="deleteId" required>
-            </div>
-            <button type="submit" class="delete">Excluir Usuário</button>
-        </form>
-    </div>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required><br><br>
 
-    <div class="section">
-        <h2>Lista de Usuários</h2>
-        <button id="loadUsers">Carregar Todos os Usuários</button>
-        <div id="userList">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Idade</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <!-- Dados serão carregados aqui -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" name="cpf" required><br><br>
+
+        <label for="codigo_recuperacao">Código de Recuperação:</label>
+        <input type="text" id="codigo_recuperacao" name="codigo_recuperacao" required><br><br>
+
+        <label for="nascimento">Data de Nascimento:</label>
+        <input type="date" id="nascimento" name="nascimento" required><br><br>
+
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" required><br><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
 
     <script>
-        // URL base da API
-        const API_URL = 'http://localhost:3000/users';
-        
+        // Quando o formulário for enviado, envia os dados para o backend
+        document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Previne o envio padrão do formulário
 
+            // Captura os dados do formulário
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const cpf = document.getElementById('cpf').value;
+            const codigo_recuperacao = document.getElementById('codigo_recuperacao').value;
+            const nascimento = document.getElementById('nascimento').value;
+            const cidade = document.getElementById('cidade').value;
 
-        // Função para mostrar mensagens
-        function showMessage(text, isError = false) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = isError ? 'error' : 'success';
-            messageDiv.style.display = 'block';
-            
-            // Esconder a mensagem após 5 segundos
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
-        }
+            // Cria a URL para a requisição com os dados do formulário
+            const url = `http://localhost:3000/users/cadastro/${nome}/${email}/${senha}/${cpf}/${codigo_recuperacao}/${nascimento}/${cidade}`;
 
-        // Função para carregar todos os usuários
-        function loadUsers() {
-            fetch(`${API_URL}/todos`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao carregar usuários');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tableBody = document.getElementById('userTableBody');
-                    tableBody.innerHTML = '';
-                    
-                    data.forEach(user => {
-                        const row = document.createElement('tr');
-                        
-                        row.innerHTML = `
-                            <td>${user.id}</td>
-                            <td>${user.name}</td>
-                            <td>${user.email}</td>
-                            <td>${user.age}</td>
-                            <td>
-                                <button class="update" onclick="fillUpdateForm(${user.id}, '${user.name}', '${user.email}', ${user.age})">Editar</button>
-                                <button class="delete" onclick="deleteUser(${user.id})">Excluir</button>
-                            </td>
-                        `;
-                        
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    showMessage(error.message, true);
-                });
-        }
-
-        // Função para preencher o formulário de atualização
-        function fillUpdateForm(id, name, email, age) {
-            document.getElementById('updateId').value = id;
-            document.getElementById('updateName').value = name;
-            document.getElementById('updateEmail').value = email;
-            document.getElementById('updateAge').value = age;
-            // Scroll para o formulário
-            document.getElementById('updateForm').scrollIntoView();
-        }
-
-        // Função para excluir usuário diretamente da tabela
-        function deleteUser(id) {
-            if (confirm(`Tem certeza que deseja excluir o usuário com ID ${id}?`)) {
-                fetch(`${API_URL}/${id}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao excluir usuário');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    showMessage('Usuário excluído com sucesso!');
-                    loadUsers(); // Recarregar a lista
-                })
-                .catch(error => {
-                    showMessage(error.message, true);
-                });
-            }
-        }
-
-        // Event listeners para os formulários
-        document.getElementById('createForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const user = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                age: parseInt(document.getElementById('age').value)
-            };
-            
-            fetch(`${API_URL}/cadastro`, {
+            // Envia a requisição POST para o servidor
+            fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Falha ao criar usuário');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                showMessage('Usuário criado com sucesso!');
-                document.getElementById('createForm').reset();
-                loadUsers(); // Recarregar a lista
+                // Exibe a resposta do servidor
+                alert('Usuário cadastrado com sucesso! ID: ' + data.id);
             })
             .catch(error => {
-                showMessage(error.message, true);
+                alert('Erro ao cadastrar o usuário: ' + error.message);
             });
         });
-
-        document.getElementById('findUserForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userId = document.getElementById('userId').value;
-            
-            fetch(`${API_URL}/${userId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            throw new Error('Usuário não encontrado');
-                        }
-                        throw new Error('Falha ao buscar usuário');
-                    }
-                    return response.json();
-                })
-                .then(user => {
-                    const userResult = document.getElementById('userResult');
-                    userResult.innerHTML = `
-                        <h3>Usuário Encontrado:</h3>
-                        <p><strong>ID:</strong> ${user.id}</p>
-                        <p><strong>Nome:</strong> ${user.name}</p>
-                        <p><strong>Email:</strong> ${user.email}</p>
-                        <p><strong>Idade:</strong> ${user.age}</p>
-                    `;
-                })
-                .catch(error => {
-                    document.getElementById('userResult').innerHTML = '';
-                    showMessage(error.message, true);
-                });
-        });
-
-        document.getElementById('updateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userId = document.getElementById('updateId').value;
-            const user = {
-                name: document.getElementById('updateName').value,
-                email: document.getElementById('updateEmail').value,
-                age: parseInt(document.getElementById('updateAge').value)
-            };
-            
-            fetch(`${API_URL}/atualizar/${userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Falha ao atualizar usuário');
-                }
-                return response.json();
-            })
-            .then(data => {
-                showMessage('Usuário atualizado com sucesso!');
-                document.getElementById('updateForm').reset();
-                loadUsers(); // Recarregar a lista
-            })
-            .catch(error => {
-                showMessage(error.message, true);
-            });
-        });
-
-        document.getElementById('deleteForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userId = document.getElementById('deleteId').value;
-            
-            fetch(`${API_URL}/deletar/${userId}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Falha ao excluir usuário');
-                }
-                return response.json();
-            })
-            .then(data => {
-                showMessage('Usuário excluído com sucesso!');
-                document.getElementById('deleteForm').reset();
-                loadUsers(); // Recarregar a lista
-            })
-            .catch(error => {
-                showMessage(error.message, true);
-            });
-        });
-
-        // Carregar usuários ao clicar no botão
-        document.getElementById('loadUsers').addEventListener('click', loadUsers);
-        
-        // Carregar usuários ao iniciar a página
-        document.addEventListener('DOMContentLoaded', loadUsers);
     </script>
+
 </body>
 </html>

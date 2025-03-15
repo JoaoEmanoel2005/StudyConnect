@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -31,6 +33,28 @@ connection.connect(error => {
   console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
 });
 
+// Configuração do Swagger
+const options = {
+  swaggerDefinition: {
+    info: {
+      title: 'Minha API',
+      version: '1.0.0',
+      description: 'Documentação da minha API',
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 3000}`,
+      },
+    ],
+  },
+  apis: ['./routes/*.js'], // Ajuste o caminho conforme as rotas que você tem
+};
+
+const specs = swaggerJsdoc(options);
+
+// Rota de documentação do Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
 // Rota inicial
 app.get('/', (req, res) => {
   res.json({ message: 'Bem-vindo à API!' });
@@ -48,10 +72,6 @@ app.use('/vestibular', vestibularRoutes);
 
 const cursosRoutes = require('./routes/cursos')(connection);
 app.use('/cursos', cursosRoutes);
-
-
-
-
 
 // Definir porta e iniciar servidor
 const PORT = process.env.PORT || 3000;
