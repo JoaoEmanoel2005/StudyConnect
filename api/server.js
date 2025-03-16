@@ -11,6 +11,24 @@ dotenv.config();
 // Criar aplicação Express
 const app = express();
 
+const path = require('path');
+
+/*
+
+app.use(express.static(path.join(__dirname, '..', 'src', 'html')));
+
+isto serve para mim puxar os html la do src
+
+// Rota padrão (localhost:3000) - Serve o arquivo index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'index.html'));
+});
+
+isto faz com q o html index seja o primeiro a aparecer quando inicar a API
+
+*/
+
+
 // Configurar middlewares
 app.use(cors());
 app.use(express.json()); // para analisar requisições com JSON
@@ -37,9 +55,9 @@ connection.connect(error => {
 const options = {
   swaggerDefinition: {
     info: {
-      title: 'Minha API',
+      title: 'API do StudyConnect',
       version: '1.0.0',
-      description: 'Documentação da minha API',
+      description: 'Documentação da API do site StudyConnect',
     },
     servers: [
       {
@@ -57,7 +75,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Rota inicial
 app.get('/', (req, res) => {
-  res.json({ message: 'Bem-vindo à API!' });
+  res.sendFile(path.join(__dirname, 'teste.html'));
 });
 
 // Importar e configurar rotas
@@ -75,6 +93,6 @@ app.use('/cursos', cursosRoutes);
 
 // Definir porta e iniciar servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor está rodando na porta ${PORT}`);
 });
