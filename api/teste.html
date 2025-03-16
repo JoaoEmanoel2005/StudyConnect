@@ -49,7 +49,7 @@
             const cidade = document.getElementById('cidade').value;
 
             // Cria a URL para a requisição com os dados do formulário
-            const url = `http://localhost:3000/users/cadastro/${nome}/${email}/${senha}/${cpf}/${codigo_recuperacao}/${nascimento}/${cidade}`;
+            const url = `http://192.168.1.11:3000/users/cadastro/${nome}/${email}/${senha}/${cpf}/${codigo_recuperacao}/${nascimento}/${cidade}`;
 
             // Envia a requisição POST para o servidor
             fetch(url, {
