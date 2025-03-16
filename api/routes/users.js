@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { encrypt, comcrypt } = require ("../utils/bcrypt")
 
 module.exports = function(connection) {
   /**
@@ -166,7 +167,7 @@ module.exports = function(connection) {
   *                   type: string
   */
 
-  router.post('/cadastro/:nome/:email/:senha/:cpf/:codigo_recuperacao/:nascimento/:cidade', (req, res) => {
+  router.post('/cadastro/:nome/:email/:senha/:cpf/:codigo_recuperacao/:nascimento/:cidade', async (req, res) => {
     // Extrai os dados da URL (path parameters)
     const { nome, email, senha, cpf, codigo_recuperacao, nascimento, cidade } = req.params;
 
@@ -177,10 +178,12 @@ module.exports = function(connection) {
       });
     }
 
+const crypto_senha = await encrypt(senha);
+
     const user = {
       nome,
       email,
-      senha,
+      senha: crypto_senha,
       cpf,
       codigo_recuperacao,
       nascimento,
