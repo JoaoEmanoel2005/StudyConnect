@@ -1,9 +1,8 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -36,9 +35,9 @@ app.use(express.urlencoded({ extended: true })); // para analisar requisições 
 
 // Configuração do banco de dados
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || '127.1.0.0.1',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'minha_api_db'
 });
 
@@ -50,28 +49,6 @@ connection.connect(error => {
   }
   console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
 });
-
-// Configuração do Swagger
-const options = {
-  swaggerDefinition: {
-    info: {
-      title: 'API do StudyConnect',
-      version: '1.0.0',
-      description: 'Documentação da API do site StudyConnect',
-    },
-    servers: [
-      {
-        url: `http://localhost:${process.env.PORT || 3000}`,
-      },
-    ],
-  },
-  apis: ['./routes/*.js'], // Ajuste o caminho conforme as rotas que você tem
-};
-
-const specs = swaggerJsdoc(options);
-
-// Rota de documentação do Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Rota inicial
 app.get('/', (req, res) => {
