@@ -2,7 +2,9 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const session = require('express-session');  // Importar express-session
+require("dotenv-safe").config();
+
+
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -10,9 +12,15 @@ dotenv.config();
 // Criar aplicação Express
 const app = express();
 
+const jwt = require('jsonwebtoken');
+
 const path = require('path');
 
-
+function verifyJWT(req, res, next){
+  const token = req.headers['autorization'];
+    if(!token) return res.status(401).json({})
+  
+}
 
 
 // Configurar middlewares

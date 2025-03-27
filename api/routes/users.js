@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { encrypt, comcrypt } = require("../utils/bcrypt");
+const jwt = require('jsonwebtoken');
 
 module.exports = function(connection) {
   // Middleware para verificar se o usuário está autenticado
@@ -40,45 +41,45 @@ module.exports = function(connection) {
     });
   });
 
-  // Rota de login
   router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
-
-    // Verificar se o usuário existe no banco de dados
-    connection.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-      if (err) {
-        res.status(500).send({
-          message: err.message || "Erro ao buscar o usuário."
-        });
-        return;
-      }
-
+  
+    try {
+      const [results] = await connection.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+  
       if (results.length === 0) {
-        res.status(400).send({ message: "Usuário não encontrado." });
-        return;
+        return res.status(400).send({ message: "Email ou senha incorretos." });
       }
-
-      // Comparar a senha
+  
       const user = results[0];
       const isMatch = await comcrypt(senha, user.senha);
-
-      if (!isMatch) {
-        res.status(400).send({ message: "Senha incorreta." });
-        return;
-      }
-
-
-      res.send({
-        message: "Login bem-sucedido!",
-        
-      });
-    });
-  });
-
-  // Rota de logout
-  router.post('/logout', (req, res) => {
   
+      if (!isMatch) {
+        return res.status(400).send({ message: "Email ou senha incorretos." });
+      }
+  
+      const token = jwt.sign({ id: user.id }, process.env.SECRET, {
+        expiresIn: 300 // 5 minutos ou 300 segundos
+      });
+  
+      return res.json({
+        auth: true,
+        token: token,
+        expiresIn: 300
+      });
+  
+    } catch (err) {
+      return res.status(500).send({
+        message: err.message || "Erro ao processar a requisição."
+      });
+    }
   });
+  
+  // Rota de logout
+router.post('/logout', (req, res) => {
+  // Aqui você não precisa fazer nada com o token no servidor, apenas retorna um sucesso
+  res.json({ message: "Logout bem-sucedido", auth: false, token: null });
+});
 
   // Criar um novo usuário
   router.post('/cadastro', async (req, res) => {
