@@ -20,13 +20,7 @@ app.use(cors());
 app.use(express.json()); // para analisar requisições com JSON
 app.use(express.urlencoded({ extended: true })); // para analisar requisições url-encoded
 
-// Configuração do express-session
-app.use(session({
-  secret: 'Project_TG', // Coloque um segredo forte
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // Defina como `true` se estiver usando HTTPS
-}));
+
 
 // Configuração do banco de dados
 const connection = mysql.createConnection({

@@ -93,6 +93,8 @@
     if (data.message === "Login bem-sucedido!") {
       document.getElementById('response').innerText = `Bem-vindo ${data.user.nome}!`;
       localStorage.setItem('user', JSON.stringify(data.user));  // Salva os dados do usuário no localStorage
+      console.log(localStorage.getItem('user'))
+      console.log(data.user)
 
       // Limpar os campos de login após o sucesso
       document.getElementById('loginEmail').value = '';

@@ -4,15 +4,10 @@ const { encrypt, comcrypt } = require("../utils/bcrypt");
 
 module.exports = function(connection) {
   // Middleware para verificar se o usuário está autenticado
-  function verificaAutenticacao(req, res, next) {
-    if (req.session && req.session.user) {
-      return next(); // Se o usuário estiver logado, pode acessar a rota
-    }
-    res.status(401).send({ message: "Você precisa estar logado para acessar essa página." });
-  }
+    
 
   // Buscar todos os usuários
-  router.get('/todos', verificaAutenticacao, (req, res) => {  // Rota protegida
+  router.get('/todos', (req, res) => {  // Rota protegida
     connection.query('SELECT * FROM users', (err, results) => {
       if (err) {
         res.status(500).send({
@@ -25,7 +20,7 @@ module.exports = function(connection) {
   });
 
   // Buscar usuário por ID
-  router.get('/:id', verificaAutenticacao, (req, res) => {  // Rota protegida
+  router.get('/:id', (req, res) => {  // Rota protegida
     connection.query('SELECT * FROM users WHERE id = ?', [req.params.id], (err, results) => {
       if (err) {
         res.status(500).send({
@@ -72,28 +67,17 @@ module.exports = function(connection) {
         return;
       }
 
-      // Criar sessão de usuário após login bem-sucedido
-      req.session.user = {
-        id: user.id,
-        nome: user.nome,
-        email: user.email,
-      };
 
       res.send({
         message: "Login bem-sucedido!",
-        user: req.session.user,
+        
       });
     });
   });
 
   // Rota de logout
   router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send({ message: "Erro ao tentar fazer logout." });
-      }
-      res.send({ message: "Logout bem-sucedido!" });
-    });
+  
   });
 
   // Criar um novo usuário

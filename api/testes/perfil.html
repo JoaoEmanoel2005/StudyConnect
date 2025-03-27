@@ -49,10 +49,15 @@
   <script>
     const BASE_URL = "http://localhost:3000";
 
+    console.log(localStorage.getItem('user'))
     // Carregar os dados do usuário logado
-    const user = JSON.parse(localStorage.getItem('user'));
+    const userData = (localStorage.getItem('user'));
+    const test = JSON.parse(localStorage.getItem('user'));
+    console.log(test)
 
-    if (user) {
+    if (userData) {
+      const user = JSON.parse(userData)
+
       document.getElementById('userData').innerHTML = `
         <p><strong>Nome:</strong> ${user.nome}</p>
         <p><strong>Email:</strong> ${user.email}</p>
