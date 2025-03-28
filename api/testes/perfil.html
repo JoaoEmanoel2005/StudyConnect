@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil do Usuário</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .form-group { margin-bottom: 15px; }
+    input[type="text"], input[type="email"], input[type="date"], input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Perfil do Usuário</h1>
+    <div id="userData">
+      <!-- Os dados do usuário logado serão exibidos aqui -->
+    </div>
+
+    <h2>Atualizar Dados</h2>
+    <form id="updateForm">
+      <div class="form-group">
+        <label for="updateNome">Nome</label>
+        <input type="text" id="updateNome" required>
+      </div>
+      <div class="form-group">
+        <label for="updateEmail">Email</label>
+        <input type="email" id="updateEmail" required>
+      </div>
+      <div class="form-group">
+        <label for="updateSenha">Nova Senha</label>
+        <input type="password" id="updateSenha" placeholder="Digite uma nova senha">
+      </div>
+      <div class="form-group">
+        <label for="updateCidade">Cidade</label>
+        <input type="text" id="updateCidade" required>
+      </div>
+      <button type="submit">Atualizar</button>
+    </form>
+
+    <div id="response"></div>
+  </div>
+
+  <script>
+    const BASE_URL = "http://localhost:3000";
+
+    console.log(localStorage.getItem('user'))
+    // Carregar os dados do usuário logado
+    const userData = (localStorage.getItem('user'));
+    const test = JSON.parse(localStorage.getItem('user'));
+    console.log(test)
+
+    if (userData) {
+      const user = JSON.parse(userData)
+
+      document.getElementById('userData').innerHTML = `
+        <p><strong>Nome:</strong> ${user.nome}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Cidade:</strong> ${user.cidade}</p>
+      `;
+
+      // Preencher os campos de atualização com os dados atuais
+      document.getElementById('updateNome').value = user.nome;
+      document.getElementById('updateEmail').value = user.email;
+      document.getElementById('updateCidade').value = user.cidade;
+    } else {
+      document.getElementById('userData').innerText = 'Você não está logado.';
+    }
+
+    // Função para atualizar os dados do usuário
+    document.getElementById('updateForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById('updateNome').value;
+      const email = document.getElementById('updateEmail').value;
+      const senha = document.getElementById('updateSenha').value;
+      const cidade = document.getElementById('updateCidade').value;
+
+      const updatedUserData = { nome, email, senha, cidade };
+
+      // Enviar dados de atualização para a API
+      fetch(`${BASE_URL}/users/atualizar/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedUserData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('response').innerText = data.message;
+        
+        // Se os dados foram atualizados com sucesso, salve novamente no localStorage
+        if (data.message.includes('sucesso')) {
+          user.nome = nome;
+          user.email = email;
+          user.cidade = cidade;
+          localStorage.setItem('user', JSON.stringify(user)); // Atualizar no localStorage
+        }
+      })
+      .catch(error => {
+        document.getElementById('response').innerText = "Erro ao atualizar dados!";
+        console.error("Erro na atualização:", error);
+      });
+    });
+  </script>
+</body>
+</html>

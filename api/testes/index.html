@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login e Cadastro</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .form-group { margin-bottom: 15px; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Login ou Cadastro</h1>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="Digite seu e-mail" required>
+      </div>
+      <div class="form-group">
+        <label for="loginSenha">Senha</label>
+        <input type="password" id="loginSenha" placeholder="Digite sua senha" required>
+      </div>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <h2>Cadastro</h2>
+    <form id="cadastroForm">
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" placeholder="Digite seu nome" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail" required>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Digite sua senha" required>
+      </div>
+      <div class="form-group">
+        <label for="cpf">CPF</label>
+        <input type="text" id="cpf" placeholder="Digite seu CPF" required>
+      </div>
+      <div class="form-group">
+        <label for="nascimento">Data de Nascimento</label>
+        <input type="date" id="nascimento" required>
+      </div>
+      <div class="form-group">
+        <label for="cidade">Cidade</label>
+        <input type="text" id="cidade" placeholder="Digite sua cidade" required>
+      </div>
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <h2>Logout</h2>
+    <button id="logoutButton">Sair</button>
+
+    <div id="response"></div>
+  </div>
+
+  <script>
+    //ip do notbook do joao
+  //  const BASE_URL = "http://192.168.142.47:3000"
+    const BASE_URL = "http://localhost:3000" 
+
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('loginEmail').value;
+  const senha = document.getElementById('loginSenha').value;
+
+  console.log(email, senha);
+
+  fetch(`${BASE_URL}/users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, senha })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Erro de login: ' + response.statusText);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.auth) {
+      document.getElementById('response').innerText = `Login bem-sucedido!`;
+      localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
+      console.log(localStorage.getItem('token'));
+
+      // Limpar os campos de login após o sucesso
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginSenha').value = '';
+    } else {
+      document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
+    }
+  })
+  .catch(error => {
+    document.getElementById('response').innerText = error.message;
+  });
+});
+
+
+    // Função para cadastrar um novo usuário
+    document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+      const cpf = document.getElementById('cpf').value;
+      const nascimento = document.getElementById('nascimento').value;
+      const cidade = document.getElementById('cidade').value;
+
+      fetch(`${BASE_URL}/users/cadastro`, {  // Correção aqui
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nome, email, senha, cpf, nascimento, cidade })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('response').innerText = data.message;
+      });
+    });
+    document.getElementById('logoutButton').addEventListener('click', function() {
+  fetch(`${BASE_URL}/users/logout`, {
+    method: 'POST',
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Exibe a mensagem de sucesso no frontend
+    document.getElementById('response').innerText = data.message;
+
+    // Remove o token (ou os dados do usuário) do localStorage
+    localStorage.removeItem('token');  // Remove o token, caso esteja armazenado
+    localStorage.removeItem('user');   // Remove os dados do usuário, se necessário
+
+    // Opcional: Redireciona para a página de login ou para a tela inicial
+   // window.location.href = "/login";  // Isso redireciona o usuário para a página de login (ajuste conforme sua aplicação)
+  })
+  .catch(error => {
+    // Caso haja algum erro na requisição, exibe uma mensagem
+    document.getElementById('response').innerText = `Erro: ${error.message}`;
+  });
+});
+
+  </script>
+</body>
+</html>

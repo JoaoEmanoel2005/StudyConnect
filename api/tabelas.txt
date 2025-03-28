@@ -1,0 +1,36 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    codigo_recuperacao VARCHAR(50),
+    nascimento DATE,
+    cidade VARCHAR(100),
+    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE instituicao (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL UNIQUE,
+        endereco VARCHAR(100) NOT NULL UNIQUE,
+        descricao VARCHAR(255) NOT NULL,
+        tipo VARCHAR(50) NOT NULL,
+        data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    /*
+
+app.use(express.static(path.join(__dirname, '..', 'src', 'html')));
+
+isto serve para mim puxar os html la do src
+
+// Rota padrão (localhost:3000) - Serve o arquivo index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'index.html'));
+});
+
+isto faz com q o html index seja o primeiro a aparecer quando inicar a API
+
+*/

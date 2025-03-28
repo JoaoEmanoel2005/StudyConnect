@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const { encrypt, comcrypt } = require("../utils/bcrypt");
+const jwt = require('jsonwebtoken');
 
 module.exports = function(connection) {
+  // Middleware para verificar se o usuário está autenticado
+    
+
   // Buscar todos os usuários
-  router.get('/todos', (req, res) => {
+  router.get('/todos', (req, res) => {  // Rota protegida
     connection.query('SELECT * FROM users', (err, results) => {
       if (err) {
         res.status(500).send({
@@ -16,7 +21,7 @@ module.exports = function(connection) {
   });
 
   // Buscar usuário por ID
-  router.get('/:id', (req, res) => {
+  router.get('/:id', (req, res) => {  // Rota protegida
     connection.query('SELECT * FROM users WHERE id = ?', [req.params.id], (err, results) => {
       if (err) {
         res.status(500).send({
@@ -24,21 +29,60 @@ module.exports = function(connection) {
         });
         return;
       }
-      
+
       if (results.length === 0) {
         res.status(404).send({
           message: `Usuário com id ${req.params.id} não encontrado.`
         });
         return;
       }
-      
+
       res.send(results[0]);
     });
   });
 
+  router.post('/login', async (req, res) => {
+    const { email, senha } = req.body;
+  
+    try {
+      const [results] = await connection.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+  
+      if (results.length === 0) {
+        return res.status(400).send({ message: "Email ou senha incorretos." });
+      }
+  
+      const user = results[0];
+      const isMatch = await comcrypt(senha, user.senha);
+  
+      if (!isMatch) {
+        return res.status(400).send({ message: "Email ou senha incorretos." });
+      }
+  
+      const token = jwt.sign({ id: user.id }, process.env.SECRET, {
+        expiresIn: 300 // 5 minutos ou 300 segundos
+      });
+  
+      return res.json({
+        auth: true,
+        token: token,
+        expiresIn: 300
+      });
+  
+    } catch (err) {
+      return res.status(500).send({
+        message: err.message || "Erro ao processar a requisição."
+      });
+    }
+  });
+  
+  // Rota de logout
+router.post('/logout', (req, res) => {
+  // Aqui você não precisa fazer nada com o token no servidor, apenas retorna um sucesso
+  res.json({ message: "Logout bem-sucedido", auth: false, token: null });
+});
+
   // Criar um novo usuário
-  router.post('/cadastro', (req, res) => {
-    // Validar requisição
+  router.post('/cadastro', async (req, res) => {
     if (!req.body) {
       res.status(400).send({
         message: "O conteúdo não pode estar vazio!"
@@ -46,52 +90,42 @@ module.exports = function(connection) {
       return;
     }
 
-    // Criar um usuário
-    const user = {
-      nome: req.body.nome,
-      email: req.body.email,
-      senha: req.body.senha,
-      cpf: req.body.cpf,
-      codigo_recuperacao: req.body.codigo_recuperacao,
-      nascimento: req.body.nascimento,
-      cidade: req.body.cidade, 
-    };
+    try {
+      const cripto_senha = await encrypt(req.body.senha);
 
-/*
+      const user = {
+        nome: req.body.nome,
+        email: req.body.email,
+        senha: cripto_senha,
+        cpf: req.body.cpf,
+        codigo_recuperacao: req.body.codigo_recuperacao,
+        nascimento: req.body.nascimento,
+        cidade: req.body.cidade,
+      };
 
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    cpf VARCHAR(11) NOT NULL UNIQUE,
-    codigo_recuperacao VARCHAR(50),
-    nascimento DATE,
-    cidade VARCHAR(100),
-    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+      connection.query('INSERT INTO users SET ?', user, (err, result) => {
+        if (err) {
+          res.status(500).send({
+            message: err.message || "Ocorreu um erro ao criar o usuário."
+          });
+          return;
+        }
 
-*/
-
-    // Inserir no banco de dados
-    connection.query('INSERT INTO usuarios SET ?', user, (err, result) => {
-      if (err) {
-        res.status(500).send({
-          message: err.message || "Ocorreu um erro ao criar o usuário."
+        res.send({
+          id: result.insertId,
+          ...user,
+          message: 'Usuário criado com sucesso!'
         });
-        return;
-      }
-      
-      res.send({
-        id: result.insertId,
-        ...user
       });
-    });
+    } catch (error) {
+      res.status(500).send({
+        message: "Erro ao criptografar a senha: " + error.message
+      });
+    }
   });
 
   // Atualizar um usuário
-  router.put('/atualizar/:id', (req, res) => {
-    // Validar requisição
+  router.put('/atualizar/:id', async (req, res) => {
     if (!req.body) {
       res.status(400).send({
         message: "O conteúdo não pode estar vazio!"
@@ -99,31 +133,39 @@ CREATE TABLE usuarios (
       return;
     }
 
-    connection.query(
-      'UPDATE usuarios SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
-      [req.body.nome, req.body.email, req.body.senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id
-      ],
-      (err, result) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message || `Erro ao atualizar usuário com id ${req.params.id}`
+    try {
+      const cripto_senha = await encrypt(req.body.senha);
+
+      connection.query(
+        'UPDATE users SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
+        [req.body.nome, req.body.email, cripto_senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
+        (err, result) => {
+          if (err) {
+            res.status(500).send({
+              message: err.message || `Erro ao atualizar usuário com id ${req.params.id}`
+            });
+            return;
+          }
+
+          if (result.affectedRows === 0) {
+            res.status(404).send({
+              message: `Usuário com id ${req.params.id} não encontrado.`
+            });
+            return;
+          }
+
+          res.send({
+            id: req.params.id,
+            ...req.body,
+            message: "Usuário atualizado com sucesso!"
           });
-          return;
         }
-        
-        if (result.affectedRows === 0) {
-          res.status(404).send({
-            message: `Usuário com id ${req.params.id} não encontrado.`
-          });
-          return;
-        }
-        
-        res.send({
-          id: req.params.id,
-          ...req.body
-        });
-      }
-    );
+      );
+    } catch (error) {
+      res.status(500).send({
+        message: "Erro ao criptografar a senha: " + error.message
+      });
+    }
   });
 
   // Excluir um usuário
@@ -135,14 +177,14 @@ CREATE TABLE usuarios (
         });
         return;
       }
-      
+
       if (result.affectedRows === 0) {
         res.status(404).send({
           message: `Usuário com id ${req.params.id} não encontrado.`
         });
         return;
       }
-      
+
       res.send({ message: "Usuário excluído com sucesso!" });
     });
   });
