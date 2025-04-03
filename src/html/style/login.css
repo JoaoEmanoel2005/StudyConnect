@@ -3,145 +3,144 @@
     --second-color: #F58420;
 }
 
-* {
+*{
     font-family: 'Poppins', sans-serif;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
-body {
+body{
     height: 100vh;
     background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
+
 }
 
-h1 {
+h1{
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 35px;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    height: 43px;
+    margin-bottom: 0;
 }
 
-h3 {
+h3{
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     font-size: 15px;
     color: #A0ADBE;
-    margin-bottom: 30px;
+    margin-top: 0;
 }
 
-.container {
+.container{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 40px;
-    width: 50%; /* Mantendo o tamanho original da container (50%) */
-    border: 0.5px solid #D1D1D1;
+    width: 50%;
+    border-style: solid;
+    border-color: #D1D1D1;
+    border-width: 0.5px;
     border-radius: 15px;
 }
 
-.inputsDiv {
-    width: 100%;
-    margin-bottom: 20px;
+input{
+    color: #000000;
+    margin: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
-.inputsDiv form {
-    width: 100%;
-}
+input::placeholder{
+    color: #A0ADBE;
+    font-family: 'Poppins', sans-serif;
 
-.input-container {
-    position: relative;
-    width: 100%;
-    margin-bottom: 20px;
 }
-
 .form-input {
     width: 100%;
-    padding: 15px 45px 15px 45px; /* Aumentado o padding para inputs maiores */
+    padding: 12px 15px;
     border: 1.5px solid #CAD3DE;
-    border-radius: 6px; /* Ligeiramente aumentado */
-    font-size: 16px; /* Aumentado tamanho da fonte */
+    border-radius: 4px;
+    font-size: 14px;
     transition: border-color 0.3s ease;
     background-color: #F1F4F8;
-    height: 55px; /* Altura explícita para campos maiores */
 }
 
 .form-input:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(38, 89, 195, 0.2);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
 }
 
+/* Ajustes gerais */
+.input-container {
+    position: relative;
+    width: 100%; /* Garantir que o input ocupe toda a largura */
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 40px 12px 40px; /* Adiciona 40px à esquerda e à direita para o ícone */
+    border: 1.5px solid #CAD3DE;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    background-color: #F1F4F8;
+    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+}
+
+.form-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+/* Ajuste no ícone dentro do input */
 .input-container i {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px; /* Ícones ligeiramente maiores */
+    transform: translateY(-50%); /* Centraliza verticalmente */
+    font-size: 18px;
     color: #888;
+    pointer-events: none; /* Impede que o ícone interfira na interação do usuário com o input */
 }
 
+/* Ícone à esquerda do input (CPF) */
 .input-container i.fa-id-card {
-    left: 15px;
+    left: 10px;
 }
 
+/* Ícone do olho à direita (Senha) */
 .input-container i.fa-eye {
-    right: 15px;
-    cursor: pointer;
+    right: 10px;
 }
 
-.inputsDiv a {
-    display: block;
-    text-align: right;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
+/* Estilo do botão */
 button {
     width: 100%;
-    padding: 15px; /* Botão ligeiramente maior */
+    padding: 12px;
     font-size: 16px;
     border: none;
     background-color: var(--primary-color);
     color: white;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    margin: 20px 0;
-    transition: background-color 0.3s ease;
-    height: 55px; /* Altura explícita para o botão */
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #193b83;
+    background-color: var(--second-color);
 }
 
-p {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #666;
-    display: inline-block;
-}
-
-.container > a {
+/* Links e texto */
+a {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 600;
-    margin-left: 5px;
 }
 
-.container > a:hover {
+a:hover {
     text-decoration: underline;
-}
-p{
-    color: var(--primary-color);
-}
-#linkCad{
-    color: var(--second-color);
 }
