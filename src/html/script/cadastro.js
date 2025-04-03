@@ -24,3 +24,4 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     this.classList.toggle('fa-eye');
     this.classList.toggle('fa-eye-slash');
 });
+    

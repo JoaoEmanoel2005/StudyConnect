@@ -24,6 +24,7 @@ h1 {
     font-size: 35px;
     color: var(--primary-color);
     margin-bottom: 10px;
+    text-align: center;
 }
 
 h3 {
@@ -31,7 +32,8 @@ h3 {
     font-weight: 300;
     font-size: 15px;
     color: #A0ADBE;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .container {
@@ -41,107 +43,89 @@ h3 {
     align-items: center;
     justify-content: center;
     padding: 40px;
-    width: 50%; /* Mantendo o tamanho original da container (50%) */
+    width: 50%;
     border: 0.5px solid #D1D1D1;
     border-radius: 15px;
+    max-width: 600px;
 }
 
-.inputsDiv {
+.input-field {
     width: 100%;
-    margin-bottom: 20px;
-}
-
-.inputsDiv form {
-    width: 100%;
-}
-
-.input-container {
-    position: relative;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.form-input {
-    width: 100%;
-    padding: 15px 45px 15px 45px; /* Aumentado o padding para inputs maiores */
+    padding: 15px 45px;
     border: 1.5px solid #CAD3DE;
-    border-radius: 6px; /* Ligeiramente aumentado */
-    font-size: 16px; /* Aumentado tamanho da fonte */
+    border-radius: 6px;
+    font-size: 16px;
     transition: border-color 0.3s ease;
     background-color: #F1F4F8;
-    height: 55px; /* Altura explícita para campos maiores */
+    height: 55px;
+    margin-bottom: 15px;
+    position: relative;
 }
 
-.form-input:focus {
+.input-field:focus {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 5px rgba(38, 89, 195, 0.2);
 }
 
-.input-container i {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px; /* Ícones ligeiramente maiores */
-    color: #888;
+.input-container {
+    position: relative;
+    width: 100%;
 }
 
-.input-container i.fa-id-card {
+.input-container i {
+    position: absolute;
     left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+    z-index: 1;
 }
 
 .input-container i.fa-eye {
     right: 15px;
+    left: auto;
     cursor: pointer;
-}
-
-.inputsDiv a {
-    display: block;
-    text-align: right;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 14px;
-    margin-top: 5px;
 }
 
 button {
     width: 100%;
-    padding: 15px; /* Botão ligeiramente maior */
+    padding: 15px;
     font-size: 16px;
     border: none;
-    background-color: var(--primary-color);
+    background-color: var(--second-color);
     color: white;
-    border-radius: 6px;
+    border-radius: 35px;
     cursor: pointer;
-    margin: 20px 0;
+    margin: 20px 0 10px;
     transition: background-color 0.3s ease;
-    height: 55px; /* Altura explícita para o botão */
+    height: 55px;
+    font-weight: bold;
 }
 
 button:hover {
-    background-color: #193b83;
+    background-color: #e07417;
 }
 
-p {
-    margin: 10px 0;
+.login-link {
+    margin-top: 5px;
+    text-align: center;
     font-size: 14px;
-    color: #666;
-    display: inline-block;
 }
 
-.container > a {
+.login-link a {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 600;
-    margin-left: 5px;
 }
 
-.container > a:hover {
+.login-link a:hover {
     text-decoration: underline;
 }
-p{
-    color: var(--primary-color);
-}
-#linkCad{
-    color: var(--second-color);
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 30px;
+    }
 }
