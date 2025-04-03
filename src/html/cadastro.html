@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyConnect | Cadastro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style/cadastro.css">
+</head>
+<body>
+    <div class="container">
+        <h1>CADASTRO DE USUÁRIO</h1>
+        <h3>Crie sua conta para acessar nosso filtro e nos deixe ajudar em sua busca...</h3>
+        
+        <div class="input-container">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" class="input-field" placeholder="Nome Completo">
+        </div>
+        
+        <div class="input-container">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" class="input-field" placeholder="Digite seu e-mail">
+        </div>
+        
+        <div class="input-container">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="text" id="cpf" class="input-field" placeholder="Digite seu CPF" maxlength="14">
+        </div>
+        
+        <div class="input-container">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <input type="text" class="input-field" placeholder="Qual a sua escolaridade?">
+        </div>
+        
+        <div class="input-container">
+            <i class="fa-solid fa-eye" id="togglePassword"></i>
+            <input type="password" id="password" class="input-field" placeholder="Digite sua senha">
+        </div>
+        
+        <button>CADASTRAR</button>
+        
+        <div class="login-link">
+            Já possui conta? <a href="#">Entre aqui...</a>
+        </div>
+    </div>
+
+    
+    <script src="./script/cadastro.js"></script>
+</body>
+</html>
