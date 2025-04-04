@@ -64,6 +64,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'pages', 'html', 'home.html'));
 });
 
+app.get('/perfil', (req, res) => {
+  console.log("tela de perfil")
+});
+
+app.get('/log_cad', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'log_cad.html'));
+});
+
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
 app.use('/users', userRoutes);
