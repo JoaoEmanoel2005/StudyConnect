@@ -116,6 +116,25 @@ input::placeholder{
 /* Ícone do olho à direita (Senha) */
 .input-container i.fa-eye {
     right: 10px;
+    position: absolute;
+    right: 15px;
+    left: auto;
+    cursor: pointer;
+}
+
+.input-container i.fa-eye-slash {
+    position: absolute;
+    right: 15px;
+    left: auto;
+    cursor: pointer;
+}
+.inputsDiv a {
+    display: block;
+    text-align: right;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 /* Estilo do botão */

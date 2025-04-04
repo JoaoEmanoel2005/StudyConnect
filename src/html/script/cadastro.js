@@ -14,22 +14,7 @@ document.getElementById('cpf').addEventListener('input', function (e) {
     e.target.value = value;
 });
 
-// Validação básica de CPF ao enviar o formulário
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
-    
-    if (cpf.length !== 11) {
-        alert('Por favor, insira um CPF válido com 11 dígitos.');
-        return false;
-    }
-    
-    // Aqui você pode adicionar uma validação mais completa do CPF
-    // ou enviar o formulário para processamento
-    alert('Formulário enviado com sucesso!');
-});
-
+// Toggle para mostrar/ocultar senha
 document.getElementById('togglePassword').addEventListener('click', function() {
     const passwordInput = document.getElementById('password');
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
