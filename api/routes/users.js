@@ -5,7 +5,21 @@ const jwt = require('jsonwebtoken');
 
 module.exports = function(connection) {
   // Middleware para verificar se o usuário está autenticado
-    
+const autenticar = (req, res, next) => {
+  const token = req.headers['authorization']?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(403).json({ erro: 'Token não fornecido' });
+  }
+
+  try {
+    const tokenDecodificado = jwt.verify(token, process.env.SECRET);
+    req.usuario = tokenDecodificado; // Armazena o payload do token
+    next();
+  } catch (error) {
+    res.status(401).json({ erro: 'Token inválido' });
+  }
+};
 
   // Buscar todos os usuários
   router.get('/todos', (req, res) => {  // Rota protegida
@@ -21,24 +35,26 @@ module.exports = function(connection) {
   });
 
   // Buscar usuário por ID
-  router.get('/:id', (req, res) => {  // Rota protegida
-    connection.query('SELECT * FROM users WHERE id = ?', [req.params.id], (err, results) => {
-      if (err) {
-        res.status(500).send({
-          message: err.message || `Erro ao buscar usuário com id ${req.params.id}`
-        });
-        return;
-      }
-
+  router.get('/expecifico', autenticar, async (req, res) => {
+    try {
+      const [results] = await connection.promise().query(
+        'SELECT * FROM users WHERE id = ?', 
+        [req.usuario.id] // Usa o ID do usuário autenticado
+      );
+  
       if (results.length === 0) {
-        res.status(404).send({
-          message: `Usuário com id ${req.params.id} não encontrado.`
+        return res.status(404).json({
+          message: `Usuário com id ${req.usuario.id} não encontrado`
         });
-        return;
       }
-
-      res.send(results[0]);
-    });
+  
+      res.json(results[0]);
+  
+    } catch (err) {
+      res.status(500).json({
+        message: err.message || `Erro ao buscar usuário`
+      });
+    }
   });
 
   router.post('/login', async (req, res) => {
@@ -48,17 +64,19 @@ module.exports = function(connection) {
       const [results] = await connection.promise().query('SELECT * FROM users WHERE email = ?', [email]);
   
       if (results.length === 0) {
-        return res.status(400).send({ message: "Email ou senha incorretos." });
+        return res.status(404).send({ message: "Email ou senha incorretos." });
       }
   
       const user = results[0];
-      const isMatch = await comcrypt(senha, user.senha);
+      const isMatch = await bcrypt.comcryptc(senha, user.senha);
   
       if (!isMatch) {
-        return res.status(400).send({ message: "Email ou senha incorretos." });
+        return res.status(401).send({ message: "Email ou senha incorretos." });
       }
   
-      const token = jwt.sign({ id: user.id }, process.env.SECRET, {
+      const token = jwt.sign({ 
+        id: user.id,
+      }, process.env.SECRET, {
         expiresIn: 300 // 5 minutos ou 300 segundos
       });
   

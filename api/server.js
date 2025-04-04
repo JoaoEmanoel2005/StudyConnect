@@ -48,8 +48,13 @@ connection.connect(error => {
 });
 
 // Rota inicial
+app.use(express.static(path.join(__dirname, '..', 'src', 'html')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'script')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'style')));
+
+// Rota padrão (localhost:3000) - Serve o arquivo index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/testes/index.html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'home.html'));
 });
 
 // Importar e configurar rotas

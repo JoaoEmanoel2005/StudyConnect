@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style.css">
     <title>JobConnect - Find Your Dream Job</title>
 </head>
+<script>
+    // Função para redirecionar para a página log_cad.html
+    function redirectToLogin() {
+        window.location.href = 'log_cad.html';
+    }
+</script>
 <body>
+  
+
+    
     <!-- Header -->
     <header>
         <div class="container header-container">
@@ -22,7 +31,7 @@
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <button href="registro.html" class="login-btn">Log In</button>
+                <button class="login-btn"><a href="log_cad.html">Log in</a></button>
                 <button href="registro.html" class="signup-btn">Sign Up</button>
             </div>
         </div>
@@ -231,5 +240,6 @@
                 <!-- Company Card 1 -->
                 <div class="company-card">
                 
+                    <script src="home.js"></script>
 </body>
 </html>
