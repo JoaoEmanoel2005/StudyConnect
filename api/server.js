@@ -32,9 +32,9 @@ app.use(express.urlencoded({ extended: true })); // para analisar requisições 
 
 // Configuração do banco de dados
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST || '127.1.0.0.1',
+  host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'minha_api_db'
 });
 
@@ -48,8 +48,15 @@ connection.connect(error => {
 });
 
 // Rota inicial
+
+app.use(express.static(path.join(__dirname, '..', 'src','pages', 'html')));
+app.use(express.static(path.join(__dirname, '..', 'src','pages', 'style')));
+app.use(express.static(path.join(__dirname, '..', 'src','pages', 'script')));
+
+
+// Rota padrão (localhost:3000) - Serve o arquivo index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/testes/index.html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'pages', 'html', 'home.html'));
 });
 
 // Importar e configurar rotas

@@ -21,7 +21,7 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     passwordInput.setAttribute('type', type);
     
     // Alterna o ícone
-    this.classList.toggle('fa-eye');
     this.classList.toggle('fa-eye-slash');
+    this.classList.toggle('fa-eye');
 });
     

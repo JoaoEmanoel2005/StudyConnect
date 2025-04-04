@@ -29,3 +29,14 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     // ou enviar o formulário para processamento
     alert('Formulário enviado com sucesso!');
 });
+
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    // Alterna o ícone
+    this.classList.toggle('fa-eye-slash');
+    this.classList.toggle('fa-eye');
+});
+    
