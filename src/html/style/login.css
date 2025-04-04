@@ -1,64 +1,74 @@
 :root{
     --primary-color: #2659C3;
     --second-color: #F58420;
-}
-
-*{
+    --background-color: white;
+    --text-color: #333;
+    --input-bg: #F1F4F8;
+    --input-border: #CAD3DE;
+    --subtitle-color: #A0ADBE;
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    --container-border: 0.5px solid #D1D1D1;
+    --transition-speed: 0.3s;
+   }
+   
+   [data-theme="dark"] {
+    --background-color: #121212;
+    --text-color: #EFEFEF;
+    --input-bg: #2A2A2A;
+    --input-border: #444;
+    --subtitle-color: #999;
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    --container-border: 0.5px solid #444;
+   }
+   
+   * {
     font-family: 'Poppins', sans-serif;
-}
-
-body{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+   }
+   
+   body {
     height: 100vh;
-    background-color: white;
+    background-color: var(--background-color);
     display: flex;
     align-items: center;
     justify-content: center;
-
-}
-
-h1{
+    color: var(--text-color);
+   }
+   
+   h1 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 35px;
     color: var(--primary-color);
-    height: 43px;
-    margin-bottom: 0;
-}
-
-h3{
+    margin-bottom: 10px;
+   }
+   
+   h3 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     font-size: 15px;
-    color: #A0ADBE;
-    margin-top: 0;
-}
-
-.container{
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: var(--subtitle-color);
+    margin-bottom: 30px;
+   }
+   
+   .container {
+    box-shadow: var(--box-shadow);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 40px;
-    width: 50%;
-    border-style: solid;
-    border-color: #D1D1D1;
-    border-width: 0.5px;
+    width: 50%; 
+    border: var(--container-border);
     border-radius: 15px;
-}
-
-input{
-    color: #000000;
-    margin: 10px;
-    font-family: 'Poppins', sans-serif;
-}
-
-input::placeholder{
-    color: #A0ADBE;
-    font-family: 'Poppins', sans-serif;
-
-}
-.form-input {
+    background-color: var(--background-color);
+    position: relative;
+   }
+   
+   .inputsDiv {
     width: 100%;
     padding: 12px 15px;
     border: 1.5px solid #CAD3DE;
@@ -79,27 +89,36 @@ input::placeholder{
     position: relative;
     width: 100%; /* Garantir que o input ocupe toda a largura */
     margin-bottom: 20px;
-}
-
-.form-input {
+   }
+   
+   .form-input {
     width: 100%;
     padding: 12px 40px 12px 40px; /* Adiciona 40px à esquerda e à direita para o ícone */
     border: 1.5px solid #CAD3DE;
     border-radius: 4px;
     font-size: 14px;
+    padding: 15px 45px 15px 45px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 16px;
     transition: border-color 0.3s ease;
     background-color: #F1F4F8;
     box-sizing: border-box; /* Garante que o padding não afete a largura total */
 }
 
 .form-input:focus {
+    background-color: var(--input-bg);
+    height: 55px;
+    color: var(--text-color);
+   }
+   
+   .form-input:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
-}
-
-/* Ajuste no ícone dentro do input */
-.input-container i {
+    box-shadow: 0 0 5px rgba(38, 89, 195, 0.2);
+   }
+   
+   .input-container i {
     position: absolute;
     top: 50%;
     transform: translateY(-50%); /* Centraliza verticalmente */
@@ -117,9 +136,24 @@ input::placeholder{
 .input-container i.fa-eye {
     right: 10px;
     position: absolute;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--subtitle-color);
+   }
+   
+   .input-container i.fa-id-card {
+    left: 15px;
+   }
+   
+   .input-container i.fa-eye,
+   .input-container i.fa-eye-slash {
+    position: absolute;
     right: 15px;
     left: auto;
     cursor: pointer;
+   }
+   
+   .inputsDiv a {
 }
 
 .input-container i.fa-eye-slash {
@@ -135,11 +169,12 @@ input::placeholder{
     text-decoration: none;
     font-size: 14px;
     margin-top: 5px;
-}
-
+   }
+   
 /* Estilo do botão */
-button {
+   button {
     width: 100%;
+    padding: 15px;
     padding: 12px;
     font-size: 16px;
     border: none;
@@ -147,6 +182,23 @@ button {
     color: white;
     border-radius: 5px;
     cursor: pointer;
+    margin: 20px 0;
+    transition: background-color 0.3s ease;
+    height: 55px;
+   }
+   
+   button:hover {
+    background-color: #193b83;
+   }
+   
+   p {
+    margin: 10px 0;
+    font-size: 14px;
+    color: var(--primary-color);
+    display: inline-block;
+   }
+   
+   .container > a {
     margin-top: 10px;
 }
 
@@ -158,8 +210,16 @@ button:hover {
 a {
     color: var(--primary-color);
     text-decoration: none;
-}
-
-a:hover {
+    font-weight: 600;
+    margin-left: 5px;
+   }
+   
+   .container > a:hover {
     text-decoration: underline;
+}
+p{
+    color: var(--primary-color);
+}
+#linkCad{
+    color: var(--second-color);
 }
