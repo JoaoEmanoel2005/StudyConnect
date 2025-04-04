@@ -1,120 +1,138 @@
 :root{
     --primary-color: #2659C3;
     --second-color: #F58420;
-}
-
-* {
+    --background-color: white;
+    --text-color: #333;
+    --input-bg: #F1F4F8;
+    --input-border: #CAD3DE;
+    --subtitle-color: #A0ADBE;
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    --container-border: 0.5px solid #D1D1D1;
+    --transition-speed: 0.3s;
+   }
+   
+   [data-theme="dark"] {
+    --background-color: #121212;
+    --text-color: #EFEFEF;
+    --input-bg: #2A2A2A;
+    --input-border: #444;
+    --subtitle-color: #999;
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    --container-border: 0.5px solid #444;
+   }
+   
+   * {
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-body {
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+   }
+   
+   body {
     height: 100vh;
-    background-color: white;
+    background-color: var(--background-color);
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-h1 {
+    color: var(--text-color);
+   }
+   
+   h1 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 35px;
     color: var(--primary-color);
     margin-bottom: 10px;
-}
-
-h3 {
+   }
+   
+   h3 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     font-size: 15px;
-    color: #A0ADBE;
+    color: var(--subtitle-color);
     margin-bottom: 30px;
-}
-
-.container {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+   }
+   
+   .container {
+    box-shadow: var(--box-shadow);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 40px;
-    width: 50%; /* Mantendo o tamanho original da container (50%) */
-    border: 0.5px solid #D1D1D1;
+    width: 50%; 
+    border: var(--container-border);
     border-radius: 15px;
-}
-
-.inputsDiv {
+    background-color: var(--background-color);
+    position: relative;
+   }
+   
+   .inputsDiv {
     width: 100%;
     margin-bottom: 20px;
-}
-
-.inputsDiv form {
+   }
+   
+   .inputsDiv form {
     width: 100%;
-}
-
-.input-container {
+   }
+   
+   .input-container {
     position: relative;
     width: 100%;
     margin-bottom: 20px;
-}
-
-.form-input {
+   }
+   
+   .form-input {
     width: 100%;
-    padding: 15px 45px 15px 45px; /* Aumentado o padding para inputs maiores */
-    border: 1.5px solid #CAD3DE;
-    border-radius: 6px; /* Ligeiramente aumentado */
-    font-size: 16px; /* Aumentado tamanho da fonte */
+    padding: 15px 45px 15px 45px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 16px;
     transition: border-color 0.3s ease;
-    background-color: #F1F4F8;
-    height: 55px; /* Altura explícita para campos maiores */
-}
-
-.form-input:focus {
+    background-color: var(--input-bg);
+    height: 55px;
+    color: var(--text-color);
+   }
+   
+   .form-input:focus {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 5px rgba(38, 89, 195, 0.2);
-}
-
-.input-container i {
+   }
+   
+   .input-container i {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 20px; /* Ícones ligeiramente maiores */
-    color: #888;
-}
-
-.input-container i.fa-id-card {
+    font-size: 20px;
+    color: var(--subtitle-color);
+   }
+   
+   .input-container i.fa-id-card {
     left: 15px;
-}
-
-.input-container i.fa-eye {
+   }
+   
+   .input-container i.fa-eye,
+   .input-container i.fa-eye-slash {
     position: absolute;
     right: 15px;
     left: auto;
     cursor: pointer;
-}
-
-.input-container i.fa-eye-slash {
-    position: absolute;
-    right: 15px;
-    left: auto;
-    cursor: pointer;
-}
-.inputsDiv a {
+   }
+   
+   .inputsDiv a {
     display: block;
     text-align: right;
     color: var(--primary-color);
     text-decoration: none;
     font-size: 14px;
     margin-top: 5px;
-}
-
-button {
+   }
+   
+   button {
     width: 100%;
-    padding: 15px; /* Botão ligeiramente maior */
+    padding: 15px;
     font-size: 16px;
     border: none;
     background-color: var(--primary-color);
@@ -123,33 +141,73 @@ button {
     cursor: pointer;
     margin: 20px 0;
     transition: background-color 0.3s ease;
-    height: 55px; /* Altura explícita para o botão */
-}
-
-button:hover {
+    height: 55px;
+   }
+   
+   button:hover {
     background-color: #193b83;
-}
-
-p {
+   }
+   
+   p {
     margin: 10px 0;
     font-size: 14px;
-    color: #666;
+    color: var(--primary-color);
     display: inline-block;
-}
-
-.container > a {
+   }
+   
+   .container > a {
     color: var(--primary-color);
     text-decoration: none;
     font-weight: 600;
     margin-left: 5px;
-}
-
-.container > a:hover {
+   }
+   
+   .container > a:hover {
     text-decoration: underline;
-}
-p{
-    color: var(--primary-color);
-}
-#linkCad{
+   }
+   
+   #linkCad{
     color: var(--second-color);
-}
+   }
+   
+   /* Estilo para o botão de alternância de tema */
+   .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.5s;
+   }
+   
+   .theme-toggle i {
+    color: white;
+    font-size: 20px;
+    transition: transform 0.5s;
+   }
+   
+   .theme-toggle:hover {
+    transform: scale(1.1);
+   }
+   
+   /* Animação para o ícone de tema */
+   .rotate {
+    animation: rotate 0.5s forwards;
+   }
+   
+   @keyframes rotate {
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+   }
