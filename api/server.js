@@ -47,9 +47,9 @@ app.use(express.static(path.join(__dirname, '..', 'src', 'style')));
 
 // Rota padrão (localhost:3000) - Serve o arquivo index.html
 
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'html')));
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'style')));
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'script')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'html')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'style')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'script')));
 
 app.use(express.static(path.join(__dirname, 'testes')));
 

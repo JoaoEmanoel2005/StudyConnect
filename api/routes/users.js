@@ -4,7 +4,7 @@ const { encrypt, comcrypt } = require("../utils/bcrypt");
 const jwt = require('jsonwebtoken');
 const { verificarToken } = require('../utils/midle');
 
-module.exports = function(connection) {
+module.exports = function (connection) {
   // Middleware para verificar se o usuário está autenticado
 
   // Buscar todos os usuários
@@ -24,72 +24,72 @@ module.exports = function(connection) {
 
   router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
-  
+
     try {
       const [results] = await connection.promise().query('SELECT * FROM users WHERE email = ?', [email]);
-  
+
       if (results.length === 0) {
         return res.status(404).send({ message: "Email ou senha incorretos." });
       }
-  
+
       const user = results[0];
       const isMatch = await comcrypt(senha, user.senha);
-  
+
       if (!isMatch) {
         return res.status(401).send({ message: "Email ou senha incorretos." });
       }
-  
-      const token = jwt.sign({ 
+
+      const token = jwt.sign({
         id: user.id,
-      },process.env.SECRET, {
+      }, process.env.SECRET, {
         expiresIn: 300 // 5 minutos ou 300 segundos
       });
-  
+
       return res.json({
         auth: true,
         token: token,
         expiresIn: 300
       });
-  
+
     } catch (err) {
       return res.status(500).send({
         message: err.message || "Erro ao processar a requisição."
       });
     }
   });
-  
+
   // Rota de logout
-router.post('/logout', (req, res) => {
-  // Aqui você não precisa fazer nada com o token no servidor, apenas retorna um sucesso
-  res.json({ message: "Logout bem-sucedido", auth: false, token: null });
-});
+  router.post('/logout', (req, res) => {
+    // Aqui você não precisa fazer nada com o token no servidor, apenas retorna um sucesso
+    res.json({ message: "Logout bem-sucedido", auth: false, token: null });
+  });
 
-router.get('/perfil', verificarToken, async (req, res) => {
-  try {
-    const userId = req.userId;
+  router.get('/perfil', verificarToken, async (req, res) => {
+    try {
+      const userId = req.userId;
 
-    console.log('ID do usuário autenticado:', userId); // Log do ID do usuário
+      console.log('ID do usuário autenticado:', userId); // Log do ID do usuário
 
-    const [results] = await connection.promise().query('SELECT * FROM users WHERE id = ?', [userId]);
+      const [results] = await connection.promise().query('SELECT * FROM users WHERE id = ?', [userId]);
 
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+
+      const user = results[0];
+
+      return res.json({
+        message: 'Acesso autorizado à rota protegida!',
+        user: user
+      });
+
+    } catch (err) {
+      console.error('Erro no servidor:', err); // Log de erro
+      return res.status(500).json({
+        message: err.message || "Erro ao acessar a rota protegida."
+      });
     }
-
-    const user = results[0];
-
-    return res.json({
-      message: 'Acesso autorizado à rota protegida!',
-      user: user
-    });
-
-  } catch (err) {
-    console.error('Erro no servidor:', err); // Log de erro
-    return res.status(500).json({
-      message: err.message || "Erro ao acessar a rota protegida."
-    });
-  }
-});
+  });
 
 
 
@@ -149,7 +149,7 @@ router.get('/perfil', verificarToken, async (req, res) => {
       const cripto_senha = await encrypt(req.body.senha);
 
       connection.query(
-        'UPDATE users SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?', 
+        'UPDATE users SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?',
         [req.body.nome, req.body.email, cripto_senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
         (err, result) => {
           if (err) {
