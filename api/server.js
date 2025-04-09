@@ -12,15 +12,8 @@ dotenv.config();
 // Criar aplicação Express
 const app = express();
 
-const jwt = require('jsonwebtoken');
-
 const path = require('path');
 
-function verifyJWT(req, res, next){
-  const token = req.headers['autorization'];
-    if(!token) return res.status(401).json({})
-  
-}
 
 
 // Configurar middlewares
@@ -54,19 +47,22 @@ app.use(express.static(path.join(__dirname, '..', 'src', 'style')));
 
 // Rota padrão (localhost:3000) - Serve o arquivo index.html
 
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'html')));
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'style')));
-app.use(express.static(path.join(__dirname, '..', 'src','pages', 'script')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'html')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'style')));
+app.use(express.static(path.join(__dirname, '..', 'src', 'pages', 'script')));
 
+app.use(express.static(path.join(__dirname, 'testes')));
 
 // Rota padrão (localhost:3000) - Serve o arquivo index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'src', 'pages', 'html', 'home.html'));
+  res.sendFile(path.join(__dirname, 'testes', 'index.html'));
 });
 
 app.get('/perfil', (req, res) => {
-  console.log("tela de perfil")
+  res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
 });
+
+
 
 app.get('/log_cad', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'log_cad.html'));

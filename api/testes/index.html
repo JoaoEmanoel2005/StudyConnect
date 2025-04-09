@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login e Cadastro</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .container { max-width: 600px; margin: 0 auto; }
-    .form-group { margin-bottom: 15px; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="submit"] {
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    input[type="submit"] {
       width: 100%;
       padding: 10px;
       margin: 5px 0;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Login ou Cadastro</h1>
@@ -68,51 +85,78 @@
 
   <script>
     //ip do notbook do joao
-  //  const BASE_URL = "http://192.168.142.47:3000"
-    const BASE_URL = "http://localhost:3000" 
+    //  const BASE_URL = "http://192.168.142.47:3000"
+    const BASE_URL = "http://localhost:3000"
 
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-  event.preventDefault();
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+      event.preventDefault();
 
-  const email = document.getElementById('loginEmail').value;
-  const senha = document.getElementById('loginSenha').value;
+      const email = document.getElementById('loginEmail').value;
+      const senha = document.getElementById('loginSenha').value;
 
-  console.log(email, senha);
+      console.log(email, senha);
 
-  fetch(`${BASE_URL}/users/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, senha })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Erro de login: ' + response.statusText);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.auth) {
-      document.getElementById('response').innerText = `Login bem-sucedido!`;
-      localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
-      console.log(localStorage.getItem('token'));
+      fetch(`${BASE_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, senha })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro de login: ' + response.statusText);
+          }
+          return response.json();
+        })
+        .then(data => {
+console.log("Auth data: " + data.auth);
 
-      // Limpar os campos de login após o sucesso
-      document.getElementById('loginEmail').value = '';
-      document.getElementById('loginSenha').value = '';
-    } else {
-      document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
-    }
-  })
-  .catch(error => {
-    document.getElementById('response').innerText = error.message;
-  });
-});
+          if (data.auth) {
+            document.getElementById('response').innerText = `Login bem-sucedido!`;
+            localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
+            console.log(localStorage.getItem('token'));
+           const token = localStorage.getItem('token');
+
+            // Limpar os campos de login após o sucesso
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginSenha').value = '';
+
+            if (token) {
+    fetch(`${BASE_URL}/users/perfil`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`  // Envia o token no cabeçalho Authorization
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Dados do perfil:', data);
+    })
+    .catch(error => {
+        console.log('Erro:', error);
+    });
+} else {
+    console.error('Token não encontrado!');
+}
+
+          } else {
+            document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
+          }
+        })
+        .catch(error => {
+          document.getElementById('response').innerText = error.message;
+        });
+    });
 
 
     // Função para cadastrar um novo usuário
-    document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+    document.getElementById('cadastroForm').addEventListener('submit', function (event) {
       event.preventDefault();
 
       const nome = document.getElementById('nome').value;
@@ -129,33 +173,34 @@
         },
         body: JSON.stringify({ nome, email, senha, cpf, nascimento, cidade })
       })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('response').innerText = data.message;
-      });
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('response').innerText = data.message;
+        });
     });
-    document.getElementById('logoutButton').addEventListener('click', function() {
-  fetch(`${BASE_URL}/users/logout`, {
-    method: 'POST',
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Exibe a mensagem de sucesso no frontend
-    document.getElementById('response').innerText = data.message;
+    document.getElementById('logoutButton').addEventListener('click', function () {
+      fetch(`${BASE_URL}/users/logout`, {
+        method: 'POST',
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Exibe a mensagem de sucesso no frontend
+          document.getElementById('response').innerText = data.message;
 
-    // Remove o token (ou os dados do usuário) do localStorage
-    localStorage.removeItem('token');  // Remove o token, caso esteja armazenado
-    localStorage.removeItem('user');   // Remove os dados do usuário, se necessário
+          // Remove o token (ou os dados do usuário) do localStorage
+          localStorage.removeItem('token');  // Remove o token, caso esteja armazenado
+          localStorage.removeItem('user');   // Remove os dados do usuário, se necessário
 
-    // Opcional: Redireciona para a página de login ou para a tela inicial
-   // window.location.href = "/login";  // Isso redireciona o usuário para a página de login (ajuste conforme sua aplicação)
-  })
-  .catch(error => {
-    // Caso haja algum erro na requisição, exibe uma mensagem
-    document.getElementById('response').innerText = `Erro: ${error.message}`;
-  });
-});
+          // Opcional: Redireciona para a página de login ou para a tela inicial
+          // window.location.href = "/login";  // Isso redireciona o usuário para a página de login (ajuste conforme sua aplicação)
+        })
+        .catch(error => {
+          // Caso haja algum erro na requisição, exibe uma mensagem
+          document.getElementById('response').innerText = `Erro: ${error.message}`;
+        });
+    });
 
   </script>
 </body>
+
 </html>
