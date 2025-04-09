@@ -25,3 +25,50 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     this.classList.toggle('fa-eye');
 });
     
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se há uma preferência de tema salva
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+    } else {
+        // Defina o tema padrão para 'light' caso não tenha uma preferência salva
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+
+    // Alternar tema ao clicar no botão
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        // Adicionar classe para animação de rotação
+        this.classList.add('rotate');
+
+        // Aguardar metade da animação para trocar o ícone
+        setTimeout(() => {
+            updateThemeIcon(newTheme);
+        }, 250);
+
+        // Remover classe após a animação terminar
+        setTimeout(() => {
+            this.classList.remove('rotate');
+        }, 500);
+
+        // Atualizar tema
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+});
+
+// Função para atualizar o ícone do tema
+function updateThemeIcon(theme) {
+    const themeIcon = document.getElementById('themeToggle');
+    if (theme === 'dark') {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+    } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+    }
+}
