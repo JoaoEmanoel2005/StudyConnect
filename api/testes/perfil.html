@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Recupera o token do localStorage
+        console.log(localStorage.getItem('token'));
+        const token = localStorage.getItem('token');
+
+        console.log("Token do localStorage:", token);  // Verifique se o token foi recuperado corretamente
+/*
+        if (token) {
+            fetch('/users/perfil', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`  // Envia o token aqui
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.statusText}`);
+                }
+                return response.json(); // Só tenta converter para JSON se a resposta for válida
+            })
+            .then(data => {
+                console.log('Dados do perfil:', data);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+        } else {
+            console.error('Token não encontrado!');
+        }
+
+        */
+    </script>
+</body>
+</html>

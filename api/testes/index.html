@@ -101,6 +101,7 @@
       // Limpar os campos de login após o sucesso
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginSenha').value = '';
+      
     } else {
       document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
     }
