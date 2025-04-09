@@ -68,8 +68,6 @@ module.exports = function (connection) {
     try {
       const userId = req.userId;
 
-      console.log('ID do usuário autenticado:', userId); // Log do ID do usuário
-
       const [results] = await connection.promise().query('SELECT * FROM users WHERE id = ?', [userId]);
 
       if (results.length === 0) {
