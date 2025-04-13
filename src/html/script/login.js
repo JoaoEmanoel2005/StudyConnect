@@ -1,23 +1,20 @@
-// Formatar CPF enquanto digita
-document.getElementById('cpf').addEventListener('input', function (e) {
+//ip do notbook do joao
+//  const BASE_URL = "http://192.168.142.47:3000"
+const BASE_URL = "http://localhost:3000"
+
+// Validação de e-mail enquanto digita (opcional, sem máscara)
+document.getElementById('loginEmail').addEventListener('input', function (e) {
   let value = e.target.value;
 
-  // Remove todos os caracteres não numéricos
-  value = value.replace(/\D/g, '');
-
-  // Aplica a máscara de CPF (000.000.000-00)
-  if (value.length <= 11) {
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  }
+  // Remove espaços no início/fim
+  value = value.trim();
 
   e.target.value = value;
 });
 
 // Toggle para mostrar/ocultar senha
 document.getElementById('togglePassword').addEventListener('click', function () {
-  const passwordInput = document.getElementById('password');
+  const passwordInput = document.getElementById('loginSenha');
   const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
   passwordInput.setAttribute('type', type);
 
@@ -33,36 +30,29 @@ document.addEventListener('DOMContentLoaded', function () {
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
   } else {
-    // Defina o tema padrão para 'light' caso não tenha uma preferência salva
     document.documentElement.setAttribute('data-theme', 'light');
   }
 
-  // Alternar tema ao clicar no botão
   const themeToggle = document.getElementById('themeToggle');
   themeToggle.addEventListener('click', function () {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
 
-    // Adicionar classe para animação de rotação
     this.classList.add('rotate');
 
-    // Aguardar metade da animação para trocar o ícone
     setTimeout(() => {
       updateThemeIcon(newTheme);
     }, 250);
 
-    // Remover classe após a animação terminar
     setTimeout(() => {
       this.classList.remove('rotate');
     }, 500);
 
-    // Atualizar tema
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
   });
 });
 
-// Função para atualizar o ícone do tema
 function updateThemeIcon(theme) {
   const themeIcon = document.getElementById('themeToggle');
   if (theme === 'dark') {
@@ -75,21 +65,81 @@ function updateThemeIcon(theme) {
 }
 
 // Validação básica ao enviar o formulário
-document.querySelector('button').addEventListener('click', function () {
-  const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
-  const password = document.getElementById('password').value;
+document.getElementById('loginForm').addEventListener('submit', function (event) {
+  event.preventDefault();
 
-  if (cpf.length !== 11) {
-    alert('Por favor, insira um CPF válido com 11 dígitos.');
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+
+  // Validação básica de e-mail
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Por favor, insira um e-mail válido.');
     return;
   }
 
-  if (password.length < 6) {
-    alert('A senha deve ter pelo menos 6 caracteres.');
+  if (senha.length < 8) {
+    alert('A senha deve ter pelo menos 8 caracteres.');
     return;
   }
 
-  // Aqui você adicionaria o código para enviar os dados para seu backend
-  console.log('Dados válidos, enviando para autenticação...');
-  // Exemplo: window.location.href = 'dashboard.html';
+
+  console.log(email, senha);
+
+  fetch(`${BASE_URL}/users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, senha })
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro de login: ' + response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Auth data: " + data.auth);
+
+      if (data.auth) {
+        document.getElementById('response').innerText = `Login bem-sucedido!`;
+        localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
+        console.log(localStorage.getItem('token'));
+        const token = localStorage.getItem('token');
+
+        // Limpar os campos de login após o sucesso
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginSenha').value = '';
+
+        if (token) {
+          fetch(`${BASE_URL}/users/perfil`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`  // Envia o token no cabeçalho Authorization
+            }
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.statusText}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Dados do perfil:', data);
+            })
+            .catch(error => {
+              console.log('Erro:', error);
+            });
+        } else {
+          console.error('Token não encontrado!');
+        }
+
+      } else {
+        document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
+      }
+    })
+    .catch(error => {
+      document.getElementById('response').innerText = error.message;
+    });
 });

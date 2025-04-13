@@ -25,9 +25,9 @@ app.use(express.urlencoded({ extended: true })); // para analisar requisições 
 
 // Configuração do banco de dados
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'minha_api_db'
 });
 
@@ -41,25 +41,24 @@ connection.connect(error => {
 });
 
 
-// Rota padrão (localhost:3000) - Serve o arquivo index.html
 
-// app.use(express.static(path.join(__dirname, '..', 'src', 'html')));
-app.use(express.static(path.join(__dirname, '..', 'src', 'html', 'style')));
-app.use(express.static(path.join(__dirname, '..', 'src', 'html', 'script')));
-
-// Supondo que seu CSS e JS estejam em src/public/style e src/public/script
 
 app.use('/style', express.static(path.join(__dirname, '..', 'src', 'html', 'style')));
 app.use('/script', express.static(path.join(__dirname, '..', 'src', 'html', 'script')));
 
 
-// app.use(express.static(path.join(__dirname, 'testes')));
-
-// Rota padrão (localhost:3000) - Serve o arquivo index.html
-
 app.get('/', (req, res) => {
   //res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
+  //res.sendFile(path.join(__dirname, 'testes', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'index.html'));
+
+});
+
+app.get('/index', (req, res) => {
+
   res.sendFile(path.join(__dirname, 'testes', 'index.html'));
+
+
 });
 
 app.get('/login', (req, res) => {
