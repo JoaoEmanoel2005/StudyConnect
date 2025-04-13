@@ -26,17 +26,17 @@ body {
 }
 
 [data-theme="dark"] body{
-    background-color: #222222; /* Cor de fundo para o tema escuro */
+    background-color: #121212; /* Cor de fundo para o tema escuro */
     color: white; /* Texto claro para o tema escuro */
 }
 
 [data-theme="dark"] .container {
-    background-color: #333;
+    background-color: #121212;
     border: 0.5px solid #555;
 }
 
 [data-theme="dark"] .input-field {
-    background-color: #444;
+    background-color: #2A2A2A;
     border-color: #666;
     color: white;
 }
@@ -146,7 +146,7 @@ button {
     border: none;
     background-color: var(--second-color);
     color: white;
-    border-radius: 35px;
+    border-radius: 6px;
     cursor: pointer;
     margin: 20px 0 10px;
     transition: background-color 0.3s ease;
@@ -220,3 +220,32 @@ button:hover {
       transform: rotate(360deg);
     }
    }
+
+   /* Adicione este CSS ao seu arquivo cadastro.css */
+select.input-field {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    cursor: pointer;
+    color: #555;
+}
+
+select.input-field option {
+    color: #333;
+    background-color: #fff;
+    padding: 10px;
+}
+
+/* Para tema escuro */
+[data-theme="dark"] select.input-field {
+    color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] select.input-field option {
+    background-color: #444;
+    color: #fff;
+}
