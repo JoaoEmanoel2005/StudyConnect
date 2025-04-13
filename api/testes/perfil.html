@@ -11,9 +11,7 @@
     <script>
         // Recupera o token do localStorage
         const token = localStorage.getItem('token');
-        console.log(token);
-
-        console.log("Token do localStorage:", token);  // Verifique se o token foi recuperado corretamente
+          // Verifique se o token foi recuperado corretamente
         
                 if (token) {
                     fetch('http://localhost:3000/users/perfil', {

@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const verificarToken = (req, res, next) => {
   // Pega o token do cabeçalho Authorization
   const token = req.headers['authorization'];
-  console.log('token passado: ', token)
 
   // Se não houver token, retorna erro
   if (!token) {
