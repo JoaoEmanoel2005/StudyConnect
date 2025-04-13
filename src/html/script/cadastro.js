@@ -72,3 +72,39 @@ function updateThemeIcon(theme) {
         themeIcon.classList.add('fa-moon');
     }
 }
+
+// Adicione este código ao seu arquivo cadastro.js
+
+// Função para obter o valor da escolaridade selecionada
+function getEscolaridade() {
+    const escolaridadeSelect = document.getElementById('escolaridade');
+    return escolaridadeSelect.value;
+}
+
+// Exemplo de como usar ao enviar o formulário
+document.querySelector('button').addEventListener('click', function(e) {
+    e.preventDefault(); // Impede o envio padrão do formulário
+    
+    // Capturar todos os valores do formulário
+    const dadosFormulario = {
+        nome: document.querySelector('input[placeholder="Nome Completo"]').value,
+        email: document.querySelector('input[type="email"]').value,
+        cpf: document.getElementById('cpf').value,
+        escolaridade: getEscolaridade(),
+        senha: document.getElementById('password').value
+    };
+    
+    console.log('Dados a serem enviados para API:', dadosFormulario);
+    
+    // Aqui você faria o envio para sua API Node.js
+    // fetch('/api/cadastro', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(dadosFormulario)
+    // })
+    // .then(response => response.json())
+    // .then(data => console.log('Sucesso:', data))
+    // .catch(error => console.error('Erro:', error));
+});
