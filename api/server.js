@@ -56,6 +56,12 @@ app.use('/script', express.static(path.join(__dirname, '..', 'src', 'html', 'scr
 // app.use(express.static(path.join(__dirname, 'testes')));
 
 // Rota padrão (localhost:3000) - Serve o arquivo index.html
+
+app.get('/', (req, res) => {
+  //res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
+  res.sendFile(path.join(__dirname, 'testes', 'index.html'));
+});
+
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'login.html'));
 });
@@ -66,7 +72,8 @@ app.get('/cadastro', (req, res) => {
 
 
 app.get('/perfil', (req, res) => {
-  res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
+  //res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'perfil.html'));
 });
 
 
