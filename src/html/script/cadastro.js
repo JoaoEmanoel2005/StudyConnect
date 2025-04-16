@@ -1,18 +1,3 @@
-document.getElementById('cpf').addEventListener('input', function (e) {
-    let value = e.target.value;
-    
-    // Remove todos os caracteres não numéricos
-    value = value.replace(/\D/g, '');
-    
-    // Aplica a máscara de CPF (000.000.000-00)
-    if (value.length <= 11) {
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    }
-    
-    e.target.value = value;
-});
 
 // Toggle para mostrar/ocultar senha
 document.getElementById('togglePassword').addEventListener('click', function() {
@@ -73,38 +58,55 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Adicione este código ao seu arquivo cadastro.js
 
-// Função para obter o valor da escolaridade selecionada
-function getEscolaridade() {
-    const escolaridadeSelect = document.getElementById('escolaridade');
-    return escolaridadeSelect.value;
-}
+const BASE_URL = "http://localhost:3000";
 
-// Exemplo de como usar ao enviar o formulário
-document.querySelector('button').addEventListener('click', function(e) {
-    e.preventDefault(); // Impede o envio padrão do formulário
-    
-    // Capturar todos os valores do formulário
-    const dadosFormulario = {
-        nome: document.querySelector('input[placeholder="Nome Completo"]').value,
-        email: document.querySelector('input[type="email"]').value,
-        cpf: document.getElementById('cpf').value,
-        escolaridade: getEscolaridade(),
-        senha: document.getElementById('password').value
-    };
-    
-    console.log('Dados a serem enviados para API:', dadosFormulario);
-    
-    // Aqui você faria o envio para sua API Node.js
-    // fetch('/api/cadastro', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(dadosFormulario)
-    // })
-    // .then(response => response.json())
-    // .then(data => console.log('Sucesso:', data))
-    // .catch(error => console.error('Erro:', error));
+document.getElementById("btnCadastrar").addEventListener("click", function (event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const cpf = document.getElementById("cpf").value;
+    const codigo_recuperacao = document.getElementById("codigoRecuperacao").value;
+    const nascimento = document.getElementById("dataNascimento").value;
+    const cidade = document.getElementById("cidade").value;
+    const escolaridade = document.getElementById("escolaridade").value;
+
+    console.log("Enviando:", { nome, email, senha, cpf,codigo_recuperacao, nascimento, cidade, escolaridade });
+
+
+    fetch(`${BASE_URL}/users/cadastro`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nome, email, senha, cpf, codigo_recuperacao, nascimento, cidade, escolaridade })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erro na requisição");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Resposta:", data);
+            alert("Cadastro realizado com sucesso!");
+
+            document.getElementById('nome').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('senha').value = '';
+            document.getElementById('cpf').value = '';
+            document.getElementById('codigoRecuperacao').value = '';
+            document.getElementById('dataNascimento').value = '';
+            document.getElementById('cidade').value = '';
+            document.getElementById('escolaridade').value = '';
+
+        })
+        .catch(error => {
+            console.error("Erro:", error);
+            alert("Cadastro não realizado.");
+        });
+
 });
+

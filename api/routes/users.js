@@ -111,6 +111,7 @@ module.exports = function (connection) {
         codigo_recuperacao: req.body.codigo_recuperacao,
         nascimento: req.body.nascimento,
         cidade: req.body.cidade,
+        escolaridade: req.body.escolaridade,
       };
 
       connection.query('INSERT INTO users SET ?', user, (err, result) => {
