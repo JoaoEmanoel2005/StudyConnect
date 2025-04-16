@@ -33,18 +33,3 @@ CREATE TABLE instituicao (
         tipo VARCHAR(50) NOT NULL,
         data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-
-    /*
-
-app.use(express.static(path.join(__dirname, '..', 'src', 'html')));
-
-isto serve para mim puxar os html la do src
-
-// Rota padrão (localhost:3000) - Serve o arquivo index.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'index.html'));
-});
-
-isto faz com q o html index seja o primeiro a aparecer quando inicar a API
-
-*/
