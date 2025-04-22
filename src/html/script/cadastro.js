@@ -1,3 +1,15 @@
+function calcularIdade(dataNascimento) {
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+
+    return idade;
+}
 
 // Toggle para mostrar/ocultar senha
 document.getElementById('togglePassword').addEventListener('click', function() {
@@ -72,6 +84,13 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
     const nascimento = document.getElementById("dataNascimento").value;
     const cidade = document.getElementById("cidade").value;
     const escolaridade = document.getElementById("escolaridade").value;
+
+    const idade = calcularIdade(nascimento)
+
+    if (idade < 14) {
+        alert("Você precisa ter pelo menos 14 anos para se cadastrar.");
+        return; // cancela o envio
+    }
 
     console.log("Enviando:", { nome, email, senha, cpf,codigo_recuperacao, nascimento, cidade, escolaridade });
 
