@@ -1,0 +1,336 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+body {
+    background-color: #f5f5f5;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.logo {
+    color: #0047ff;
+    font-weight: bold;
+    font-size: 18px;
+}
+.nav {
+    display: flex;
+    gap: 20px;
+}
+.nav a {
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+}
+.nav a.active {
+    color: #0047ff;
+}
+.enter-btn {
+    background-color: #eff6ff;
+    color: #0047ff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.banner {
+    background-color: #ff6600;
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.banner-text {
+    max-width: 50%;
+}
+.banner-text h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+.banner-price {
+    font-size: 48px;
+    font-weight: bold;
+}
+.banner-month {
+    font-size: 20px;
+}
+.banner-btn {
+    background-color: #ffcc00;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.partner-logos {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.partner-logo {
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+.search-bar {
+    background-color: #333;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+}
+.search-nav {
+    display: flex;
+    gap: 20px;
+}
+.search-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.search-form {
+    background-color: white;
+    padding: 20px;
+}
+.search-title {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.form-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.search-btn {
+    background-color: #0047ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+.slider-track {
+    flex: 1;
+    height: 4px;
+    background-color: #ddd;
+    position: relative;
+}
+.slider-thumb {
+    width: 12px;
+    height: 12px;
+    background-color: #0047ff;
+    border-radius: 50%;
+    position: absolute;
+    top: -4px;
+    left: 30%;
+}
+.slider-value {
+    font-size: 12px;
+    color: #666;
+}
+.payment-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.payment-option {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.featured-section {
+    padding: 20px 40px;
+}
+.section-title {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+}
+.location {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 10px;
+}
+.cards-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+.card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 220px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card-header {
+    padding: 10px;
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.card-like {
+    color: #ddd;
+    cursor: pointer;
+}
+.card-body {
+    padding: 15px;
+}
+.card-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.card-subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 10px;
+}
+.discount-badge {
+    background-color: #ffcc00;
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.price {
+    display: flex;
+    flex-direction: column;
+}
+.original-price {
+    font-size: 12px;
+    color: #999;
+    text-decoration: line-through;
+}
+.discounted-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+.pagination-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ddd;
+    border-radius: 50%;
+}
+.pagination-dot.active {
+    background-color: #0047ff;
+    width: 20px;
+    border-radius: 4px;
+}
+.courses-section {
+    padding: 20px 40px;
+    background-color: white;
+}
+.view-all {
+    color: #0047ff;
+    text-decoration: none;
+    font-size: 14px;
+    float: right;
+}
+.course-cards {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+.course-card {
+    width: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.course-img {
+    height: 120px;
+    background-color: #eee;
+}
+.course-body {
+    padding: 15px;
+    background-color: #f8f8f8;
+}
+.course-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.course-price {
+    font-size: 14px;
+    color: #666;
+}
+.faculties-section {
+    padding: 20px 40px;
+}
+.faculty-logos {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+.faculty-logo {
+    width: 140px;
+    height: 60px;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.faculty-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+}
+.faculty-location {
+    font-size: 12px;
+    color: #666;
+}
+.discount-info {
+    font-size: 12px;
+    color: #0047ff;
+    margin-top: 5px;
+}
