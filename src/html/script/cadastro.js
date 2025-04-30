@@ -1,3 +1,6 @@
+import { API_URL } from './globalVar.js';
+const BASE_URL = API_URL;
+
 function calcularIdade(dataNascimento) {
     const hoje = new Date();
     const nascimento = new Date(dataNascimento);
@@ -71,7 +74,7 @@ function updateThemeIcon(theme) {
 }
 
 
-const BASE_URL = "http://localhost:3000";
+
 
 document.getElementById("btnCadastrar").addEventListener("click", function (event) {
     event.preventDefault();

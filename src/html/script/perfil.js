@@ -1,4 +1,5 @@
-
+import { API_URL } from './globalVar.js';
+const BASE_URL = API_URL;
 
 // Recupera o token do localStorage
 const token = localStorage.getItem('token');
@@ -25,7 +26,7 @@ function calcularIdade(dataNascimento) {
 }
 
 if (token) {
-    fetch('http://localhost:3000/users/perfil', {
+    fetch(`${BASE_URL}/users/perfil`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`  // Envia o token aqui

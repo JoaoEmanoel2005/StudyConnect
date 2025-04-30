@@ -1,6 +1,7 @@
+import { API_URL } from './globalVar.js';
+const BASE_URL = API_URL;
 //ip do notbook do joao
 //  const BASE_URL = "http://192.168.142.47:3000"
-const BASE_URL = "http://localhost:3000"
 
 // Validação de e-mail enquanto digita (opcional, sem máscara)
 document.getElementById('loginEmail').addEventListener('input', function (e) {
