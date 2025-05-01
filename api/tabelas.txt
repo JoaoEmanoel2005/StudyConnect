@@ -13,6 +13,7 @@ CREATE TABLE users (
 );
 
 
+
 CREATE TABLE instituicao (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nome VARCHAR(100) NOT NULL UNIQUE,

@@ -1,16 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tela inicial</title>
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="./style/index.css">
 </head>
 
 <body>
-    Não possui conta? <a href="cadastro">Cadastre-se</a>
-    Já possui conta? <a href="login">Entre aqui...</a>
 
+    <header>
+        <div class="logo">StudyConnect</div>
+        <div class="nav-buttons">
+            <button onclick="location.href='login'">Login</button>
+            <button onclick="location.href='cadastro'">Cadastro</button>
+        </div>
+    </header>
+
+<section class="banner">
+    <p>Faça Login para realizar pesquisas e visualizar informaçoes das instituicoes e cursos</p>
+</section>
+
+    <section class="cards-container">
+        <div class="card">
+            <img src="https://via.placeholder.com/300x180.png?text=Instituição+1" alt="Instituição 1">
+            <div class="card-content">
+                <h3>Universidade Federal do Exemplo</h3>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://via.placeholder.com/300x180.png?text=Instituição+2" alt="Instituição 2">
+            <div class="card-content">
+                <h3>Instituto de Tecnologia ABC</h3>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://via.placeholder.com/300x180.png?text=Instituição+3" alt="Instituição 3">
+            <div class="card-content">
+                <h3>Faculdade Exemplo</h3>
+            </div>
+
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/300x180.png?text=Instituição+3" alt="Instituição 4">
+            <div class="card-content">
+                <h3>Faculdade Exemplo</h3>
+        </div>
+    </section>
 
 </body>
 
