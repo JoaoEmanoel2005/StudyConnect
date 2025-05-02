@@ -15,10 +15,28 @@ CREATE TABLE users (
 
 
 CREATE TABLE instituicao (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        instituicao_id INT AUTO_INCREMENT PRIMARY KEY,
         nome VARCHAR(100) NOT NULL UNIQUE,
-        endereco VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        senha VARCHAR(255) NOT NULL,
+        cnpj VARCHAR(14) NOT NULL UNIQUE,
+        local VARCHAR(100) NOT NULL UNIQUE,
         descricao VARCHAR(255) NOT NULL,
         tipo VARCHAR(50) NOT NULL,
+        foto_perfil LONGBLOB,
         data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE curso (
+    curso_id INT AUTO_INCREMENT PRIMARY KEY,
+    instituicao_id INT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    periodo VARCHAR(20) NOT NULL,
+    custo VARCHAR(30) NOT NULL,
+    duracao VARCHAR(255) NOT NULL,
+    FOREIGN KEY (instituicao_id) REFERENCES instituicao(instituicao_id)
+        ON DELETE CASCADE
+);
+

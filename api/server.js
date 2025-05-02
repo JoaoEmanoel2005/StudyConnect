@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true })); // para analisar requisições 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'minha_api_db'
 });
 
@@ -80,11 +80,8 @@ app.get('/perfil', (req, res) => {
 const userRoutes = require('./routes/users')(connection);
 app.use('/users', userRoutes);
 
-const instituicoesRoutes = require('./routes/instituicoes')(connection);
-app.use('/instituicoes', instituicoesRoutes);
-
-const vestibularRoutes = require('./routes/vestibular')(connection);
-app.use('/vestibular', vestibularRoutes);
+const instituicaoRoutes = require('./routes/instituicao')(connection);
+app.use('/instituicao', instituicaoRoutes);
 
 const cursosRoutes = require('./routes/cursos')(connection);
 app.use('/cursos', cursosRoutes);
