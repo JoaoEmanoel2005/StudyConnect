@@ -42,13 +42,13 @@ module.exports = function (connection) {
       const token = jwt.sign({
         id: user.id,
       }, process.env.SECRET, {
-        expiresIn: 300 // 5 minutos ou 300 segundos
+        expiresIn: 600 // 5 minutos ou 300 segundos
       });
 
       return res.json({
         auth: true,
         token: token,
-        expiresIn: 300
+        expiresIn: 600
       });
 
     } catch (err) {
