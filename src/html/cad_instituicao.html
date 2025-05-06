@@ -22,29 +22,7 @@
 
     
 
-    <script>
-        document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-
-            try {
-                const response = await fetch('http://localhost:3000/instituicao/cadastro', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const resultado = await response.json();
-                window.alert("cadastro de instituicao realizado");
-            } catch (error) {
-              window.alert("cadastro invalido", error);
-            }
-        });
-    </script>
+    <script type="module" src="./script/cad_instituicao.js"></script>
 </body>
 
 </html>
