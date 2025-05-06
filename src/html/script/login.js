@@ -104,7 +104,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
       console.log("Auth data: " + data.auth);
 
       if (data.auth) {
-        document.getElementById('response').innerText = `Login bem-sucedido!`;
+        window.alert("Login realizado")
         localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
         console.log(localStorage.getItem('token'));
         const token = localStorage.getItem('token');
@@ -137,10 +137,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         }
 
       } else {
-        document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
+        window.alert("Login falhou");
       }
     })
     .catch(error => {
-      document.getElementById('response').innerText = error.message;
+      window.alert("Login falhou");
     });
 });
