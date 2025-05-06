@@ -62,11 +62,12 @@ h3 {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  width: 50%;
+  width: 90%;
   border: var(--container-border);
   border-radius: 15px;
   background-color: var(--background-color);
   max-width: 600px;
+  height: 90svh;
 }
 
 .input-field {
@@ -116,12 +117,14 @@ h3 {
   width: 100%;
   text-align: right;
   margin-bottom: 15px;
+
 }
 
 .forgot-password a {
   color: var(--primary-color);
   text-decoration: none;
   font-size: 14px;
+  margin-right: 61px;
 }
 
 .forgot-password a:hover {
@@ -159,6 +162,8 @@ button:hover {
   text-decoration: none;
   font-weight: 600;
 }
+
+a
 
 .register-link a:hover, .login-link a:hover {
   text-decoration: underline;
