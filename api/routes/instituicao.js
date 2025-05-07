@@ -6,18 +6,19 @@ const { verificarToken } = require('../utils/midle');
 
 module.exports = function(connection) {
 
-router.get('/todos', (req,res) => {
-  connection.query('SELECT * FROM instituicao', (err, results) => {
-    if (err) {
-      res.status(500).send({
-        message: err.message || "Ocorreu um erro ao buscar as instituicoes."
-      });
-      return;
-    }
-    res.send(results);
-  });
+  router.get('/todos', (req, res) => {
+    const query = 'SELECT instituicao_id, nome, email, cnpj, local, descricao, tipo, data_registro FROM instituicao';
 
-});
+    connection.query(query, (error, results) => {
+      if (error) {
+        console.error('Erro ao buscar instituições:', error);
+        res.status(500).json({ erro: 'Erro ao buscar instituições' });
+        return;
+      }
+
+      res.json(results); // results é o array de instituições
+    });
+  });
 
  router.post('/cadastro', async (req, res) => {
     if (!req.body) {

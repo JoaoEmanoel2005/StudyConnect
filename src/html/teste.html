@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Instituições Cadastradas</title>
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 style="text-align:center;">Instituições Cadastradas</h1>
+    <div class="container" id="instituicoesContainer"></div>
+
+    <script>
+        async function carregarInstituicoes() {
+            try {
+                const response = await fetch('http://localhost:3000/instituicao/todos');
+                const instituicoes = await response.json();
+
+                const container = document.getElementById('instituicoesContainer');
+                container.innerHTML = '';
+
+                instituicoes.forEach(inst => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    card.innerHTML = `
+            <h3>${inst.nome}</h3>
+            <p><strong>Email:</strong> ${inst.email}</p>
+            <p><strong>CNPJ:</strong> ${inst.cnpj}</p>
+            <p><strong>Local:</strong> ${inst.local}</p>
+            <p><strong>Tipo:</strong> ${inst.tipo}</p>
+            <p><strong>Descrição:</strong> ${inst.descricao}</p>
+            <p><strong>Registrado em:</strong> ${new Date(inst.data_registro).toLocaleString()}</p>
+          `;
+
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar instituições:', error);
+            }
+        }
+
+        // Chama ao carregar
+        carregarInstituicoes();
+    </script>
+
+</body>
+
+</html>

@@ -40,25 +40,12 @@ connection.connect(error => {
   console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
 });
 
-
-
-
 app.use('/style', express.static(path.join(__dirname, '..', 'src', 'html', 'style')));
 app.use('/script', express.static(path.join(__dirname, '..', 'src', 'html', 'script')));
 
 
 app.get('/', (req, res) => {
-  //res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
-  //res.sendFile(path.join(__dirname, 'testes', 'index.html'));
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'index.html'));
-
-});
-
-app.get('/index', (req, res) => {
-
-  res.sendFile(path.join(__dirname, 'testes', 'index.html'));
-
-
 });
 
 app.get('/login', (req, res) => {
@@ -69,10 +56,20 @@ app.get('/cadastro', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'cadastro.html'));
 });
 
-
 app.get('/perfil', (req, res) => {
-  //res.sendFile(path.join(__dirname, 'testes', 'perfil.html'));
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'perfil.html'));
+});
+
+app.get('/login_instituicao', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'log_instituicao.html'));
+});
+
+app.get('/cadastro_instituicao', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'cad_instituicao.html'));
+});
+
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'home.html'));
 });
 
 
