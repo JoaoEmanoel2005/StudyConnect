@@ -1,7 +1,5 @@
 import { API_URL } from './globalVar.js';
 const BASE_URL = API_URL;
-//ip do notbook do joao
-//  const BASE_URL = "http://192.168.142.47:3000"
 
 // Validação de e-mail enquanto digita (opcional, sem máscara)
 document.getElementById('loginEmail').addEventListener('input', function (e) {
@@ -104,8 +102,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
       console.log("Auth data: " + data.auth);
 
       if (data.auth) {
-        document.getElementById('response').innerText = `Login bem-sucedido!`;
-        localStorage.setItem('token', data.token);  // Salva o token no localStorage (ou o que for necessário)
+        window.alert("Login realizado")
+        localStorage.setItem('token', data.token);  // Salva o token no localStorage
         console.log(localStorage.getItem('token'));
         const token = localStorage.getItem('token');
 
@@ -128,6 +126,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             })
             .then(data => {
               console.log('Dados do perfil:', data);
+              window.location.href = 'home';
             })
             .catch(error => {
               console.log('Erro:', error);
@@ -135,12 +134,11 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         } else {
           console.error('Token não encontrado!');
         }
-
       } else {
-        document.getElementById('response').innerText = `Erro: ${data.message || 'Login falhou!'}`;  // Exibe a mensagem de erro
+        window.alert("Login falhou");
       }
     })
     .catch(error => {
-      document.getElementById('response').innerText = error.message;
+      window.alert("Login falhou");
     });
 });

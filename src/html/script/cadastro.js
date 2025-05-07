@@ -16,7 +16,7 @@ function calcularIdade(dataNascimento) {
 
 // Toggle para mostrar/ocultar senha
 document.getElementById('togglePassword').addEventListener('click', function() {
-    const passwordInput = document.getElementById('password');
+    const passwordInput = document.getElementById('senha');
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordInput.setAttribute('type', type);
     

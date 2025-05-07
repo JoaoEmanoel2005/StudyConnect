@@ -12,14 +12,24 @@
 
     <header>
         <div class="logo">StudyConnect</div>
-        <div class="nav-buttons">
-            <button onclick="location.href='login'">Login</button>
-            <button onclick="location.href='cadastro'">Cadastro</button>
-        </div>
+        <!-- Botão para abrir a sidebar -->
+        <button onclick="openSidebar()" id="openSidebarBtn">☰ Abrir Menu</button>
     </header>
 
+    <!-- Sua sidebar -->
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="closeSidebar()">×</button>
+        <h3>Perfil do Estudante</h3>
+        <p><strong>Nome:</strong> João da Silva</p>
+        <p><strong>Escolaridade:</strong> Ensino Médio Completo</p>
+        <p><strong>Instituição:</strong> Universidade Federal do Exemplo</p>
+        <p><strong>Cursos:</strong> Engenharia da Computação, Ciência de Dados</p>
+        <p><strong>Status:</strong> Pré-inscrito</p>
+        <button onclick="alert('Logout simulado')">Sair</button>
+    </div>
+
     <section class="banner">
-        <p>Faça Login para realizar pesquisas e visualizar informaçoes das instituicoes e cursos</p>
+        <p>Faça Login para realizar pesquisas e visualizar informações das instituições e cursos</p>
     </section>
 
     <section class="cards-container">
@@ -42,16 +52,18 @@
             <div class="card-content">
                 <h3>Faculdade Exemplo</h3>
             </div>
-
         </div>
+        
         <div class="card">
-            <img src="https://via.placeholder.com/300x180.png?text=Instituição+3" alt="Instituição 4">
+            <img src="https://via.placeholder.com/300x180.png?text=Instituição+4" alt="Instituição 4">
             <div class="card-content">
                 <h3>Faculdade Exemplo</h3>
             </div>
+        </div>
     </section>
 
     <script type="module" src="./script/home.js"></script>
+
 </body>
 
 </html>
