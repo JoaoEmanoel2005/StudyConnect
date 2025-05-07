@@ -6,13 +6,12 @@
 }
 
 body {
-    height: 100vh;
-    background-color: white;
-    /* Cor de fundo para o tema claro */
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+    padding: 20px;
+    /* opcional: dá um respiro lateral e evita corte */
 }
 
 input-container {

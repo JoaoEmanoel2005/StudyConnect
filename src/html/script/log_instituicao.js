@@ -22,9 +22,11 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         if (resultado.token) {
             localStorage.setItem('token', resultado.token);
             console.log("Token armazenado:", resultado.token);
+            window.alert("logou");
         }
 
     } catch (error) {
         document.getElementById('resposta').textContent = 'Erro: ' + error.message;
+        window.alert("nao logou");
     }
 });
