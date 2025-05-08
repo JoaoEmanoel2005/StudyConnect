@@ -60,7 +60,6 @@ module.exports = function (connection) {
 
   // Rota de logout
   router.post('/logout', (req, res) => {
-    // Aqui você não precisa fazer nada com o token no servidor, apenas retorna um sucesso
     res.json({ message: "Logout bem-sucedido", auth: false, token: null });
   });
 
@@ -203,7 +202,7 @@ module.exports = function (connection) {
     });
   });
 
-  
+
 
   return router;
 };
