@@ -13,7 +13,7 @@ window.closeSidebar = function () {
 
 async function carregarInstituicoes() {
     try {
-        const response = await fetch('http://localhost:3000/instituicao/todos');
+        const response = await fetch(`${BASE_URL}/instituicao/todos`);
         const instituicoes = await response.json();
 
         const container = document.getElementById('instituicoesContainer');
