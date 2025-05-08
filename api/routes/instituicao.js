@@ -134,5 +134,31 @@ router.get('/perfil', verificarToken, async (req, res) => {
     }
   });
 
+
+  router.delete('/delete', (req, res) => {
+    const { cnpj } = req.body;
+
+    if (!cnpj) {
+      return res.status(400).send({ message: 'CNPJ é obrigatório no corpo da requisição.' });
+    }
+
+    connection.query('DELETE FROM instituicao WHERE cnpj = ?', [cnpj], (err, result) => {
+      if (err) {
+        return res.status(500).send({
+          message: 'Erro ao tentar excluir a instituição.',
+          error: err.message
+        });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ message: 'Nenhuma instituição encontrada com esse CNPJ.' });
+      }
+
+      res.send({ message: 'Instituição excluída com sucesso!' });
+    });
+  });
+
+
     return router;
 };
+

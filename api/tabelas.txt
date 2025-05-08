@@ -20,7 +20,7 @@ CREATE TABLE instituicao (
         email VARCHAR(100) NOT NULL UNIQUE,
         senha VARCHAR(255) NOT NULL,
         cnpj VARCHAR(14) NOT NULL UNIQUE,
-        local VARCHAR(100) NOT NULL UNIQUE,
+        local VARCHAR(100) NOT NULL,
         descricao VARCHAR(255) NOT NULL,
         tipo VARCHAR(50) NOT NULL,
         foto_perfil LONGBLOB,
