@@ -180,25 +180,30 @@ module.exports = function (connection) {
   });
 
   // Excluir um usuário
-  router.delete('/deletar/:id', (req, res) => {
-    connection.query('DELETE FROM users WHERE id = ?', [req.params.id], (err, result) => {
+  router.delete('/delete', (req, res) => {
+    const { cpf } = req.body;
+
+    if (!cpf) {
+      return res.status(400).send({ message: 'CPF é obrigatório no corpo da requisição.' });
+    }
+
+    connection.query('DELETE FROM users WHERE cpf = ?', [cpf], (err, result) => {
       if (err) {
-        res.status(500).send({
-          message: err.message || `Erro ao excluir usuário com id ${req.params.id}`
+        return res.status(500).send({
+          message: 'Erro ao tentar excluir o usuário.',
+          error: err.message
         });
-        return;
       }
 
       if (result.affectedRows === 0) {
-        res.status(404).send({
-          message: `Usuário com id ${req.params.id} não encontrado.`
-        });
-        return;
+        return res.status(404).send({ message: 'Usuário não encontrado com esse CPF.' });
       }
 
-      res.send({ message: "Usuário excluído com sucesso!" });
+      res.send({ message: 'Usuário excluído com sucesso!' });
     });
   });
+
+  
 
   return router;
 };
