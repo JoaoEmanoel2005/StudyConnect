@@ -72,6 +72,10 @@ app.get('/home', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'home.html'));
 });
 
+app.get('/teste', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'teste.html'));
+});
+
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
