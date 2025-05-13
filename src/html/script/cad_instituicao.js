@@ -21,4 +21,6 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
     } catch (error) {
         window.alert("cadastro invalido", error);
     }
+
+    
 });
