@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const { verificarToken } = require('../utils/midle');
 
 module.exports = function (connection) {
-  // Middleware para verificar se o usuário está autenticado
+ 
+
 
   // Buscar todos os usuários
   router.get('/todos', (req, res) => {  // Rota protegida
@@ -25,6 +26,8 @@ module.exports = function (connection) {
   router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
+  
+
     try {
       const [results] = await connection.promise().query('SELECT * FROM users WHERE email = ?', [email]);
 
@@ -39,6 +42,8 @@ module.exports = function (connection) {
         return res.status(401).send({ message: "Email ou senha incorretos." });
       }
 
+      
+      
       const token = jwt.sign({
         id: user.id,
       }, process.env.SECRET, {
@@ -60,6 +65,7 @@ module.exports = function (connection) {
 
   // Rota de logout
   router.post('/logout', (req, res) => {
+    
     res.json({ message: "Logout bem-sucedido", auth: false, token: null });
   });
 
