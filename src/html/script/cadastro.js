@@ -73,7 +73,18 @@ function updateThemeIcon(theme) {
     }
 }
 
+document.getElementById('cpf').addEventListener('input', function () {
+    let valor = this.value.replace(/\D/g, ''); // Remove tudo que não é número
 
+    if (valor.length > 11) valor = valor.slice(0, 11); // Limita a 11 dígitos
+
+    // Aplica a máscara: 000.000.000-00
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+    this.value = valor;    
+});
 
 
 document.getElementById("btnCadastrar").addEventListener("click", function (event) {
@@ -82,7 +93,10 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
     const nome = document.getElementById("nome").value;
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
-    const cpf = document.getElementById("cpf").value;
+    // Puxando o valor com regex
+    const cpfMascara = document.getElementById("cpf").value;
+    // Removendo o Regex para o envio
+    const cpf = cpfMascara.replace(/\D/g, ''); 
     const codigo_recuperacao = document.getElementById("codigoRecuperacao").value;
     const nascimento = document.getElementById("dataNascimento").value;
     const cidade = document.getElementById("cidade").value;
