@@ -110,6 +110,7 @@ module.exports = function (connection) {
 
       const user = {
         nome: req.body.nome,
+        username: req.body.username,
         email: req.body.email,
         senha: cripto_senha,
         cpf: req.body.cpf,
@@ -153,8 +154,8 @@ module.exports = function (connection) {
       const cripto_senha = await encrypt(req.body.senha);
 
       connection.query(
-        'UPDATE users SET nome = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?',
-        [req.body.nome, req.body.email, cripto_senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
+        'UPDATE users SET nome = ?, username = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?',
+        [req.body.nome, req.body.username, req.body.email, cripto_senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
         (err, result) => {
           if (err) {
             res.status(500).send({

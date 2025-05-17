@@ -4,6 +4,7 @@ const BASE_URL = 'http://localhost:3000'; // Ajuste conforme seu backend
 const usuariosParaCadastrar = [
     {
         nome: 'Ana Silva',
+        username: 'ana.silva',
         email: 'ana.silva@email.com',
         senha: 'senha123',
         cpf: '11111111111',
@@ -14,6 +15,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Bruno Souza',
+        username: 'bruno.souza',
         email: 'bruno.souza@email.com',
         senha: 'senha123',
         cpf: '22222222222',
@@ -24,6 +26,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Carla Pereira',
+        username: 'carla.pereira',
         email: 'carla.pereira@email.com',
         senha: 'senha123',
         cpf: '33333333333',
@@ -34,6 +37,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Diego Rocha',
+        username: 'diego.rocha',
         email: 'diego.rocha@email.com',
         senha: 'senha123',
         cpf: '44444444444',
@@ -44,6 +48,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Eduarda Lima',
+        username: 'eduarda.lima',
         email: 'eduarda.lima@email.com',
         senha: 'senha123',
         cpf: '55555555555',
@@ -54,6 +59,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Fernando Oliveira',
+        username: 'fernando.oliveira',
         email: 'fernando.oliveira@email.com',
         senha: 'senha123',
         cpf: '66666666666',
@@ -64,6 +70,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Gabriela Santos',
+        username: 'gabriela.santos',
         email: 'gabriela.santos@email.com',
         senha: 'senha123',
         cpf: '77777777777',
@@ -74,6 +81,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Henrique Alves',
+        username: 'henrique.alves',
         email: 'henrique.alves@email.com',
         senha: 'senha123',
         cpf: '88888888888',
@@ -84,6 +92,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Isabela Martins',
+        username: 'isabela.martins',
         email: 'isabela.martins@email.com',
         senha: 'senha123',
         cpf: '99999999999',
@@ -94,6 +103,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'João Pedro',
+        username: 'joao.pedro',
         email: 'joao.pedro@email.com',
         senha: 'senha123',
         cpf: '10101010101',
@@ -104,6 +114,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Katia Mendes',
+        username: 'katia.mendes',
         email: 'katia.mendes@email.com',
         senha: 'senha123',
         cpf: '12121212121',
@@ -114,6 +125,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Lucas Costa',
+        username: 'lucas.costa',
         email: 'lucas.costa@email.com',
         senha: 'senha123',
         cpf: '13131313131',
@@ -124,6 +136,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Mariana Faria',
+        username: 'mariana.faria',
         email: 'mariana.faria@email.com',
         senha: 'senha123',
         cpf: '14141414141',
@@ -134,6 +147,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Nicolas Barros',
+        username: 'nicolas.barros',
         email: 'nicolas.barros@email.com',
         senha: 'senha123',
         cpf: '15151515151',
@@ -144,6 +158,7 @@ const usuariosParaCadastrar = [
     },
     {
         nome: 'Olívia Teixeira',
+        username: 'olivia.teixeira',
         email: 'olivia.teixeira@email.com',
         senha: 'senha123',
         cpf: '16161616161',
@@ -153,6 +168,7 @@ const usuariosParaCadastrar = [
         escolaridade: 'Ensino Superior'
     }
 ];
+
 
 
 async function cadastrarUsuarios() {

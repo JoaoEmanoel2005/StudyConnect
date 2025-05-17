@@ -91,6 +91,7 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
     event.preventDefault();
 
     const nome = document.getElementById("nome").value;
+    const username = document.getElementById("username").value;
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
     // Puxando o valor com regex
@@ -109,7 +110,7 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
         return; // cancela o envio
     }
 
-    console.log("Enviando:", { nome, email, senha, cpf,codigo_recuperacao, nascimento, cidade, escolaridade });
+    console.log("Enviando:", { nome, username, email, senha, cpf,codigo_recuperacao, nascimento, cidade, escolaridade });
 
 
     fetch(`${BASE_URL}/users/cadastro`, {
@@ -130,6 +131,7 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
             alert("Cadastro realizado com sucesso!");
 
             document.getElementById('nome').value = '';
+            document.getElementById('username').value = '';
             document.getElementById('email').value = '';
             document.getElementById('senha').value = '';
             document.getElementById('cpf').value = '';
