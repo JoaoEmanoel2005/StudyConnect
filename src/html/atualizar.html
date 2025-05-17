@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Atualizar Usuário</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select {
+            width: 300px;
+            padding: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Atualizar Dados do Usuário</h2>
+
+    <form id="formAtualizar">
+        <label>Nome: <input type="text" name="nome" required></label>
+        <label>Username: <input type="text" name="username" required></label>
+        <label>Email: <input type="email" name="email" required></label>
+        <label>Senha: <input type="password" name="senha" placeholder="Nova senha" required></label>
+        <label>CPF: <input type="text" name="cpf" required></label>
+        <label>Código de Recuperação: <input type="text" name="codigo_recuperacao" required></label>
+        <label>Nascimento: <input type="date" name="nascimento" required></label>
+        <label>Cidade: <input type="text" name="cidade" required></label>
+        <label>Escolaridade:
+            <select name="escolaridade" required>
+                <option value="Ensino Fundamental">Ensino Fundamental</option>
+                <option value="Ensino Médio">Ensino Médio</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Ensino Superior">Ensino Superior</option>
+            </select>
+        </label>
+        <br>
+        <button type="submit">Atualizar Dados</button>
+    </form>
+
+    <p id="mensagem"></p>
+
+    <script type="module">
+        
+        const BASE_URL = "http://localhost:3000";
+
+        const form = document.getElementById('formAtualizar');
+        const mensagem = document.getElementById('mensagem');
+
+        // Preencher formulário com dados atuais
+        async function carregarDadosDoUsuario() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                mensagem.textContent = 'Token não encontrado. Faça login primeiro.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/users/perfil`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    for (const campo in data) {
+                        if (form.elements[campo]) {
+                            form.elements[campo].value = data[campo];
+                        }
+                    }
+                } else {
+                    mensagem.textContent = 'Erro ao buscar dados do perfil.';
+                }
+            } catch (error) {
+                console.error('Erro ao buscar perfil:', error);
+                mensagem.textContent = 'Erro ao carregar perfil.';
+            }
+        }
+
+        // Atualizar dados no envio
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const dados = Object.fromEntries(formData.entries());
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                mensagem.textContent = 'Token não encontrado.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/users/atualizar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    mensagem.textContent = '✅ Dados atualizados com sucesso!';
+                } else {
+                    mensagem.textContent = `❌ Erro: ${result.mensagem}`;
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar:', error);
+                mensagem.textContent = 'Erro ao conectar com o servidor.';
+            }
+        });
+
+        // Inicializa o carregamento automático
+        carregarDadosDoUsuario();
+    </script>
+</body>
+
+</html>

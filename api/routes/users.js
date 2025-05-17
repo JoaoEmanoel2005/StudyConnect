@@ -140,48 +140,71 @@ module.exports = function (connection) {
       });
     }
   });
-
+  
+  //    const cripto_senha = await encrypt(req.body.senha);
+  
   // Atualizar um usuário
-  router.put('/atualizar/:id', async (req, res) => {
-    if (!req.body) {
-      res.status(400).send({
-        message: "O conteúdo não pode estar vazio!"
-      });
-      return;
-    }
+  router.put('/atualizar', verificarToken, async (req, res) => {
+    const userId = req.userId;
+
+    const {
+      nome,
+      username,
+      email,
+      senha,
+      cpf,
+      codigo_recuperacao,
+      nascimento,
+      cidade,
+      escolaridade
+    } = req.body;
 
     try {
-      const cripto_senha = await encrypt(req.body.senha);
+      const cripto_senha = await encrypt(senha); // 🔒 Criptografando a senha
 
-      connection.query(
-        'UPDATE users SET nome = ?, username = ?, email = ?, senha = ?, cpf = ?, codigo_recuperacao = ?, nascimento = ?, cidade = ? WHERE id = ?',
-        [req.body.nome, req.body.username, req.body.email, cripto_senha, req.body.cpf, req.body.codigo_recuperacao, req.body.nascimento, req.body.cidade, req.params.id],
-        (err, result) => {
-          if (err) {
-            res.status(500).send({
-              message: err.message || `Erro ao atualizar usuário com id ${req.params.id}`
-            });
-            return;
-          }
+      const sql = `
+            UPDATE users 
+            SET 
+                nome = ?, 
+                username = ?, 
+                email = ?, 
+                senha = ?, 
+                cpf = ?, 
+                codigo_recuperacao = ?, 
+                nascimento = ?, 
+                cidade = ?, 
+                escolaridade = ?
+            WHERE id = ?
+        `;
 
-          if (result.affectedRows === 0) {
-            res.status(404).send({
-              message: `Usuário com id ${req.params.id} não encontrado.`
-            });
-            return;
-          }
+      const values = [
+        nome,
+        username,
+        email,
+        cripto_senha,
+        cpf,
+        codigo_recuperacao,
+        nascimento,
+        cidade,
+        escolaridade,
+        userId
+      ];
 
-          res.send({
-            id: req.params.id,
-            ...req.body,
-            message: "Usuário atualizado com sucesso!"
-          });
+      connection.query(sql, values, (err, result) => {
+        if (err) {
+          console.error('Erro ao atualizar usuário:', err);
+          return res.status(500).json({ mensagem: 'Erro ao atualizar os dados.' });
         }
-      );
-    } catch (error) {
-      res.status(500).send({
-        message: "Erro ao criptografar a senha: " + error.message
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+        }
+
+        return res.status(200).json({ mensagem: 'Dados atualizados com sucesso.' });
       });
+    } catch (error) {
+      console.error('Erro ao criptografar senha:', error);
+      return res.status(500).json({ mensagem: 'Erro ao processar a senha.' });
     }
   });
 

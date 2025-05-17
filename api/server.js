@@ -76,6 +76,10 @@ app.get('/teste', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'teste.html'));
 });
 
+app.get('/atualizar', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar.html'));
+});
+
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
