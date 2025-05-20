@@ -77,7 +77,7 @@ app.get('/teste', (req, res) => {
 });
 
 app.get('/atualizar', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar.html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar .html'));
 });
 
 
@@ -95,4 +95,5 @@ app.use('/cursos', cursosRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor está rodando na porta ${PORT}`);
+  console.log("http://localhost:3000");
 });
