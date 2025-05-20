@@ -80,6 +80,11 @@
             text-align: center;
         }
 
+        .input-field.erro {
+        border: 2px solid #cb0404fa !important;
+        }
+
+
         .container {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -121,7 +126,7 @@
         .input-container i {
             position: absolute;
             left: 15px;
-            top: 50%;
+            top: 45%;
             transform: translateY(-50%);
             color: #888;
             font-size: 16px;
@@ -247,7 +252,7 @@
                 margin: 10px 0;
             }
             .input-field {
-                height: 40px;
+                height: 43px;
                 margin-bottom: 8px;
             }
             button {
@@ -264,12 +269,12 @@
                 margin-bottom: 8px;
             }
             .input-field {
-                height: 35px;
+                height: 43px;
                 margin-bottom: 6px;
                 font-size: 14px;
             }
             button {
-                height: 35px;
+                height: 43px;
                 font-size: 14px;
                 margin: 6px 0;
             }
