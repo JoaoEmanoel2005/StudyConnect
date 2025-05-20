@@ -19,37 +19,37 @@
         
         <div class="input-container">
             <i class="fa-solid fa-building"></i>
-            <input type="text" class="input-field" name="nome" placeholder="Nome da Instituição" required>
+            <input type="text" class="input-field" id="nome" placeholder="Nome da Instituição" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-envelope"></i>
-            <input type="email" class="input-field" name="email" placeholder="E-mail Institucional" required>
+            <input type="email" class="input-field" id="email" placeholder="E-mail Institucional" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
-            <input type="password" class="input-field" name="senha" placeholder="Digite sua senha" maxlength="18" required>
+            <input type="password" class="input-field" id="senha" placeholder="Digite sua senha" maxlength="18" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-id-card"></i>
-            <input type="text" class="input-field" name="cnpj" placeholder="CNPJ (Somente 14 números)" maxlength="18" required>
+            <input type="text" class="input-field" id="cnpj" placeholder="CNPJ (Somente 14 números)" maxlength="18" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-location-dot"></i>
-            <input type="text" class="input-field" name="local" placeholder="Endereço da Instituição" required>
+            <input type="text" class="input-field" id="local" placeholder="Endereço da Instituição" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-align-left"></i>
-            <input type="text" class="input-field" name="descricao" placeholder="Breve descrição da instituição" required>
+            <input type="text" class="input-field" id="descricao" placeholder="Breve descrição da instituição" required>
         </div>
         
         <div class="input-container">
             <i class="fa-solid fa-graduation-cap"></i>
-            <select class="input-field" name="tipo" required>
+            <select class="input-field" id="tipo" required>
                 <option value="" disabled selected>Tipo de Instituição</option>
                 <option value="Faculdade">Faculdade</option>
                 <option value="Universidade">Universidade</option>
@@ -60,7 +60,7 @@
             </select>
         </div>
         
-        <button type="submit">CADASTRAR</button>
+        <button id="btnCadastrar">CADASTRAR</button>
         
         <div class="login-link">
             Já possui conta? <a href="login">Entre aqui...</a>
