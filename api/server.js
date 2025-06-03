@@ -80,6 +80,10 @@ app.get('/atualizar', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar .html'));
 });
 
+app.get('/cadastro_curso', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'cad_curso.html'));
+});
+
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
