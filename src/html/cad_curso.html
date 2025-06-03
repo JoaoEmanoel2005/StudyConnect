@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Curso</title>
+</head>
+
+<body>
+    <h1>Cadastrar Novo Curso</h1>
+
+    <form id="cursoForm">
+        <label>Nome: <input type="text" name="nome" required></label><br><br>
+        <label>Área: <input type="text" name="area" required></label><br><br>
+        <label>Tipo: <input type="text" name="tipo" required></label><br><br>
+        <label>Descrição: <input type="text" name="descricao" required></label><br><br>
+        <label>Período: <input type="text" name="periodo" required></label><br><br>
+        <label>Custo: <input type="text" name="custo" required></label><br><br>
+        <label>Duração: <input type="text" name="duracao" required></label><br><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p id="mensagem"></p>
+
+    <script>
+        const form = document.getElementById('cursoForm');
+        const mensagem = document.getElementById('mensagem');
+
+        console.log(localStorage.getItem('token'));
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            // Aqui você insere o token JWT da instituição logada
+            const token = localStorage.getItem('token'); // ou pegue do sessionStorage, etc.
+
+            try {
+                const response = await fetch('http://localhost:3000/cursos/cadastro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    mensagem.textContent = result.mensagem;
+                    form.reset();
+                } else {
+                    mensagem.textContent = 'Erro: ' + result.mensagem;
+                }
+
+            } catch (err) {
+                mensagem.textContent = 'Erro de rede: ' + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
