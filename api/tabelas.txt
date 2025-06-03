@@ -13,8 +13,6 @@ CREATE TABLE users (
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 CREATE TABLE instituicao (
         instituicao_id INT AUTO_INCREMENT PRIMARY KEY,
         nome VARCHAR(100) NOT NULL UNIQUE,

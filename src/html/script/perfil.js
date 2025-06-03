@@ -91,7 +91,7 @@ function carregarPerfil() {
             
             // Atualiza os elementos do DOM com os dados do servidor
             document.getElementById('profileName').textContent = user.nome;
-            document.getElementById('profileBio').textContent = user.escolaridade; // Usando escolaridade como "bio" temporário
+            document.getElementById('profileBio').textContent = user.username; // Usando escolaridade como "bio" temporário
             document.getElementById('escolaridade').textContent = user.escolaridade;
             document.getElementById('email').textContent = user.email;
             document.getElementById('cidade').textContent = user.cidade;
