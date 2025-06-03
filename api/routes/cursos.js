@@ -32,7 +32,7 @@ module.exports = function (connection) {
     });
 
     // Ver todos os cursos (público)
-    router.get('/', (req, res) => {
+    router.get('/todos', (req, res) => {
         connection.query('SELECT * FROM curso', (err, results) => {
             if (err) {
                 console.error('Erro ao buscar cursos:', err);
