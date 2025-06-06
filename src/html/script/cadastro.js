@@ -136,6 +136,7 @@ document.getElementById("btnCadastrar").addEventListener("click", function (even
         .then(data => {
             console.log("Resposta:", data);
             alert("Cadastro realizado com sucesso!");
+            window.location.href = 'login';
 
             document.getElementById('nome').value = '';
             document.getElementById('username').value = '';

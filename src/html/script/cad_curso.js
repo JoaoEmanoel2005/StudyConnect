@@ -1,3 +1,6 @@
+import { API_URL } from './globalVar.js';
+const BASE_URL = API_URL;
+
 const themeToggle = document.getElementById('themeToggle');
         themeToggle.addEventListener('click', () => {
             const html = document.documentElement;
@@ -76,7 +79,7 @@ const themeToggle = document.getElementById('themeToggle');
             // Envio do formulário (ajuste a URL para seu backend)
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://localhost:3000/cursos/cadastro', {
+                const response = await fetch(`${BASE_URL}/cursos/cadastro`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

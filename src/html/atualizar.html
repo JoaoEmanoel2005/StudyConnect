@@ -2,138 +2,68 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Atualizar Usuário</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        input,
-        select {
-            width: 300px;
-            padding: 5px;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="./style/atualizar.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
-    <h2>Atualizar Dados do Usuário</h2>
+    <div class="container">
+        <header class="header">
+            <h2>Atualizar Dados do Usuário</h2>
+            <button id="themeToggle" class="theme-toggle" title="Alternar tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </header>
 
-    <form id="formAtualizar">
-        <label>Nome: <input type="text" name="nome" required></label>
-        <label>Username: <input type="text" name="username" required></label>
-        <label>Email: <input type="email" name="email" required></label>
-        <label>Senha: <input type="password" name="senha" placeholder="Nova senha" required></label>
-        <label>CPF: <input type="text" name="cpf" required></label>
-        <label>Código de Recuperação: <input type="text" name="codigo_recuperacao" required></label>
-        <label>Nascimento: <input type="date" name="nascimento" required></label>
-        <label>Cidade: <input type="text" name="cidade" required></label>
-        <label>Escolaridade:
-            <select name="escolaridade" required>
-                <option value="Ensino Fundamental">Ensino Fundamental</option>
-                <option value="Ensino Médio">Ensino Médio</option>
-                <option value="Técnico">Técnico</option>
-                <option value="Ensino Superior">Ensino Superior</option>
-            </select>
-        </label>
-        <br>
-        <button type="submit">Atualizar Dados</button>
-    </form>
+        <form id="formAtualizar" novalidate>
+            <label>Nome:
+                <input type="text" id="nome" name="nome" required />
+            </label>
+            <label>Username:
+                <input type="text" id="username" name="username" required />
+            </label>
+            <label>Email:
+                <input type="email" id="email" name="email" required />
+            </label>
+            <label>Senha:
+                <div class="password-wrapper">
+                    <input type="password" id="senha" name="senha" placeholder="Nova senha" required minlength="8" />
+                    <button type="button" id="togglePassword" class="toggle-password" aria-label="Mostrar senha">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </label>
+            <label>CPF:
+                <input type="text" id="cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" />
+            </label>
+            <label>Código de Recuperação:
+                <input type="text" id="codigoRecuperacao" name="codigo_recuperacao" required />
+            </label>
+            <label>Nascimento:
+                <input type="date" id="dataNascimento" name="nascimento" required />
+            </label>
+            <label>Cidade:
+                <input type="text" id="cidade" name="cidade" required />
+            </label>
+            <label>Escolaridade:
+                <select id="escolaridade" name="escolaridade" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option value="Ensino Fundamental">Ensino Fundamental</option>
+                    <option value="Ensino Médio">Ensino Médio</option>
+                    <option value="Técnico">Técnico</option>
+                    <option value="Ensino Superior">Ensino Superior</option>
+                </select>
+            </label>
 
-    <p id="mensagem"></p>
+            <button type="submit" id="btnAtualizar">Atualizar Dados</button>
+        </form>
 
-    <script type="module">
-        
-        const BASE_URL = "http://localhost:3000";
+        <p id="mensagem"></p>
+    </div>
 
-        const form = document.getElementById('formAtualizar');
-        const mensagem = document.getElementById('mensagem');
-
-        // Preencher formulário com dados atuais
-        async function carregarDadosDoUsuario() {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                mensagem.textContent = 'Token não encontrado. Faça login primeiro.';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BASE_URL}/users/perfil`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    for (const campo in data) {
-                        if (form.elements[campo]) {
-                            form.elements[campo].value = data[campo];
-                        }
-                    }
-                } else {
-                    mensagem.textContent = 'Erro ao buscar dados do perfil.';
-                }
-            } catch (error) {
-                console.error('Erro ao buscar perfil:', error);
-                mensagem.textContent = 'Erro ao carregar perfil.';
-            }
-        }
-
-        // Atualizar dados no envio
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(form);
-            const dados = Object.fromEntries(formData.entries());
-
-            const token = localStorage.getItem('token');
-            if (!token) {
-                mensagem.textContent = 'Token não encontrado.';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BASE_URL}/users/atualizar`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(dados)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    mensagem.textContent = '✅ Dados atualizados com sucesso!';
-                } else {
-                    mensagem.textContent = `❌ Erro: ${result.mensagem}`;
-                }
-            } catch (error) {
-                console.error('Erro ao atualizar:', error);
-                mensagem.textContent = 'Erro ao conectar com o servidor.';
-            }
-        });
-
-        // Inicializa o carregamento automático
-        carregarDadosDoUsuario();
-    </script>
+    <script type="module" src="./script/atualizar.js"></script>
 </body>
 
 </html>
