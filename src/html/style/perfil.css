@@ -386,3 +386,10 @@ body.editing-profile .photo-edit-overlay {
         padding: 20px;
     }
 }
+
+#logo{
+
+    font-family: 'Poppins', ;
+    color: white;
+    text-decoration: none;
+}

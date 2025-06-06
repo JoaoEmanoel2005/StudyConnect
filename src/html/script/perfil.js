@@ -133,6 +133,10 @@ function carregarPerfilExemplo() {
 
 // Função para alternar entre visualização e edição
 function toggleEdicao() {
+    window.location.href = 'atualizar';
+
+/*
+
     const isEditing = document.body.classList.contains('editing-profile');
     const editBtn = document.getElementById('editProfileBtn');
     const photoEditOverlay = document.getElementById('photoEditOverlay');
@@ -156,7 +160,9 @@ function toggleEdicao() {
         
         // Converter campos para modo de visualização
         converterParaTexto();
+
     }
+    */
 }
 
 // Função para converter os campos de exibição para inputs editáveis

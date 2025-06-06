@@ -77,13 +77,21 @@ app.get('/teste', (req, res) => {
 });
 
 app.get('/atualizar', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar .html'));
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'atualizar.html'));
 });
 
 app.get('/cadastro_curso', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'src', 'html', 'cad_curso.html'));
 });
 
+
+app.get('/instituicoes', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'instituicoes.html'));
+});
+
+app.get('/cursos', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'src', 'html', 'cursos.html'));
+});
 
 // Importar e configurar rotas
 const userRoutes = require('./routes/users')(connection);
