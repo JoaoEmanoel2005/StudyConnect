@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auth Flow Tester</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #111827;
+            --muted: #94a3b8;
+            --text: #e5e7eb;
+            --accent: #22c55e;
+            --danger: #ef4444;
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(120deg, #0f172a, #111827 60%);
+            font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text)
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 16px
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .3px
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0 20px
+        }
+
+        .tab {
+            padding: 10px 14px;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            background: #0b1220;
+            cursor: pointer
+        }
+
+        .tab.active {
+            background: #111827;
+            border-color: #374151
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px
+        }
+
+        .card {
+            background: rgba(17, 24, 39, .7);
+            backdrop-filter: blur(8px);
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            padding: 18px
+        }
+
+        .card h3 {
+            margin: .2rem 0 1rem
+        }
+
+        label {
+            display: block;
+            font-size: .9rem;
+            margin: .25rem 0 .35rem;
+            color: var(--muted)
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            background: #0b1220;
+            color: var(--text)
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #2a3648;
+            background: #111827;
+            color: var(--text);
+            cursor: pointer
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #14532d, #166534);
+            border-color: #14532d
+        }
+
+        .btn.warn {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
+            border-color: #7f1d1b
+        }
+
+        .small {
+            font-size: .85rem
+        }
+
+        pre {
+            background: #0b1220;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 12px;
+            max-height: 220px;
+            overflow: auto
+        }
+
+        .help {
+            font-size: .85rem;
+            color: var(--muted)
+        }
+
+        .ok {
+            color: var(--accent)
+        }
+
+        .err {
+            color: var(--danger)
+        }
+
+        a {
+            color: #60a5fa
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <div class="brand">Auth Flow Tester</div>
+                <div class="muted small">Cadastro com verificação por email + Recuperação por código</div>
+            </div>
+            <div class="help">Defina a URL base da API abaixo e teste cada etapa.</div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+            <label>BASE_URL da API</label>
+            <input id="base" placeholder="ex: http://localhost:3000/api/usuarios" />
+            <div class="help">Use a mesma porta/domínio do backend para evitar CORS. Os endpoints serão:
+                <code>BASE_URL/register</code>, <code>BASE_URL/verify-email</code>, <code>BASE_URL/login</code>,
+                <code>BASE_URL/forgot-password</code>, <code>BASE_URL/reset-password</code>.</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="register">1) Cadastro</button>
+            <button class="tab" data-tab="verify">2) Verificar Email</button>
+            <button class="tab" data-tab="login">3) Login</button>
+            <button class="tab" data-tab="forgot">4) Solicitar Código</button>
+            <button class="tab" data-tab="reset">5) Redefinir Senha</button>
+        </div>
+
+        <div class="grid">
+            <!-- Cadastro -->
+            <div class="card tabpanel" id="panel-register">
+                <h3>Cadastro</h3>
+                <div class="row">
+                    <div>
+                        <label>Nome</label>
+                        <input id="r-nome" placeholder="Seu nome" />
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input id="r-email" placeholder="voce@exemplo.com" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Senha</label>
+                        <input id="r-senha" type="password" placeholder="••••••" />
+                    </div>
+                    <div>
+                        <label>(Opcional) CEP</label>
+                        <input id="r-cep" placeholder="00000-000" />
+                    </div>
+                </div>
+                <button class="btn primary" id="btn-register">Cadastrar</button>
+                <div class="small help">Você receberá um email com o link de verificação.</div>
+                <pre id="out-register" class="small"></pre>
+            </div>
+
+            <!-- Verificar Email -->
+            <div class="card tabpanel" id="panel-verify" style="display:none">
+                <h3>Verificar Email</h3>
+                <label>Token de verificação (do email)</label>
+                <input id="v-token" placeholder="cole aqui o token" />
+                <button class="btn primary" id="btn-verify">Verificar email</button>
+                <div class="help small">A requisição é <code>GET BASE_URL/verify-email?token=...</code></div>
+                <pre id="out-verify" class="small"></pre>
+            </div>
+
+            <!-- Login -->
+            <div class="card tabpanel" id="panel-login" style="display:none">
+                <h3>Login</h3>
+                <div class="row">
+                    <div>
+                        <label>Email</label>
+                        <input id="l-email" placeholder="voce@exemplo.com" />
+                    </div>
+                    <div>
+                        <label>Senha</label>
+                        <input id="l-senha" type="password" placeholder="••••••" />
+                    </div>
+                </div>
+                <button class="btn primary" id="btn-login">Entrar</button>
+                <pre id="out-login" class="small"></pre>
+            </div>
+
+            <!-- Solicitar Código -->
+            <div class="card tabpanel" id="panel-forgot" style="display:none">
+                <h3>Solicitar código de recuperação</h3>
+                <label>Email</label>
+                <input id="f-email" placeholder="voce@exemplo.com" />
+                <button class="btn primary" id="btn-forgot">Enviar código</button>
+                <div class="help small">Você receberá um código de 6 dígitos por email. Expira em ~15 minutos.</div>
+                <pre id="out-forgot" class="small"></pre>
+            </div>
+
+            <!-- Redefinir Senha -->
+            <div class="card tabpanel" id="panel-reset" style="display:none">
+                <h3>Redefinir senha</h3>
+                <div class="row">
+                    <div>
+                        <label>Email</label>
+                        <input id="x-email" placeholder="voce@exemplo.com" />
+                    </div>
+                    <div>
+                        <label>Código</label>
+                        <input id="x-code" placeholder="123456" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Nova senha</label>
+                        <input id="x-pass" type="password" placeholder="NovaSenha123" />
+                    </div>
+                    <div>
+                        <label>Confirmar nova senha</label>
+                        <input id="x-pass2" type="password" placeholder="NovaSenha123" />
+                    </div>
+                </div>
+                <button class="btn primary" id="btn-reset">Resetar senha</button>
+                <pre id="out-reset" class="small"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Helpers ---
+        const $ = sel => document.querySelector(sel);
+        const out = (el, data) => el.textContent = (typeof data === 'string' ? data : JSON.stringify(data, null, 2));
+        const endpoint = (path, withLeadingSlash = true) => {
+            const base = ($('#base').value || '').replace(/\/$/, '');
+            return base + (withLeadingSlash ? '' : '/') + path;
+        }
+
+        // Tabs logic
+        document.querySelectorAll('.tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tabpanel').forEach(p => p.style.display = 'none');
+                btn.classList.add('active');
+                $('#panel-' + btn.dataset.tab).style.display = '';
+            });
+        });
+
+        // Persist last BASE_URL in localStorage
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('authdemo.base');
+            if (saved) $('#base').value = saved;
+        });
+        $('#base').addEventListener('change', e => localStorage.setItem('authdemo.base', e.target.value));
+
+        // --- Actions ---
+        $('#btn-register').addEventListener('click', async () => {
+            const body = {
+                nome: $('#r-nome').value.trim(),
+                email: $('#r-email').value.trim(),
+                senha: $('#r-senha').value,
+            };
+            // Se seu backend aceitar CEP, descomente a linha abaixo e o campo
+            const cep = $('#r-cep').value.trim();
+            if (cep) body.cep = cep;
+
+            try {
+                const res = await fetch(endpoint('/register'), {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
+                const json = await res.json();
+                out($('#out-register'), json);
+            } catch (err) {
+                out($('#out-register'), { error: String(err) });
+            }
+        });
+
+        $('#btn-verify').addEventListener('click', async () => {
+            const token = $('#v-token').value.trim();
+            if (!token) return out($('#out-verify'), { error: 'Informe o token.' });
+            try {
+                const url = endpoint('/verify-email') + '?token=' + encodeURIComponent(token);
+                const res = await fetch(url);
+                const json = await res.json();
+                out($('#out-verify'), json);
+            } catch (err) {
+                out($('#out-verify'), { error: String(err) });
+            }
+        });
+
+        $('#btn-login').addEventListener('click', async () => {
+            const body = { email: $('#l-email').value.trim(), senha: $('#l-senha').value };
+            try {
+                const res = await fetch(endpoint('/login'), {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
+                const json = await res.json();
+                out($('#out-login'), json);
+            } catch (err) {
+                out($('#out-login'), { error: String(err) });
+            }
+        });
+
+        $('#btn-forgot').addEventListener('click', async () => {
+            const body = { email: $('#f-email').value.trim() };
+            try {
+                const res = await fetch(endpoint('/forgot-password'), {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
+                const json = await res.json();
+                out($('#out-forgot'), json);
+            } catch (err) {
+                out($('#out-forgot'), { error: String(err) });
+            }
+        });
+
+        $('#btn-reset').addEventListener('click', async () => {
+            const pass = $('#x-pass').value, pass2 = $('#x-pass2').value;
+            if (pass !== pass2) return out($('#out-reset'), { error: 'Senhas não conferem.' });
+            const body = {
+                email: $('#x-email').value.trim(),
+                code: $('#x-code').value.trim(),
+                newPassword: pass
+            };
+            try {
+                const res = await fetch(endpoint('/reset-password'), {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
+                const json = await res.json();
+                out($('#out-reset'), json);
+            } catch (err) {
+                out($('#out-reset'), { error: String(err) });
+            }
+        });
+    </script>
+</body>
+
+</html>
