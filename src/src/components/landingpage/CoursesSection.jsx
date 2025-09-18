@@ -32,25 +32,33 @@ export default function CoursesSection() {
         </p>
 
         {/* Barra de pesquisa */}
-        <div className="max-w-7xl mx-auto px-7 grid md:grid-cols-2 gap-12 items-center bg-white p-6 rounded-lg shadow-md mb-12">
-          <div className="text-center md:text-left space-y-2 mb-4">
-            <span className="inline-block px-4 py-2 bg-indigo-500/30 text-indigo-700 text-sm font-medium rounded-full border border-indigo-500/30 mb-4">
+        <div className="max-w-7xl mx-auto px-7 grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-lg shadow-md mb-12">
+          {/* Texto */}
+          <div className="space-y-4 text-center md:text-left">
+            <span className="inline-block px-4 py-2 bg-indigo-500/30 text-indigo-700 text-sm font-medium rounded-full border border-indigo-500/30">
               <span role="img" aria-label="books">📚</span> Encontre o curso perfeito para você!
             </span>
             <h3 className="text-2xl font-semibold text-textprimary">
               Procure o curso e saiba todos os detalhes
             </h3>
-            <p className="text-sm text-primary">
-              Descubra a duração do curso, média da mensalidade, o que faz o profissional, nota de corte, quanto ganha, entre outras informações.
+            <p className="text-sm text-primary max-w-md">
+              Descubra a duração do curso, média da mensalidade, o que faz o profissional,
+              nota de corte, quanto ganha, entre outras informações.
             </p>
           </div>
-          <div className="text-center md:text-right space-y-6 mb-4">
+
+          {/* Barra de pesquisa */}
+          <div className="flex flex-col items-center md:items-end space-y-4 w-full">
             <SearchBar value={query} onChange={setQuery} />
-            <Link to="/catalogo" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">
-              Ver todos os cursos 
+            <Link
+              to="/catalogo"
+              className="text-sm text-white px-9 py-3 rounded-md bg-secondary hover:text-slate-200 hover:bg-primary transition-colors"
+            >
+              Ver todos os cursos
             </Link>
           </div>
         </div>
+
 
         {cursosFiltrados.length > 0 ? (
           <>
