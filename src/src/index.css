@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+header {
+  position: relative;
+  z-index: 9999;
+}
+
+/* Estilo base das bolinhas */
+.swiper-pagination-bullet {
+  margin-top: 10px;
+  width: 7px;
+  height: 7px;
+  background-color: #363738;
+  border-radius: 9999px;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #2563eb;
+  width: 10px;
+  height: 10px;
+  opacity: 1;
+}
+
+/* Estilo quando está ativa */
+.swiper-pagination-bullet-active {
+  background-color: #2563eb;
+  width: 10px;
+  height: 10px;
+  opacity: 1;
+}
