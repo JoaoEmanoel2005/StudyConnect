@@ -24,13 +24,19 @@ exports.verificarEmail = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, senha } = req.body;
-    const user = await UsuarioService.login(email, senha);
-    if (!user) return res.status(400).json({ error: 'Credenciais inválidas.' });
-    res.json({ message: 'Login realizado com sucesso!', user });
+    const data = await UsuarioService.login(email, senha);
+    if (!data) return res.status(400).json({ error: 'Credenciais inválidas.' });
+
+    res.json({
+      message: 'Login realizado com sucesso!',
+      user: data.user,
+      token: data.token
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.forgotPassword = async (req, res) => {
   try {
@@ -51,3 +57,27 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.alterarSenha = async (req, res) => {
+  try {
+    const { senhaAtual, novaSenha } = req.body;
+    const userId = req.user.id; // vem do middleware
+
+    await UsuarioService.alterarSenha(userId, senhaAtual, novaSenha);
+
+    res.json({ message: 'Senha alterada com sucesso!' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    // req.user vem do JWT (id, email)
+    const { id, email } = req.user;
+    res.json({ id, email });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

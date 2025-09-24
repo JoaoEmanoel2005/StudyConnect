@@ -111,7 +111,7 @@ A API deve rodar em `http://localhost:${process.env.PORT || 3000}`
 ## 6. Contato / Contribuição
 
 João Emanoel
-Linkedin: 
+Linkedin: https://www.linkedin.com/in/jo%C3%A3o-emanoell-6b2b66268/
 Github: https://github.com/JoaoEmanoel2005
 
 Juliana Maria
