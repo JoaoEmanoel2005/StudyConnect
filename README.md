@@ -115,8 +115,9 @@ Linkedin:
 Github: https://github.com/JoaoEmanoel2005
 
 Juliana Maria
-Linkedin: "[(Juliana Jacinto) https://www.linkedin.com/in/juliana-jacinto/]"
-Github: "[(Juliana Jacinto) https://github.com/JulianaJacinto]"
+Linkedin: https://www.linkedin.com/in/juliana-jacinto/
+<br>
+Github: https://github.com/JulianaJacinto
 
 Maxson Daniel
 Linkedin:
