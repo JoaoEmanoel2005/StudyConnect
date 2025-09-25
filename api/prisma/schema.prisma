@@ -36,3 +36,4 @@ model Instituicao {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+

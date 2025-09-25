@@ -1,4 +1,4 @@
-const UsuarioService = require('../services/UsuarioService');
+const UsuarioService = require('../services/usuarioService');
 
 exports.registrar = async (req, res) => {
   try {
