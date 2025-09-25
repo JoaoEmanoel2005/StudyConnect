@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Dialog, DialogPanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon, AcademicCapIcon, ClipboardDocumentListIcon, CpuChipIcon, 
-  RocketLaunchIcon, GlobeAltIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline'
+import { Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
+import { AcademicCapIcon, ClipboardDocumentListIcon, CpuChipIcon, 
+  RocketLaunchIcon, GlobeAltIcon, BuildingOffice2Icon, UserCircleIcon, ArrowRightStartOnRectangleIcon  } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import useAuth from '../../hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 
@@ -17,10 +18,8 @@ const cursos = [
 ]
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [open, setOpen] = useState(false) 
-  const [mobileCursosOpen, setMobileCursosOpen] = useState(false)
-
+  const [open, setOpen] = useState(false)
+  const { usuario, logout } = useAuth()
 
   // GSAP animação para dropdown
   useEffect(() => {
@@ -44,18 +43,6 @@ export default function Header() {
               StudyConnect
             </span>
           </Link>
-        </div>
-
-        {/* Botão hamburguer (mobile) */}
-        <div className="flex lg:hidden">
-          <button 
-            type="button" 
-            onClick={() => setMobileMenuOpen(true)} 
-            className="p-2.5 text-primary rounded-md transition-all duration-300 hover:bg-primary/10 hover:text-accent"
-          >
-            <span className="sr-only">Abrir menu</span>
-            <Bars3Icon className="h-6 w-6" />
-          </button>
         </div>
 
         {/* Menu desktop */}
@@ -108,90 +95,40 @@ export default function Header() {
           </Link>
         </PopoverGroup>
 
-        {/* CTAs */}
+        {/* Área do usuário / CTAs */}
         <div className="hidden lg:flex lg:flex-1 gap-3 lg:justify-end">
-          <Link to="/login" className="text-sm font-medium text-secondary border border-secondary px-6 py-2 rounded-lg transition-all duration-300 hover:bg-secondary hover:text-white">
-            Entrar
-          </Link>
-
-          <Link to="/cadastro" className="text-sm font-medium text-white bg-accent px-6 py-2 rounded-lg transition-all duration-300 hover:bg-orange-600">
-            Cadastrar
-          </Link>
+          {usuario ? (
+            // Menu de usuário
+            <Popover className="relative">
+              <PopoverButton className="flex items-center gap-2 border border-gray-300 rounded-full px-3 py-1 hover:bg-gray-100 transition-all">
+                <UserCircleIcon className="h-6 w-6 text-primary" />
+                <span className="text-sm font-medium">{usuario.name}</span>
+                <ChevronDownIcon className="h-4 w-4 text-primary" />
+              </PopoverButton>
+              <PopoverPanel className="absolute right-0 mt-2 w-48 bg-white border shadow-lg rounded-md p-2 flex flex-col gap-2 z-50">
+                <Link to="/perfil" className="text-sm text-gray-700 hover:bg-gray-100 rounded-md px-2 py-1">Meu Perfil</Link>
+                <button
+                  onClick={logout}
+                  className="flex items-center text-sm text-red-600 hover:bg-red-50 rounded-md px-2 py-1 text-left"
+                >
+                  Sair
+                  <ArrowRightStartOnRectangleIcon className="h-5 w-7 text-red-600" />
+                </button>
+              </PopoverPanel>
+            </Popover>
+          ) : (
+            // Botões de login/cadastro
+            <>
+              <Link to="/login" className="text-sm font-medium bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-all">
+                Login
+              </Link>
+              <Link to="/cadastro" className="text-sm font-medium border border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary/10 transition-all">
+                Cadastrar
+              </Link>
+            </>
+          )}
         </div>
-
       </nav>
-
-      {/* Menu mobile */}
-      <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-        <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" />
-        <DialogPanel className={`fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-lg p-6 transform transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
-          
-          <div className="flex items-center justify-between">
-            <Link to="/" className="font-bold text-primary text-lg">
-              StudyConnect
-            </Link>
-            <button 
-              type="button" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="p-2 text-primary rounded-md transition-colors hover:bg-red-50 hover:text-red-600"
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
-          </div>
-
-          <div className="mt-6 space-y-2">
-            <Link to="/" className="block rounded-md px-3 py-3 text-sm text-primary transition-colors hover:bg-primary/10 hover:text-secondary hover:font-bold">
-              Home
-            </Link>
-
-            {/* Cursos com toggle */}
-            <div>
-              <div 
-                className="flex justify-between items-center px-3 py-3 rounded-md hover:bg-primary/10 hover:text-secondary hover:font-bold cursor-pointer transition-colors"
-                onClick={() => setMobileCursosOpen(!mobileCursosOpen)}
-              >
-                <Link to="/cursos" className="text-sm text-primary" onClick={(e) => e.stopPropagation()}>
-                  Catálogo de Cursos
-                </Link>
-                <ChevronDownIcon 
-                  className={`h-5 w-5 transition-transform ${mobileCursosOpen ? "rotate-180 text-accent" : "text-secondary"}`} 
-                />
-              </div>
-
-              <div className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${mobileCursosOpen ? "max-h-96" : "max-h-0"}`}>
-                <div className="pl-6 mt-2 space-y-1">
-                  {cursos.map((item) => (
-                    <Link key={item.name} to={item.href} className="curso-link flex items-center gap-2 rounded-md px-3 py-2 text-sm text-primary transition-colors hover:bg-primary/10 hover:font-bold">
-                      <item.icon className="h-5 w-5 text-secondary" /> 
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <Link to="/instituicoes" className="block rounded-md px-3 py-3 text-sm text-primary transition-colors hover:bg-primary/10 hover:text-secondary hover:font-bold">
-              Instituições de Ensino
-            </Link>
-
-            <Link to="/sobre-nos" className="block rounded-md px-3 py-3 text-sm text-primary transition-colors hover:bg-primary/10 hover:text-secondary hover:font-bold">
-              Sobre Nós
-            </Link>
-
-            <Link to="/contato" className="block rounded-md px-3 py-3 text-sm text-primary transition-colors hover:bg-primary/10 hover:text-secondary hover:font-bold">
-              Contato
-            </Link>
-
-            <Link to="/login" className="block rounded-md px-3 py-3 text-sm text-center font-medium text-secondary border border-secondary transition-colors hover:bg-secondary hover:text-white">
-              Entrar
-            </Link>
-
-            <Link to="/cadastro" className="block rounded-md px-3 py-3 text-sm text-center font-medium text-white bg-accent transition-colors hover:bg-orange-600">
-              Cadastrar
-            </Link>
-          </div>
-        </DialogPanel>
-      </Dialog>
     </header>
   )
 }
