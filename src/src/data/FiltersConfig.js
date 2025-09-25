@@ -65,7 +65,7 @@ export const filtrosCursos = [
   {
     id: 'horario',
     name: 'Horários Disponíveis',
-    type: "radio",
+    type: "select",
     options: [
       { value: 'Matutino', label: 'Matutino (manhã)', checked: false },
       { value: 'Vespertino', label: 'Vespertino (tarde)', checked: false },
@@ -135,6 +135,7 @@ export const filtrosCursos = [
   {
     id: 'duracao',
     name: 'Duração do Curso',
+    type: "select",
     options: [
       { value: 'Menos de 1 mês', label: 'Menos de 1 mês', checked: false },
       { value: '1 semestre', label: '1 semestre (6 meses)', checked: false },
