@@ -1,7 +1,10 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const transporter = require('../config/mailer');
 const UsuarioRepository = require('../repositories/usuarioRepository');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta';
 
 class UsuarioService {
   async cadastrar(nome, email, senha) {
@@ -75,7 +78,18 @@ async validarCPF(cpf) {
     const senhaValida = await bcrypt.compare(senha, user.senha);
     if (!senhaValida) return null;
 
-    return user;
+     // gerar token JWT
+    const token = jwt.sign(
+      { id: user.id, email: user.email }, // payload
+      JWT_SECRET,
+      { expiresIn: "1d" } // expira em 1 dia
+    );
+
+    // devolver usuário sem senha
+    const { senha: _, ...userSafe } = user;
+
+    return { user: userSafe, token };
+
   }
 
   async enviarCodigoRecuperacao(email) {
@@ -119,6 +133,22 @@ async validarCPF(cpf) {
       html: `<p>Sua senha foi alterada com sucesso. Se não foi você, contate o suporte imediatamente.</p>`,
     });
   }
+
+async alterarSenha(userId, senhaAtual, novaSenha) {
+  const user = await UsuarioRepository.buscarPorId(userId);
+  if (!user) throw new Error('Usuário não encontrado');
+
+  const senhaValida = await bcrypt.compare(senhaAtual, user.senha);
+  if (!senhaValida) throw new Error('Senha atual inválida');
+
+  const senhaHash = await bcrypt.hash(novaSenha, 10);
+  await UsuarioRepository.atualizar(userId, { senha: senhaHash });
+
+  return true;
+}
+
+
+
 }
 
 module.exports = new UsuarioService();
