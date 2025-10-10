@@ -6,10 +6,11 @@ import Home from "./pages/Home";
 import PaginaCurso from "./pages/CoursePage";
 import NotFound from "./pages/NotFound";
 import Catalogo from "./pages/CatalogPage";
-import UserProfile from "./pages/PerfilUsuario";
+import UserProfile from "./pages/UserProfile";
 import Login from "./pages/login&cadastro/Sing-in";
 import Cadastro from "./pages/login&cadastro/Registration";
 import RecuperarSenha from "./pages/login&cadastro/ForgotPassword";
+import ConfirmacaoCadastro from "./pages/login&cadastro/ConfirmCadastro";
 
 export default function App() {
   return (
@@ -20,11 +21,13 @@ export default function App() {
         <Route path="/curso/:id" element={<Layout><PaginaCurso /></Layout>} />
         <Route path="/catalogo" element={<Layout><Catalogo /></Layout>} />
         <Route path="/perfil" element={<Layout><UserProfile /></Layout>} />
+        
 
         {/* Páginas de autenticação (sem header/footer) */}
         <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
         <Route path="/cadastro" element={<AuthLayout><Cadastro /></AuthLayout>} />
-        <Route path="/recuperar-senha" element={<AuthLayout><RecuperarSenha /></AuthLayout>} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+        <Route path="/confirmacao" element={<ConfirmacaoCadastro />} />
 
         {/* fallback */}
         <Route path="*" element={<Layout><NotFound /></Layout>} />

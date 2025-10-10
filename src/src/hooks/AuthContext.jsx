@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+// AuthContext.jsx
+import { createContext, useState, useEffect, useContext } from "react";
 
-export default function useAuth() {
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
 
-  // Carrega usuário atual do localStorage ao iniciar
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) setUsuario(JSON.parse(currentUser));
   }, []);
 
-  // Função para login
   const login = ({ email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const user = users.find((u) => u.email === email && u.password === password);
@@ -23,7 +24,6 @@ export default function useAuth() {
     }
   };
 
-  // Função para cadastro
   const cadastro = ({ name, email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
 
@@ -36,7 +36,7 @@ export default function useAuth() {
       name,
       email,
       password,
-      cursosSalvos: [], // para guardar cursos favoritos
+      cursosSalvos: [],
     };
 
     localStorage.setItem("users", JSON.stringify([...users, newUser]));
@@ -45,13 +45,11 @@ export default function useAuth() {
     return { success: true };
   };
 
-  // Função para logout
   const logout = () => {
     localStorage.removeItem("currentUser");
     setUsuario(null);
   };
 
-  // Função para salvar/remoção de cursos favoritos
   const toggleCursoFavorito = (cursoId) => {
     if (!usuario) return;
 
@@ -68,11 +66,19 @@ export default function useAuth() {
 
     setUsuario(updatedUser);
 
-    // Atualiza localStorage
     const otherUsers = users.filter((u) => u.id !== updatedUser.id);
     localStorage.setItem("users", JSON.stringify([...otherUsers, updatedUser]));
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   };
 
-  return { usuario, login, cadastro, logout, toggleCursoFavorito };
+  return (
+    <AuthContext.Provider value={{ usuario, login, cadastro, logout, toggleCursoFavorito }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Hook personalizado para acessar o contexto
+export function useAuth() {
+  return useContext(AuthContext);
 }
