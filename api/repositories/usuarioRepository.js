@@ -26,6 +26,12 @@ class UsuarioRepository {
       data: dados,
     });
   }
+
+async buscarPorId(id) {
+  return await prisma.usuario.findUnique({ where: { id } });
+}
+
+
 }
 
 module.exports = new UsuarioRepository();

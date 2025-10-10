@@ -7,17 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Modalidade {
+  PRESENCIAL
+  EAD
+  HIBRIDO
+}
+
+enum TipoCurso {
+  GRADUACAO
+  POS
+  TECNICO
+  LIVRE
+}
+
 model Usuario {
-  id                Int       @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   nome              String
-  email             String    @unique
+  email             String        @unique
   senha             String
-  email_verificado  Boolean   @default(false)
-  token_verificacao String?   @unique
+  email_verificado  Boolean       @default(false)
+  token_verificacao String?       @unique
   codigo_reset      String?
   codigo_expira     DateTime?
-  createdAt         DateTime  @default(now())
-
+  imagem            String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model Instituicao {
@@ -25,6 +39,7 @@ model Instituicao {
   nome        String
   cnpj        String    @unique
   email       String    @unique
+  senha       String
   telefone    String?
   endereco    String?
   cidade      String?
@@ -33,7 +48,82 @@ model Instituicao {
   site        String?
   descricao   String?   @db.Text
   ativo       Boolean   @default(true)
+  imagem      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  // 🔗 Relações
+  cursos      Curso[]
+
+  @@index([email])
+  @@index([cnpj])
 }
 
+model Curso {
+  id               Int               @id @default(autoincrement())
+  nome             String
+  tipo             TipoCurso
+  categoria        String
+  vagas            Int
+  modalidade       Modalidade
+  horario          String
+  duracao          String
+  custo            Decimal           @db.Decimal(10,2)
+  descricao        String
+  onde_trabalhar   String
+  imagem           String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  // 🔗 Relação com Instituição
+  instituicaoId    Int
+  instituicao      Instituicao       @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+
+  // Relações adicionais
+  preRequisitos    PreRequisito[]
+  matrizCurricular MatrizCurricular[]
+  links            Link?
+}
+
+model PreRequisito {
+  id        Int    @id @default(autoincrement())
+  texto     String
+  cursoId   Int
+  curso     Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MatrizCurricular {
+  id           Int           @id @default(autoincrement())
+  semestre     String
+  cursoId      Int
+  curso        Curso         @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  disciplinas  Disciplina[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Disciplina {
+  id        Int               @id @default(autoincrement())
+  nome      String
+  matrizId  Int
+  matriz    MatrizCurricular  @relation(fields: [matrizId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Link {
+  id           Int    @id @default(autoincrement())
+  site_oficial String
+  pagina_curso String
+  inscricao    String
+  cursoId      Int   @unique
+  curso        Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
