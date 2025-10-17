@@ -12,9 +12,9 @@ export default function StatusSection() {
 
   const stats = [
     { number: 50, label: "Cursos disponíveis", icon: <BookOpenIcon className="h-11 w-11 text-indigo-500 bg-indigo-50 rounded-full py-2" /> },
-    { number: 3, label: "Instituições parceiras", icon: <BuildingOffice2Icon  className="h-11 w-11 text-green-500 bg-green-50 rounded-full py-2" /> },
-    { number: 100, label: "Alunos conectados", icon: <UsersIcon  className="h-11 w-11 text-amber-500 bg-amber-50 rounded-full py-2"  /> },
-    { number: 10, label: "Áreas de conhecimento", icon: <RocketLaunchIcon className="h-11 w-11 text-red-500 bg-red-50 rounded-full py-2"  /> }
+    { number: 11, label: "Instituições parceiras", icon: <BuildingOffice2Icon  className="h-11 w-11 text-green-500 bg-green-50 rounded-full py-2" /> },
+    { number: 1000, label: "Alunos conectados", icon: <UsersIcon  className="h-11 w-11 text-amber-500 bg-amber-50 rounded-full py-2"  /> },
+    { number: 20, label: "Áreas de conhecimento", icon: <RocketLaunchIcon className="h-11 w-11 text-red-500 bg-red-50 rounded-full py-2"  /> }
   ];
 
   useEffect(() => {

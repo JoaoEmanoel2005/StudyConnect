@@ -10,8 +10,6 @@ export default function Home() {
       <StatusSection />
       <CoursesSection />
       {/* Futuras seções */}
-      {/* <StatusSection /> */}
-      {/* <CursosSection /> */}
       {/* <TestemunhosSection /> */}
       {/* <ContatoSection /> */}
     </div>

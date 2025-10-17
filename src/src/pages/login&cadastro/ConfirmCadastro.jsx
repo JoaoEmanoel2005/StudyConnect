@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { CheckCircle, Mail } from "lucide-react"; // biblioteca de ícones leve e moderna
 
 export default function ConfirmacaoCadastro() {
@@ -38,8 +38,8 @@ export default function ConfirmacaoCadastro() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-b from-indigo-50 to-indigo-200 p-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 max-w-md text-center border border-indigo-200">
+    <div className="flex flex-col justify-center items-center h-screen bg-indigo-50 p-4">
+      <div className="bg-white shadow rounded-xl p-8 max-w-md text-center border border-indigo-200">
         {!emailEnviado && (
           <>
             <Mail className="w-14 h-14 mx-auto text-blue-500 animate-bounce" />

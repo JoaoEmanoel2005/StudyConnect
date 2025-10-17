@@ -1,154 +1,109 @@
+import { cursos } from "./Courses";
+
+// Helper to count occurrences while maintaining order
+const countOccurrences = (items, field) => {
+  const counts = new Map();
+  items.forEach(item => {
+    const value = item[field];
+    counts.set(value, (counts.get(value) || 0) + 1);
+  });
+  return counts;
+};
+
+// Generate options with counts
+const generateOptions = (items, field, customOrder = null) => {
+  const counts = countOccurrences(items, field);
+  let options = Array.from(counts.entries()).map(([value, count]) => ({
+    value: value?.toLowerCase()?.replace(/\s+/g, '-') ?? 'outros',
+    label: value || 'Outros',
+    count
+  }));
+
+  if (customOrder) {
+    options.sort((a, b) => {
+      const indexA = customOrder.indexOf(a.value);
+      const indexB = customOrder.indexOf(b.value);
+      return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+    });
+  } else {
+    options.sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  return options;
+};
+
+// Price range helper
+const categorizePrices = (cursos) => {
+  const ranges = [
+    { value: "gratuito", label: "Gratuito", max: 0 },
+    { value: "ate-100", label: "Até R$100", max: 100 },
+    { value: "101-200", label: "R$101 - R$200", max: 200 },
+    { value: "201-500", label: "R$201 - R$500", max: 500 },
+    { value: "acima-500", label: "Acima de R$500", max: Infinity }
+  ];
+
+  const counts = ranges.map(range => ({
+    ...range,
+    count: cursos.filter(curso => {
+      const price = curso.custo === "Gratuito" ? 0 : 
+        Number(curso.custo.replace(/[^\d]/g, "")) || 0;
+      const prevMax = ranges.find(r => r.value === range.value)?.max;
+      const prevRangeMax = ranges[ranges.indexOf(range) - 1]?.max || 0;
+      return price > prevRangeMax && price <= prevMax;
+    }).length
+  }));
+
+  return counts;
+};
+
 export const filtrosCursos = [
   {
-    id: 'categoria',
-    name: 'Áreas de Conhecimento',
-    type: "select",
-    options: [
-      { value: 'Administração', label: 'Administração', checked: false},
-      { value: 'Artes', label: 'Artes', checked: false },
-      { value: 'Biológicas', label: 'Biológicas', checked: false },
-      { value: 'Ciência de Dados', label: 'Ciência de Dados', checked: false },
-      { value: 'Comunicação', label: 'Comunicação', checked: false },
-      { value: 'Design', label: 'Design', checked: false },
-      { value: 'Direito', label: 'Direito', checked: false },
-      { value: 'Educação', label: 'Educação', checked: false },
-      { value: 'Engenharia Civil', label: 'Engenharia Civil', checked: false },
-      { value: 'Engenharia Elétrica', label: 'Engenharia Elétrica', checked: false },
-      { value: 'Engenharia Mecânica', label: 'Engenharia Mecânica', checked: false },
-      { value: 'Engenharia de Produção', label: 'Engenharia de Produção', checked: false },
-      { value: 'Engenharia de Software', label: 'Engenharia de Software', checked: false },
-      { value: 'Exatas', label: 'Exatas', checked: false },
-      { value: 'Finanças', label: 'Finanças', checked: false },
-      { value: 'Humanas', label: 'Humanas', checked: false },
-      { value: 'Marketing Digital', label: 'Marketing Digital', checked: false },
-      { value: 'Medicina', label: 'Medicina', checked: false },
-      { value: 'Negócios', label: 'Negócios', checked: false },
-      { value: 'Produtos', label: 'Produtos', checked: false },
-      { value: 'Saúde', label: 'Saúde', checked: false },
-      { value: 'Tecnologia da Informação', label: 'Tecnologia da Informação', checked: false },
-    ],
+    id: "tipo",
+    name: "Nível do Curso",
+    type: "checkbox",
+    description: "Selecione um ou mais níveis",
+    options: generateOptions(cursos, "tipo")
   },
   {
-    id: 'tipo',
-    name: 'Nível do Curso',
+    id: "categoria",
+    name: "Área de Conhecimento",
     type: "select",
-    options: [
-      { value: 'Graduação', label: 'Graduação', checked: false },
-      { value: 'Pós-graduação', label: 'Pós-graduação', checked: false },
-      { value: 'Cursos Técnicos', label: 'Cursos Técnicos', checked: false },
-      { value: 'Cursos Livres', label: 'Cursos Livres', checked: false },
-      { value: 'Cursos de Extensão', label: 'Cursos de Extensão', checked: false },
-      { value: 'Cursos de Idiomas', label: 'Cursos de Idiomas', checked: false },
-      { value: 'Cursos Preparatórios', label: 'Cursos Preparatórios', checked: false },
-      { value: 'Cursos de Bacharelados', label: 'Cursos de Bacharelados', checked: false },
-      { value: 'Cursos de Licenciatura', label: 'Cursos de Licenciatura', checked: false },
-      { value: 'Cursos de Aperfeiçoamento', label: 'Cursos de Aperfeiçoamento', checked: false },
-      { value: 'Cursos de Especialização', label: 'Cursos de Especialização', checked: false },
-      { value: 'Cursos de MBA', label: 'Cursos de MBA (Master in Business Administration)', checked: false },
-      { value: 'Cursos de Desenvolvimento Pessoal', label: 'Cursos de Desenvolvimento Pessoal', checked: false },
-      { value: 'Cursos de Habilidades Específicas', label: 'Cursos de Habilidades Específicas', checked: false },
-      { value: 'Mestrado e Doutorado', label: 'Mestrado e Doutorado', checked: false },
-    ],
+    placeholder: "Todas as áreas",
+    options: generateOptions(cursos, "categoria")
   },
   {
-    id: 'modalidade',
-    name: 'Modalidades de Ensino',
+    id: "modalidade",
+    name: "Modalidade",
     type: "radio",
-    options: [
-      { value: 'Presencial', label: 'Presencial', checked: false },
-      { value: 'EAD', label: 'EAD', checked: false },
-      { value: 'Híbrido', label: 'Híbrido', checked: false },
-      { value: 'Semipresencial', label: 'Semipresencial', checked: false },
-      { value: 'Intensivo', label: 'Intensivo', checked: false },
-    ],
+    options: generateOptions(cursos, "modalidade", ["presencial", "online", "hibrida", "ead"])
   },
   {
-    id: 'horario',
-    name: 'Horários Disponíveis',
+    id: "turno",
+    name: "Turno",
+    type: "checkbox",
+    options: generateOptions(cursos, "turno", ["matutino", "vespertino", "noturno", "integral", "flexivel"])
+  },
+  {
+    id: "instituicao",
+    name: "Instituição",
     type: "select",
-    options: [
-      { value: 'Matutino', label: 'Matutino (manhã)', checked: false },
-      { value: 'Vespertino', label: 'Vespertino (tarde)', checked: false },
-      { value: 'Noturno', label: 'Noturno (noite)', checked: false },
-      { value: 'Integral', label: 'Integral (dia todo)', checked: false },
-      { value: 'Finais de Semana', label: 'Finais de Semana', checked: false },
-      { value: 'Flexível', label: 'Flexível', checked: false },
-    ],
+    placeholder: "Todas as instituições",
+    options: generateOptions(cursos, "instituicao")
   },
   {
-    id: 'estado',
-    name: 'Estado do Curso',
+    id: "estado",
+    name: "Estado",
     type: "select",
-    options: [
-      { value: 'Acre', label: 'Acre - AC', checked: false },
-      { value: 'Alagoas', label: 'Alagoas - AL', checked: false },
-      { value: 'Amapá', label: 'Amapá - AP', checked: false },
-      { value: 'Amazonas', label: 'Amazonas - AM', checked: false },
-      { value: 'Bahia', label: 'Bahia - BA', checked: false },
-      { value: 'Ceará', label: 'Ceará', checked: false },
-      { value: 'Espírito Santo', label: 'Espírito Santo - ES', checked: false },
-      { value: 'Goiás', label: 'Goiás - GO', checked: false },
-      { value: 'Maranhão', label: 'Maranhão - MA', checked: false },
-      { value: 'Mato Grosso', label: 'Mato Grosso - MT', checked: false },
-      { value: 'Mato Grosso do Sul', label: 'Mato Grosso do Sul - MS', checked: false },
-      { value: 'Minas Gerais', label: 'Minas Gerais - MG', checked: false },
-      { value: 'Pará', label: 'Pará - PA', checked: false },
-      { value: 'Paraíba', label: 'Paraíba - PB', checked: false },
-      { value: 'Paraná', label: 'Paraná - PR', checked: false },
-      { value: 'Pernambuco', label: 'Pernambuco - PE', checked: false },
-      { value: 'Piauí', label: 'Piauí - PI', checked: false },
-      { value: 'Rio de Janeiro', label: 'Rio de Janeiro - RJ', checked: false },
-      { value: 'Rio Grande do Norte', label: 'Rio Grande do Norte - RN', checked: false },
-      { value: 'Rio Grande do Sul', label: 'Rio Grande do Sul - RS', checked: false },
-      { value: 'Rondônia', label: 'Rondônia - RO', checked: false },
-      { value: 'Roraima', label: 'Roraima - RR', checked: false },
-      { value: 'Santa Catarina', label: 'Santa Catarina - SC', checked: false },
-      { value: 'São Paulo', label: 'São Paulo - SP', checked: false },
-      { value: 'Sergipe', label: 'Sergipe - SE', checked: false },
-      { value: 'Tocantins', label: 'Tocantins - TO', checked: false },
-    ],
+    placeholder: "Todos os estados",
+    options: generateOptions(cursos, "estado")
   },
   {
-    id: 'nivel',
-    name: 'Nível de Dificuldade',
+    id: "preco",
+    name: "Faixa de Preço",
     type: "radio",
-    options: [
-      { value: "Iniciante", label: "Iniciante" },
-      { value: "Intermediário", label: "Intermediário" },
-      { value: "Avançado", label: "Avançado" },
-      { value: "Especialista", label: "Especialista" },
-      { value: "Todos", label: "Todos" }
-    ],
-  },
-
-  { id: 'preco',
-    name: 'Faixa de Preço',
-    type: "slider",
-    options: [
-      { value: 'Gratuito', label: 'Gratuito', checked: false },
-      { value: 'Abaixo de R$100', label: 'Abaixo de R$100', checked: false },
-      { value: 'R$100 - R$500', label: 'R$100 - R$500', checked: false },
-      { value: 'R$500 - R$900', label: 'R$500 - R$900', checked: false },
-      { value: 'Acima de R$1.000', label: 'Acima de R$1.000', checked: false },
-    ],
-  }, 
-  {
-    id: 'duracao',
-    name: 'Duração do Curso',
-    type: "select",
-    options: [
-      { value: 'Menos de 1 mês', label: 'Menos de 1 mês', checked: false },
-      { value: '1 semestre', label: '1 semestre (6 meses)', checked: false },
-      { value: '2 semestres', label: '2 semestres (1 ano)', checked: false },
-      { value: '3 semestres', label: '3 semestres (1 ano e 6 meses)', checked: false },
-      { value: '4 semestres', label: '4 semestres (2 anos)', checked: false },
-      { value: '5 semestres', label: '5 semestres (2 anos e 6 meses)', checked: false },
-      { value: '6 semestres', label: '6 semestres (3 anos)', checked: false },
-      { value: '7 semestres', label: '7 semestres (3 anos e 6 meses)', checked: false },
-      { value: '8 semestres', label: '8 semestres (4 anos)', checked: false },
-      { value: '9 semestres', label: '9 semestres (4 anos e 6 meses)', checked: false },
-      { value: '10 semestres', label: '10 semestres (5 anos)', checked: false },
-      { value: 'outros', label: '+ de 5 anos', checked: false },
-    ],
+    description: "Filtrar por valor da mensalidade",
+    options: categorizePrices(cursos)
   }
 ];
+
+export default filtrosCursos;

@@ -1,5 +1,5 @@
 import AuthForm from "../../components/others/AuthForm";
-import { useAuth } from "../../hooks/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

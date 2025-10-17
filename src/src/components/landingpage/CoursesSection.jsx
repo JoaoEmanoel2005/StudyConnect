@@ -1,92 +1,119 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
-
-import SearchBar from "../catalog/SearchBar";
+import "swiper/css/navigation";
+import { useState, useRef, useMemo, useEffect } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, A11y } from "swiper/modules";
 import CourseCard from "../catalog/CourseCard";
-import { cursos } from "../../data/Courses";
+import SearchBar from "../catalog/SearchBar";
+import { cursos as sampleCursos } from "../../data/Courses"; // sample data
 
 export default function CoursesSection() {
-  const [query, setQuery] = useState("");
 
-  const cursosFiltrados = cursos.filter(
-    (curso) =>
-      curso.nome.toLowerCase().includes(query.toLowerCase()) ||
-      curso.categoria.toLowerCase().includes(query.toLowerCase()) ||
-      curso.instituicao?.toLowerCase().includes(query.toLowerCase())
-  );
+  const [query, setQuery] = useState("");
+  const [cursos, setCursos] = useState(sampleCursos); 
+  const [loading, setLoading] = useState(false);
+
+ 
+  useEffect(() => {
+    // Simulate loading delay
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Refs for custom navigation buttons
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+
+  // Filter + alphabetical sort (A → Z) with memoization
+  const cursosFiltrados = useMemo(() => {
+    if (!Array.isArray(cursos)) return [];
+    const q = (query || "").trim().toLowerCase();
+    const filtered = cursos.filter((curso) => {
+      if (!q) return true;
+      return (
+        (curso.nome || "").toLowerCase().includes(q) ||
+        (curso.categoria || "").toLowerCase().includes(q) ||
+        (curso.instituicao || "").toLowerCase().includes(q)
+      );
+    });
+    // stable alphabetical sort by nome (handles accents)
+    return filtered.slice().sort((a, b) => (a.nome || "").localeCompare(b.nome || "", undefined, { sensitivity: "base" }));
+  }, [cursos, query]);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-100 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-slate-900 mb-6">Cursos Disponíveis</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-72 bg-white rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-gray-100 relative">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">Cursos Disponíveis</h2>
-        <p className="text-lg text-slate-600 mb-6">
-          Descubra nossos cursos mais bem avaliados que ajudaram milhares de
-          profissionais a progredir em suas carreiras e dominar novas habilidades.
-        </p>
-
-        {/* Barra de pesquisa */}
-        <div className="max-w-7xl mx-auto px-7 grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-lg shadow-md mb-12">
-          {/* Texto */}
-          <div className="space-y-4 text-center md:text-left">
-            <span className="inline-block px-4 py-2 bg-indigo-500/30 text-indigo-700 text-sm font-medium rounded-full border border-indigo-500/30">
-              <span role="img" aria-label="books">📚</span> Encontre o curso perfeito para você!
-            </span>
-            <h3 className="text-2xl font-semibold text-textprimary">
-              Procure o curso e saiba todos os detalhes
-            </h3>
-            <p className="text-sm text-primary max-w-md">
-              Descubra a duração do curso, média da mensalidade, o que faz o profissional,
-              nota de corte, quanto ganha, entre outras informações.
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900">Cursos Disponíveis</h2>
+            <p className="text-sm text-slate-600 mt-1">
+              Explore nossos cursos — resultados mostrados em ordem alfabética.
             </p>
           </div>
 
-          {/* Barra de pesquisa */}
-          <div className="flex flex-col items-center md:items-end space-y-4 w-full">
+          <div className="flex items-center gap-3">
             <SearchBar value={query} onChange={setQuery} />
-            <Link
-              to="/catalogo"
-              className="text-sm text-white px-9 py-3 rounded-md bg-secondary hover:text-slate-200 hover:bg-primary transition-colors"
-            >
-              Ver todos os cursos
-            </Link>
+            <div className="hidden md:flex items-center gap-2">
+              <button
+                ref={prevRef}
+                aria-label="Anterior"
+                className="p-3 rounded-xl bg-primary text-white shadow-md hover:scale-105 transition transform"
+              >
+                <ChevronLeftIcon className="h-5 w-5" />
+              </button>
+              <button
+                ref={nextRef}
+                aria-label="Próximo"
+                className="p-3 rounded-xl bg-primary text-white shadow-md hover:scale-105 transition transform"
+              >
+                <ChevronRightIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-
         {cursosFiltrados.length > 0 ? (
-          <>
-            {/* Botões customizados */}
-            <div className="absolute inset-y-1/2 left-20 z-10 hidden md:flex">
-              <button className="prevBtn">
-                <ChevronLeftIcon className="h-12 w-12 text-white hover:text-gray-300 bg-primary hover:bg-textprimary p-2 rounded-full" />
-              </button>
-            </div>
-            <div className="absolute inset-y-1/2 right-20 z-10 hidden md:flex">
-              <button className="nextBtn">
-                <ChevronRightIcon className="h-12 w-12 text-white hover:text-gray-300 bg-primary hover:bg-textprimary p-2 rounded-full" />
-              </button>
-            </div>
-
-            {/* Carrossel */}
+          <div className="relative">
             <Swiper
-              modules={[Navigation, Pagination]}
+              modules={[Navigation, Pagination, A11y]}
               spaceBetween={24}
               slidesPerView={1}
-              breakpoints={{
-                640: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 },
-              }}
+              breakpoints={{ 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }}
               pagination={{ clickable: true }}
               navigation={{
-                prevEl: ".prevBtn",
-                nextEl: ".nextBtn",
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+              }}
+              onBeforeInit={(swiper) => {
+                // attach custom buttons after refs are available
+                // eslint-disable-next-line no-param-reassign
+                swiper.params.navigation.prevEl = prevRef.current;
+                // eslint-disable-next-line no-param-reassign
+                swiper.params.navigation.nextEl = nextRef.current;
+              }}
+              a11y={{
+                prevSlideMessage: "Slide anterior",
+                nextSlideMessage: "Próximo slide",
               }}
               className="pb-12"
             >
@@ -98,9 +125,17 @@ export default function CoursesSection() {
                 </SwiperSlide>
               ))}
             </Swiper>
-          </>
+          </div>
         ) : (
-          <p className="text-center text-gray-500 mt-6">Nenhum curso encontrado.</p>
+          <div className="text-center py-16">
+            <p className="text-gray-600 mb-4">Nenhum curso encontrado.</p>
+            <a
+              href="/catalogo"
+              className="inline-block bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-primary-dark transition"
+            >
+              Ver catálogo completo
+            </a>
+          </div>
         )}
       </div>
     </section>

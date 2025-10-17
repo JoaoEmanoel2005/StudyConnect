@@ -1,8 +1,9 @@
 import { HomeIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export default function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row relative">
       
       {/* Coluna Esquerda - Formulário */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-12">
@@ -28,17 +29,24 @@ export default function AuthLayout({ children }) {
         </div>
       </div>
 
-      {/* Botão Home com tooltip */}
-      <div className="absolute bottom-10 right-10 group">
-        <button
-          onClick={() => (window.location.href = "/")}
-          className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 shadow-lg transition-colors transform hover:scale-110"
+      {/* Fixed Home CTA (accessible, glass + gradient style) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Link
+          to="/"
+          aria-label="Voltar para Home"
+          aria-describedby="home-tooltip"
+          title="Voltar para Home"
+          className="group inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-primary to-accent text-white shadow-xl ring-1 ring-white/10 backdrop-blur-sm hover:scale-105 transform transition-all focus:outline-none focus:ring-4 focus:ring-primary/30"
         >
-          <HomeIcon className="h-6 w-6 text-gray-300 hover:text-white" />
-        </button>
+          <HomeIcon className="h-6 w-6" />
+        </Link>
 
-        {/* Tooltip */}
-        <span className="absolute -top-10 right-1/2 translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition duration-300 whitespace-nowrap hover:scale-105">
+        {/* Tooltip (visible on hover/focus) */}
+        <span
+          id="home-tooltip"
+          role="tooltip"
+          className="pointer-events-none absolute -top-10 right-1/2 translate-x-1/2 px-3 py-1.5 text-xs font-medium text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+        >
           Voltar para Home
         </span>
       </div>

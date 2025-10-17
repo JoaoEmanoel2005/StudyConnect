@@ -2,12 +2,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 
+
+
 import Home from "./pages/Home";
 import PaginaCurso from "./pages/CoursePage";
 import NotFound from "./pages/NotFound";
 import Catalogo from "./pages/CatalogPage";
-import UserProfile from "./pages/UserProfile";
-import Login from "./pages/login&cadastro/Sing-in";
+import Instituicao from "./pages/InstitutionPage";
+import Perfil from "./pages/UserProfile";
+import Login from "./pages/login&cadastro/Sign-in";
 import Cadastro from "./pages/login&cadastro/Registration";
 import RecuperarSenha from "./pages/login&cadastro/ForgotPassword";
 import ConfirmacaoCadastro from "./pages/login&cadastro/ConfirmCadastro";
@@ -15,13 +18,14 @@ import ConfirmacaoCadastro from "./pages/login&cadastro/ConfirmCadastro";
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Páginas com header/footer */}
-        <Route path="/" element={<Layout><Home /></Layout>} />
-        <Route path="/curso/:id" element={<Layout><PaginaCurso /></Layout>} />
-        <Route path="/catalogo" element={<Layout><Catalogo /></Layout>} />
-        <Route path="/perfil" element={<Layout><UserProfile /></Layout>} />
-        
+        <Routes>
+          {/* Páginas com header/footer */}
+          <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/curso/:id" element={<Layout><PaginaCurso /></Layout>} />
+          <Route path="/catalogo" element={<Layout><Catalogo /></Layout>} />
+          <Route path="/instituicoes" element={<Layout><Instituicao /></Layout>} />
+          <Route path="/perfil" element={<Layout><Perfil /></Layout>} />
+          
 
         {/* Páginas de autenticação (sem header/footer) */}
         <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
