@@ -1,37 +1,41 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import CourseCard from "../components/catalog/CourseCard";
-import SearchBar from "../components/catalog/SearchBar";
-import FilterSection from "../components/catalog/FilterSection";
-import { filtrosCursos } from "../data/FiltersConfig";
-import { cursos } from "../data/Courses";
+import { useSearchParams, Link } from "react-router-dom";
+import InstitutionCard from "../components/institution/InstitutionCard";
+import SearchBar from "../components/catalog/SearchBar"; 
+import FilterSection from "../components/catalog/FilterSection"; 
+import { filtrosInstituicoes } from "../data/InstituionFilters";
+import { instituicao } from "../data/Institution";
 import {
   FunnelIcon,
   XMarkIcon,
+  BuildingOfficeIcon,
   AcademicCapIcon,
-  UserGroupIcon,
-  BookOpenIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 
-export default function CatalogoCursos() {
-  // URL Search Params for shareable filters
+export default function CatalogoInstituicoes() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State
+  // Inicializa filtros a partir da URL
   const [filtrosAtivos, setFiltrosAtivos] = useState(() => {
     const params = Object.fromEntries(searchParams.entries());
-    return Object.keys(params).length ? JSON.parse(params.filters || "{}") : {};
+    try {
+      return Object.keys(params).length ? JSON.parse(params.filters || "{}") : {};
+    } catch {
+      return {};
+    }
   });
+
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [ordenacao, setOrdenacao] = useState(searchParams.get("sort") || "name-asc");
   const [paginaAtual, setPaginaAtual] = useState(Number(searchParams.get("page")) || 1);
   const [isLoading, setIsLoading] = useState(true);
 
-  const cursosPorPagina = 6;
+  const itensPorPagina = 6;
 
-  // Update URL when filters change
+  // Atualiza URL quando filtros mudam
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("q", searchQuery);
@@ -43,82 +47,63 @@ export default function CatalogoCursos() {
     setSearchParams(params, { replace: true });
   }, [filtrosAtivos, searchQuery, ordenacao, paginaAtual]);
 
-  // Simulate loading
+  // Simula carregamento
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [filtrosAtivos, searchQuery, ordenacao]);
 
-  // Memoized filtered courses
-  const cursosFiltrados = useMemo(() => {
-    let filtered = [...cursos];
+  // Filtragem e ordenação
+  const instituicoesFiltradas = useMemo(() => {
+    let filtered = [...instituicao];
 
-    // Price range helper
-    const precoParaIntervalo = (label) => {
-      const ranges = {
-        "Gratuito": [0, 0],
-        "Abaixo de R$100": [0, 100],
-        "R$100 - R$500": [100, 500],
-        "R$500 - R$900": [500, 900],
-        "Acima de R$1.000": [1000, Infinity],
-      };
-      return ranges[label] || [0, Infinity];
-    };
-
-    // Apply filters
     Object.entries(filtrosAtivos).forEach(([key, valores]) => {
       if (valores?.length) {
-        if (key === "preco") {
-          const [min, max] = precoParaIntervalo(valores);
-          filtered = filtered.filter((c) => {
-            const custoNum = Number(c.custo.replace(/[^\d]/g, ""));
-            return custoNum >= min && custoNum <= max;
-          });
-        } else {
-          filtered = filtered.filter((c) => valores.includes(c[key]));
-        }
+        filtered = filtered.filter((inst) =>
+          Array.isArray(valores)
+            ? valores.includes(inst[key])
+            : inst[key] === valores
+        );
       }
     });
 
-    // Apply search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((c) =>
-        c.nome.toLowerCase().includes(query) ||
-        c.descricao?.toLowerCase().includes(query) ||
-        c.categoria?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (inst) =>
+          inst.nome?.toLowerCase().includes(query) ||
+          inst.area?.toLowerCase().includes(query) ||
+          inst.cidade?.toLowerCase().includes(query) ||
+          inst.tipo?.toLowerCase().includes(query)
       );
     }
 
-    // Apply sorting
     const sortFunctions = {
       "name-asc": (a, b) => a.nome.localeCompare(b.nome),
       "name-desc": (a, b) => b.nome.localeCompare(a.nome),
-      "price-asc": (a, b) => Number(a.custo.replace(/[^\d]/g, "")) - Number(b.custo.replace(/[^\d]/g, "")),
-      "price-desc": (a, b) => Number(b.custo.replace(/[^\d]/g, "")) - Number(a.custo.replace(/[^\d]/g, "")),
+      "city-asc": (a, b) => a.cidade.localeCompare(b.cidade),
+      "state-asc": (a, b) => a.estado.localeCompare(b.estado),
     };
 
     return filtered.sort(sortFunctions[ordenacao] || sortFunctions["name-asc"]);
   }, [filtrosAtivos, searchQuery, ordenacao]);
 
-  // Pagination logic
-  const totalPaginas = Math.ceil(cursosFiltrados.length / cursosPorPagina);
-  const cursosVisiveis = cursosFiltrados.slice(
-    (paginaAtual - 1) * cursosPorPagina,
-    paginaAtual * cursosPorPagina
+  const totalPaginas = Math.ceil(instituicoesFiltradas.length / itensPorPagina);
+  const visiveis = instituicoesFiltradas.slice(
+    (paginaAtual - 1) * itensPorPagina,
+    paginaAtual * itensPorPagina
   );
 
-  // Filter change handler
   const handleFiltroChange = (sectionId, value, type = "checkbox") => {
-    setFiltrosAtivos(prev => {
+    setFiltrosAtivos((prev) => {
       if (type === "checkbox") {
         const prevOptions = prev[sectionId] || [];
         return {
           ...prev,
           [sectionId]: prevOptions.includes(value)
-            ? prevOptions.filter(v => v !== value)
-            : [...prevOptions, value]
+            ? prevOptions.filter((v) => v !== value)
+            : [...prevOptions, value],
         };
       }
       return { ...prev, [sectionId]: value };
@@ -127,43 +112,35 @@ export default function CatalogoCursos() {
   };
 
   return (
-    <>
-      {/* Hero Section */}
+    <main>
       <div className="relative w-full bg-gradient-to-r from-textprimary via-primary to-indigo-600 text-white py-20 px-6">
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-4xl font-bold mb-4 drop-shadow-lg">
-            Aprenda, Cresça e Transforme sua Carreira
+            Instituições de Ensino Parceiras
           </h1>
           <p className="text-base mb-8 text-gray-100 max-w-2xl mx-auto">
-            Explore nossa ampla variedade de cursos e encontre o que melhor se adapta às suas necessidades.
+            Juntas, promovemos a educação científica e tecnológica em todo o Brasil.
           </p>
 
-          {/* Quick stats */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <BookOpenIcon className="h-5 w-5" />
-              <span>+200 Cursos</span>
+              <BuildingOfficeIcon className="h-6 w-6" />
+              <span>+10 Instituições Parceiras</span>
             </div>
+
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <AcademicCapIcon className="h-5 w-5" />
-              <span>Certificados Reconhecidos</span>
+              <AcademicCapIcon className="h-6 w-6" />
+              <span>+5000 Estudantes Impactados</span>
             </div>
+
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <UserGroupIcon className="h-5 w-5" />
-              <span>Instrutores Especializados</span>
+              <GlobeAltIcon className="h-6 w-6" />
+              <span>Atuação em 15 Estados Brasileiros</span>
             </div>
           </div>
 
-          {/* Search bar */}
-          <div className="max-w-xl mx-auto">
-            <SearchBar
-              value={searchQuery}
-              onChange={(value) => {
-                setSearchQuery(value);
-                setPaginaAtual(1);
-              }}
-              placeholder="Busque por nome do curso, categoria ou descrição..."
-            />
+          <div className="mt-8 max-w-xl mx-auto">
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
           </div>
         </div>
 
@@ -179,13 +156,13 @@ export default function CatalogoCursos() {
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Conteúdo principal */}
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 pt-12 pb-20">
           {/* Results count + sorting */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <h2 className="text-lg font-medium text-gray-900">
-              {cursosFiltrados.length} {cursosFiltrados.length === 1 ? 'curso encontrado' : 'cursos encontrados'}
+              {instituicoesFiltradas.length} {instituicoesFiltradas.length === 1 ? 'instituição encontrada' : 'instituições encontradas'}
             </h2>
 
             <div className="flex items-center gap-2">
@@ -205,10 +182,7 @@ export default function CatalogoCursos() {
               </select>
             </div>
           </div>
-
-          {/* Grid layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters sidebar */}
             <aside className="lg:col-span-1">
               <div className="sticky top-4 space-y-6">
                 <div className="flex items-center justify-between">
@@ -216,7 +190,6 @@ export default function CatalogoCursos() {
                     <FunnelIcon className="h-5 w-5 text-primary" />
                     Filtros
                   </h3>
-
                   {Object.keys(filtrosAtivos).length > 0 && (
                     <button
                       onClick={() => {
@@ -232,7 +205,7 @@ export default function CatalogoCursos() {
                 </div>
 
                 <div className="space-y-4">
-                  {filtrosCursos.map((section) => (
+                  {filtrosInstituicoes.map((section) => (
                     <FilterSection
                       key={section.id}
                       section={section}
@@ -246,29 +219,41 @@ export default function CatalogoCursos() {
               </div>
             </aside>
 
-            {/* Courses grid */}
             <div className="lg:col-span-3">
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="h-48 bg-gray-200 rounded-t-xl" />
-                      <div className="p-4 space-y-3 bg-white rounded-b-xl">
-                        <div className="h-4 bg-gray-200 rounded w-3/4" />
-                        <div className="h-4 bg-gray-200 rounded w-1/2" />
-                      </div>
+                      <div className="h-64 bg-gray-200 rounded-xl mb-4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                     </div>
                   ))}
                 </div>
-              ) : cursosVisiveis.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {cursosVisiveis.map((curso) => (
-                      <CourseCard key={curso.id} curso={curso} />
-                    ))}
-                  </div>
+              ) : visiveis.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {visiveis.map((item) => (
+                    <InstitutionCard key={item.id} item={item} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-4">
+                    Nenhuma instituição encontrada com os filtros atuais.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setFiltrosAtivos({});
+                    }}
+                    className="text-primary hover:text-primary-dark"
+                  >
+                    Limpar filtros
+                  </button>
+                </div>
+              )}
 
-                  {/* Pagination */}
+              {/* Pagination */}
                   {totalPaginas > 1 && (
                     <div className="flex justify-center gap-2 mt-12">
                       <button
@@ -302,31 +287,10 @@ export default function CatalogoCursos() {
                       </button>
                     </div>
                   )}
-                </>
-              ) : (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Nenhum curso encontrado
-                  </h3>
-                  <p className="text-gray-500 mb-4">
-                    Tente ajustar seus filtros ou termos de busca
-                  </p>
-                  <button
-                    onClick={() => {
-                      setFiltrosAtivos({});
-                      setSearchQuery("");
-                      setPaginaAtual(1);
-                    }}
-                    className="text-primary hover:text-primary-dark font-medium"
-                  >
-                    Limpar todos os filtros
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }

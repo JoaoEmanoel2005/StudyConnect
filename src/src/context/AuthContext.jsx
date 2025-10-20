@@ -1,16 +1,18 @@
-// hooks/useAuth.jsx
-import { useState, useEffect } from "react";
+// ./context/AuthContext.jsx
+import { createContext, useState, useEffect, useContext } from "react";
 
-export default function useAuth() {
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
 
-  // Carrega usuário atual do localStorage ao iniciar
+  // Carrega usuário atual do localStorage
   useEffect(() => {
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) setUsuario(JSON.parse(currentUser));
   }, []);
 
-  // Função para login
+  // LOGIN
   const login = ({ email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const user = users.find((u) => u.email === email && u.password === password);
@@ -24,7 +26,7 @@ export default function useAuth() {
     }
   };
 
-  // Função para cadastro
+  // CADASTRO
   const cadastro = ({ name, email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
 
@@ -37,7 +39,7 @@ export default function useAuth() {
       name,
       email,
       password,
-      cursosSalvos: [], // para guardar cursos favoritos
+      cursosSalvos: [],
     };
 
     localStorage.setItem("users", JSON.stringify([...users, newUser]));
@@ -46,13 +48,13 @@ export default function useAuth() {
     return { success: true };
   };
 
-  // Função para logout
+  // LOGOUT
   const logout = () => {
     localStorage.removeItem("currentUser");
     setUsuario(null);
   };
 
-  // Função para salvar/remoção de cursos favoritos
+  // FAVORITAR / DESFAVORITAR
   const toggleCursoFavorito = (cursoId) => {
     if (!usuario) return;
 
@@ -61,19 +63,30 @@ export default function useAuth() {
 
     if (!updatedUser.cursosSalvos) updatedUser.cursosSalvos = [];
 
-    if (updatedUser.cursosSalvos.includes(cursoId)) {
-      updatedUser.cursosSalvos = updatedUser.cursosSalvos.filter((id) => id !== cursoId);
-    } else {
-      updatedUser.cursosSalvos.push(cursoId);
-    }
+    const jaSalvo = updatedUser.cursosSalvos.includes(cursoId);
+    updatedUser.cursosSalvos = jaSalvo
+      ? updatedUser.cursosSalvos.filter((id) => id !== cursoId)
+      : [...updatedUser.cursosSalvos, cursoId];
 
+    // Atualiza estado e armazenamento
     setUsuario(updatedUser);
-
-    // Atualiza localStorage
-    const otherUsers = users.filter((u) => u.id !== updatedUser.id);
-    localStorage.setItem("users", JSON.stringify([...otherUsers, updatedUser]));
+    const updatedUsers = users.map((u) =>
+      u.id === updatedUser.id ? updatedUser : u
+    );
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   };
 
-  return { usuario, login, cadastro, logout, toggleCursoFavorito };
+  return (
+    <AuthContext.Provider
+      value={{ usuario, login, cadastro, logout, toggleCursoFavorito }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Hook de acesso simples
+export function useAuth() {
+  return useContext(AuthContext);
 }
