@@ -7,123 +7,276 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Modalidade {
-  PRESENCIAL
-  EAD
-  HIBRIDO
-}
+// ============================================
+// Tabelas de Domínio/Lookup
+// ============================================
 
-enum TipoCurso {
-  GRADUACAO
-  POS
-  TECNICO
-  LIVRE
-}
-
-model Usuario {
-  id                Int           @id @default(autoincrement())
-  nome              String
-  email             String        @unique
-  senha             String
-  email_verificado  Boolean       @default(false)
-  token_verificacao String?       @unique
-  codigo_reset      String?
-  codigo_expira     DateTime?
-  imagem            String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-}
-
-model Instituicao {
-  id          Int       @id @default(autoincrement())
-  nome        String
-  cnpj        String    @unique
-  email       String    @unique
-  senha       String
-  telefone    String?
-  endereco    String?
-  cidade      String?
-  estado      String?
-  cep         String?
-  site        String?
-  descricao   String?   @db.Text
-  ativo       Boolean   @default(true)
-  imagem      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // 🔗 Relações
-  cursos      Curso[]
-
-  @@index([email])
-  @@index([cnpj])
-}
-
-model Curso {
-  id               Int               @id @default(autoincrement())
-  nome             String
-  tipo             TipoCurso
-  categoria        String
-  vagas            Int
-  modalidade       Modalidade
-  horario          String
-  duracao          String
-  custo            Decimal           @db.Decimal(10,2)
-  descricao        String
-  onde_trabalhar   String
-  imagem           String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-  // 🔗 Relação com Instituição
-  instituicaoId    Int
-  instituicao      Instituicao       @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
-
-  // Relações adicionais
-  preRequisitos    PreRequisito[]
-  matrizCurricular MatrizCurricular[]
-  links            Link?
-}
-
-model PreRequisito {
-  id        Int    @id @default(autoincrement())
-  texto     String
-  cursoId   Int
-  curso     Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+model Estado {
+  id      Int      @id @default(autoincrement()) @map("id_estado")
+  nome    String   @db.VarChar(100)
+  sigla   String?  @db.Char(2)
+  cidades Cidade[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("estado")
+}
+
+model Cidade {
+  id       Int    @id @default(autoincrement()) @map("id_cidade")
+  nome     String @db.VarChar(100)
+  regiao   String? @db.VarChar(50)
+  estadoId Int    @map("id_estado")
+  estado   Estado @relation(fields: [estadoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([estadoId])
+  @@map("cidade")
+}
+
+model TipoInstituicao {
+  id            Int           @id @default(autoincrement()) @map("id_tipo_inst")
+  nome          String        @db.VarChar(100)
+  instituicoes  Instituicao[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tipo_instituicao")
+}
+
+model Categoria {
+  id     Int     @id @default(autoincrement()) @map("id_categoria")
+  nome   String  @db.VarChar(100)
+  cursos Curso[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categorias")
+}
+
+model Modalidade {
+  id     Int     @id @default(autoincrement()) @map("id_modalidade")
+  nome   String  @db.VarChar(100)
+  cursos Curso[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("modalidade")
+}
+
+model TipoCurso {
+  id     Int     @id @default(autoincrement()) @map("id_tipo")
+  nome   String  @db.VarChar(100)
+  cursos Curso[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tipo_curso")
+}
+
+// ============================================
+// Tabela Principal: Usuario
+// ============================================
+
+model Usuario {
+  id                 Int      @id @default(autoincrement())
+  nome               String   @db.VarChar(200)
+  email              String   @unique @db.VarChar(200)
+  senha              String   @db.VarChar(255)
+  cpf                String?  @unique @db.VarChar(14)
+  nascimento         DateTime? @db.Date
+  imagem             String?  @db.VarChar(255)
+  emailVerificado    Boolean  @default(false) @map("email_verificado")
+  tokenVerificado    String?  @map("token_verificado") @db.VarChar(255)
+  codigoReset        String?  @map("codigo_reset") @db.VarChar(255)
+  codigoExpira       DateTime? @map("codigo_expira")
+  
+  createdAt          DateTime @default(now()) @map("createdat")
+  updatedAt          DateTime @updatedAt @map("updateat")
+
+  // 🔗 Relações
+  instituicoesSalvas InstiSalvo[]
+  cursosSalvos       CursoSalvo[]
+
+  @@index([email])
+  @@index([cpf])
+  @@map("usuario")
+}
+
+// ============================================
+// Tabela Principal: Instituicao
+// ============================================
+
+model Instituicao {
+  id              Int              @id @default(autoincrement()) @map("id_instituicao")
+  nome            String           @db.VarChar(200)
+  cidade          String?          @db.VarChar(100)
+  estado          String?          @db.VarChar(100)
+  email           String?          @db.VarChar(200)
+  senha           String?          @db.VarChar(255)
+  telefone        String?          @db.VarChar(20)
+  endereco        String?          @db.Text
+  descricao       String?          @db.Text
+  area            String?          @db.VarChar(100)
+  tipo            Int?
+  tipoInstituicao TipoInstituicao? @relation(fields: [tipo], references: [id])
+  imagem          String?          @db.VarChar(255)
+  custoMatricula  Decimal?         @map("custo_matricula") @db.Decimal(10,2)
+  latitude        Decimal?         @db.Decimal(10,8)
+  longitude       Decimal?         @db.Decimal(11,8)
+  
+  createdAt       DateTime         @default(now()) @map("createdat")
+  updatedAt       DateTime         @updatedAt @map("updateat")
+
+  // 🔗 Relações
+  cursos          Curso[]
+  salvaPor        InstiSalvo[]
+
+  @@index([nome])
+  @@index([tipo])
+  @@map("instituicao")
+}
+
+// ============================================
+// Tabela Principal: Curso
+// ============================================
+
+model Curso {
+  id              Int           @id @default(autoincrement()) @map("id_curso")
+  nome            String        @db.VarChar(200)
+  tipoId          Int?          @map("tipo_id")
+  tipoCurso       TipoCurso?    @relation(fields: [tipoId], references: [id])
+  categoriaId     Int?          @map("categoria_id")
+  categoria       Categoria?    @relation(fields: [categoriaId], references: [id])
+  vagas           Int?
+  modalidadeId    Int?          @map("modalidade_id")
+  modalidade      Modalidade?   @relation(fields: [modalidadeId], references: [id])
+  horario         String?       @db.VarChar(100)
+  turno           String?       @db.VarChar(50)
+  duracao         String?       @db.VarChar(100)
+  custo           Decimal?      @db.Decimal(10,2)
+  descricao       String?       @db.Text
+  instituicaoId   Int           @map("instituicao_id")
+  instituicao     Instituicao   @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+  ondeTrabalhar   String?       @map("onde_trabalhar") @db.Text
+  imagem          String?       @db.VarChar(255)
+  latitude        Decimal?      @db.Decimal(10,8)
+  longitude       Decimal?      @db.Decimal(11,8)
+  
+  createdAt       DateTime      @default(now()) @map("createdat")
+  updatedAt       DateTime      @updatedAt @map("updateat")
+
+  // 🔗 Relações
+  preRequisitos    PreRequisito[]
+  matrizCurricular MatrizCurricular[]
+  links            Link[]
+  salvoPor         CursoSalvo[]
+
+  @@index([nome])
+  @@index([instituicaoId])
+  @@index([categoriaId])
+  @@index([modalidadeId])
+  @@index([tipoId])
+  @@map("curso")
+}
+
+// ============================================
+// Tabelas de Relacionamento (Muitos-para-Muitos)
+// ============================================
+
+model InstiSalvo {
+  id             Int         @id @default(autoincrement())
+  usuarioId      Int         @map("id_usuario")
+  usuario        Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  instituicaoId  Int         @map("id_instituicao")
+  instituicao    Instituicao @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime    @default(now()) @map("createdat")
+
+  @@unique([usuarioId, instituicaoId], name: "unique_save")
+  @@index([usuarioId])
+  @@index([instituicaoId])
+  @@map("insti_salvo")
+}
+
+model CursoSalvo {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int      @map("id_usuario")
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  cursoId   Int      @map("id_curso")
+  curso     Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now()) @map("createdat")
+
+  @@unique([usuarioId, cursoId], name: "unique_save")
+  @@index([usuarioId])
+  @@index([cursoId])
+  @@map("curso_salvo")
+}
+
+// ============================================
+// Tabelas Complementares do Curso
+// ============================================
+
+model PreRequisito {
+  id        Int      @id @default(autoincrement()) @map("id_pre")
+  cursoId   Int      @map("curso_id")
+  curso     Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  descricao String   @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cursoId])
+  @@map("pre_requisitos")
 }
 
 model MatrizCurricular {
-  id           Int           @id @default(autoincrement())
-  semestre     String
-  cursoId      Int
-  curso        Curso         @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  disciplinas  Disciplina[]
+  id          Int          @id @default(autoincrement()) @map("id_matriz")
+  cursoId     Int          @map("curso_id")
+  curso       Curso        @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  semestre    Int?
+  disciplina  String       @db.VarChar(200)
+  disciplinas Disciplina[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  @@index([cursoId])
+  @@map("matriz_curricular")
 }
 
 model Disciplina {
-  id        Int               @id @default(autoincrement())
-  nome      String
-  matrizId  Int
-  matriz    MatrizCurricular  @relation(fields: [matrizId], references: [id], onDelete: Cascade)
+  id        Int              @id @default(autoincrement()) @map("id_disciplina")
+  nome      String           @db.VarChar(200)
+  matrizId  Int              @map("matriz_id")
+  matriz    MatrizCurricular @relation(fields: [matrizId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([matrizId])
+  @@map("disciplina")
 }
 
 model Link {
-  id           Int    @id @default(autoincrement())
-  site_oficial String
-  pagina_curso String
-  inscricao    String
-  cursoId      Int   @unique
-  curso        Curso @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-
+  id           Int      @id @default(autoincrement()) @map("id_link")
+  cursoId      Int      @map("curso_id")
+  curso        Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  siteOficial  String?  @map("site_oficial") @db.VarChar(500)
+  paginaCurso  String?  @map("pagina_curso") @db.VarChar(500)
+  inscricao    String?  @db.VarChar(500)
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([cursoId])
+  @@map("links")
 }

@@ -1,119 +1,192 @@
--- ==============================
--- Enums
--- ==============================
-CREATE TYPE Modalidade AS ENUM ('PRESENCIAL', 'EAD', 'HIBRIDO');
+-- ============================================
+-- Script de Criação do Banco de Dados TG
+-- Sistema de Gestão de Instituições e Cursos
+-- ============================================
 
-CREATE TYPE TipoCurso AS ENUM ('GRADUACAO', 'POS', 'TECNICO', 'LIVRE');
+-- Tabelas de Domínio/Lookup
+-- ============================================
 
--- ==============================
--- Tabela Usuario
--- ==============================
-CREATE TABLE Usuario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(191) NOT NULL,
-    email VARCHAR(191) NOT NULL UNIQUE,
-    senha VARCHAR(191) NOT NULL,
-    email_verificado BOOLEAN NOT NULL DEFAULT FALSE,
-    token_verificacao VARCHAR(191) UNIQUE,
-    codigo_reset VARCHAR(191),
+CREATE TABLE estado (
+    id_estado INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    sigla CHAR(2) NOT NULL
+);
+
+CREATE TABLE cidade (
+    id_cidade INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    regiao VARCHAR(50),
+    id_estado INT NOT NULL,
+    FOREIGN KEY (id_estado) REFERENCES estado (id_estado)
+);
+
+CREATE TABLE tipo_instituicao (
+    id_tipo_inst INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE categorias (
+    id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE modalidade (
+    id_modalidade INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE tipo_curso (
+    id_tipo INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+-- Tabela Principal: Usuario
+-- ============================================
+
+CREATE TABLE usuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(200) NOT NULL,
+    email VARCHAR(200) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cpf VARCHAR(14) UNIQUE,
+    nascimento DATE,
+    imagem VARCHAR(255),
+    email_verificado BOOLEAN DEFAULT FALSE,
+    token_verificado VARCHAR(255),
+    codigo_reset VARCHAR(255),
     codigo_expira DATETIME,
-    imagem VARCHAR(191),
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateat TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- ==============================
--- Tabela Instituicao
--- ==============================
-CREATE TABLE Instituicao (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(191) NOT NULL,
-    cnpj VARCHAR(191) NOT NULL UNIQUE,
-    email VARCHAR(191) NOT NULL UNIQUE,
-    senha VARCHAR(191) NOT NULL,
-    telefone VARCHAR(191),
-    endereco VARCHAR(191),
-    cidade VARCHAR(191),
-    estado VARCHAR(191),
-    cep VARCHAR(191),
-    site VARCHAR(191),
+-- Tabela Principal: Instituicao
+-- ============================================
+
+CREATE TABLE instituicao (
+    id_instituicao INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(200) NOT NULL,
+    cidade VARCHAR(100),
+    estado VARCHAR(100),
+    email VARCHAR(200),
+    senha VARCHAR(255),
+    telefone VARCHAR(20),
+    endereco TEXT,
     descricao TEXT,
-    ativo BOOLEAN NOT NULL DEFAULT TRUE,
-    imagem VARCHAR(191),
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX (email),
-    INDEX (cnpj)
+    area VARCHAR(100),
+    tipo INT,
+    imagem VARCHAR(255),
+    custo_matricula DECIMAL(10, 2),
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateat TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (tipo) REFERENCES tipo_instituicao (id_tipo_inst)
 );
 
--- ==============================
--- Tabela Curso
--- ==============================
-CREATE TABLE Curso (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(191) NOT NULL,
-    tipo TipoCurso NOT NULL,
-    categoria VARCHAR(191) NOT NULL,
-    vagas INT NOT NULL,
-    modalidade Modalidade NOT NULL,
-    horario VARCHAR(191) NOT NULL,
-    duracao VARCHAR(191) NOT NULL,
-    custo DECIMAL(10, 2) NOT NULL,
+-- Tabela Principal: Curso
+-- ============================================
+
+CREATE TABLE curso (
+    id_curso INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(200) NOT NULL,
+    tipo_id INT,
+    categoria_id INT,
+    vagas INT,
+    modalidade_id INT,
+    horario VARCHAR(100),
+    turno VARCHAR(50),
+    duracao VARCHAR(100),
+    custo DECIMAL(10, 2),
+    descricao TEXT,
+    instituicao_id INT NOT NULL,
+    onde_trabalhar TEXT,
+    imagem VARCHAR(255),
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateat TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (tipo_id) REFERENCES tipo_curso (id_tipo),
+    FOREIGN KEY (categoria_id) REFERENCES categorias (id_categoria),
+    FOREIGN KEY (modalidade_id) REFERENCES modalidade (id_modalidade),
+    FOREIGN KEY (instituicao_id) REFERENCES instituicao (id_instituicao)
+);
+
+-- Tabelas de Relacionamento (Muitos-para-Muitos)
+-- ============================================
+
+CREATE TABLE insti_salvo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_instituicao INT NOT NULL,
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id),
+    FOREIGN KEY (id_instituicao) REFERENCES instituicao (id_instituicao),
+    UNIQUE KEY unique_save (id_usuario, id_instituicao)
+);
+
+CREATE TABLE curso_salvo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_curso INT NOT NULL,
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id),
+    FOREIGN KEY (id_curso) REFERENCES curso (id_curso),
+    UNIQUE KEY unique_save (id_usuario, id_curso)
+);
+
+-- Tabelas Complementares do Curso
+-- ============================================
+
+CREATE TABLE pre_requisitos (
+    id_pre INT PRIMARY KEY AUTO_INCREMENT,
+    curso_id INT NOT NULL,
     descricao TEXT NOT NULL,
-    onde_trabalhar TEXT NOT NULL,
-    imagem VARCHAR(191) NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    instituicaoId INT NOT NULL,
-    CONSTRAINT fk_curso_instituicao FOREIGN KEY (instituicaoId) REFERENCES Instituicao (id) ON DELETE CASCADE
+    FOREIGN KEY (curso_id) REFERENCES curso (id_curso)
 );
 
--- ==============================
--- Tabela PreRequisito
--- ==============================
-CREATE TABLE PreRequisito (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    texto VARCHAR(191) NOT NULL,
-    cursoId INT NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_prerequisito_curso FOREIGN KEY (cursoId) REFERENCES Curso (id) ON DELETE CASCADE
+CREATE TABLE matriz_curricular (
+    id_matriz INT PRIMARY KEY AUTO_INCREMENT,
+    curso_id INT NOT NULL,
+    semestre INT,
+    disciplina VARCHAR(200) NOT NULL,
+    FOREIGN KEY (curso_id) REFERENCES curso (id_curso)
 );
 
--- ==============================
--- Tabela MatrizCurricular
--- ==============================
-CREATE TABLE MatrizCurricular (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    semestre VARCHAR(191) NOT NULL,
-    cursoId INT NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_matriz_curso FOREIGN KEY (cursoId) REFERENCES Curso (id) ON DELETE CASCADE
+CREATE TABLE disciplina (
+    id_disciplina INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(200) NOT NULL,
+    matriz_id INT NOT NULL,
+    FOREIGN KEY (matriz_id) REFERENCES matriz_curricular (id_matriz)
 );
 
--- ==============================
--- Tabela Disciplina
--- ==============================
-CREATE TABLE Disciplina (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(191) NOT NULL,
-    matrizId INT NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_disciplina_matriz FOREIGN KEY (matrizId) REFERENCES MatrizCurricular (id) ON DELETE CASCADE
+CREATE TABLE links (
+    id_link INT PRIMARY KEY AUTO_INCREMENT,
+    curso_id INT NOT NULL,
+    site_oficial VARCHAR(500),
+    pagina_curso VARCHAR(500),
+    inscricao VARCHAR(500),
+    FOREIGN KEY (curso_id) REFERENCES curso (id_curso)
 );
 
--- ==============================
--- Tabela Link
--- ==============================
-CREATE TABLE Link (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    site_oficial VARCHAR(191) NOT NULL,
-    pagina_curso VARCHAR(191) NOT NULL,
-    inscricao VARCHAR(191) NOT NULL,
-    cursoId INT UNIQUE NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_link_curso FOREIGN KEY (cursoId) REFERENCES Curso (id) ON DELETE CASCADE
-);
+-- Índices para melhor performance
+-- ============================================
+
+CREATE INDEX idx_usuario_email ON usuario (email);
+
+CREATE INDEX idx_usuario_cpf ON usuario (cpf);
+
+CREATE INDEX idx_instituicao_nome ON instituicao (nome);
+
+CREATE INDEX idx_curso_nome ON curso (nome);
+
+CREATE INDEX idx_curso_instituicao ON curso (instituicao_id);
+
+CREATE INDEX idx_curso_categoria ON curso (categoria_id);
+
+CREATE INDEX idx_curso_modalidade ON curso (modalidade_id);
+
+BASE_URL=http://localhost:3000/api/usuarios
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=projetoTG
