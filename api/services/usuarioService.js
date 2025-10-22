@@ -15,7 +15,7 @@ class UsuarioService {
       nome,
       email,
       senha: senhaHash,
-      token_verificacao: token,
+      tokenVerificado: token,
     });
 
     const url = `${process.env.BASE_URL}/verify-email?token=${token}`;
@@ -122,8 +122,8 @@ async validarCPF(cpf) {
 
     await UsuarioRepository.atualizar(user.id, {
       senha: senhaHash,
-      codigo_reset: null,
-      codigo_expira: null,
+      codigoReset: null,
+      codigoExpira: null,
     });
 
     await transporter.sendMail({
