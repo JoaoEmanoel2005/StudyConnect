@@ -10,7 +10,7 @@ class UsuarioRepository {
   }
 
   async buscarPorToken(token) {
-    return await prisma.usuario.findUnique({ where: { tokenVerificado: token } });
+    return await prisma.usuario.findFirst({ where: { tokenVerificado: token } });
   }
 
   async verificarEmail(id) {
