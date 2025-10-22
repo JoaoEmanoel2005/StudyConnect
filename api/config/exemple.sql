@@ -184,9 +184,3 @@ CREATE INDEX idx_curso_instituicao ON curso (instituicao_id);
 CREATE INDEX idx_curso_categoria ON curso (categoria_id);
 
 CREATE INDEX idx_curso_modalidade ON curso (modalidade_id);
-
-BASE_URL=http://localhost:3000/api/usuarios
-DB_HOST=localhost
-DB_USER=root
-DB_PASS=
-DB_NAME=projetoTG

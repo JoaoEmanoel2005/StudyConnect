@@ -71,7 +71,7 @@ async validarCPF(cpf) {
     const user = await UsuarioRepository.buscarPorEmail(email);
     if (!user) return null;
 
-    if (!user.email_verificado) {
+    if (!user.emailVerificado) {
       throw new Error('E-mail não verificado');
     }
 
@@ -100,8 +100,8 @@ async validarCPF(cpf) {
     const expira = new Date(Date.now() + 15 * 60 * 1000);
 
     await UsuarioRepository.atualizar(user.id, {
-      codigo_reset: code,
-      codigo_expira: expira,
+      codigoReset: code,
+      codigoExpira: expira,
     });
 
     await transporter.sendMail({
@@ -114,7 +114,7 @@ async validarCPF(cpf) {
 
   async redefinirSenha(email, code, novaSenha) {
     const user = await UsuarioRepository.buscarPorEmail(email);
-    if (!user || user.codigo_reset !== code || user.codigo_expira < new Date()) {
+    if (!user || user.codigoReset !== code || user.codigoExpira < new Date()) {
       throw new Error('Código inválido ou expirado');
     }
 
