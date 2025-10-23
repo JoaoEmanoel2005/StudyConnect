@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { CheckCircle, Mail } from "lucide-react"; // biblioteca de ícones leve e moderna
+import { CheckCircle, Mail } from "lucide-react";
 
 export default function ConfirmacaoCadastro() {
   const navigate = useNavigate();
@@ -11,31 +11,39 @@ export default function ConfirmacaoCadastro() {
   const [emailEnviado, setEmailEnviado] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
 
+  // 🔹 Recupera o usuário pendente e simula envio de e-mail
   useEffect(() => {
     const storedUser = localStorage.getItem("pendingUser");
     if (storedUser) {
       setPendingUser(JSON.parse(storedUser));
-      // simula envio do e-mail
       setTimeout(() => setEmailEnviado(true), 2000);
     } else {
-      navigate("/cadastro");
+      navigate("/login");
     }
   }, [navigate]);
 
-  const handleConfirm = () => {
+  // 🔹 Faz o cadastro ao confirmar
+  const handleConfirm = async () => {
     if (!pendingUser) return;
 
-    const result = cadastro(pendingUser);
-    if (result.success) {
-      localStorage.removeItem("pendingUser");
-      setConfirmado(true);
+    const result = await cadastro(pendingUser);
 
-      // animação antes de ir pra home
-      setTimeout(() => navigate("/"), 2000);
+    if (result?.success) {
+    localStorage.removeItem("pendingUser");
+    setConfirmado(true);  
     } else {
-      alert(result.message || "Erro ao confirmar cadastro.");
+      alert(result?.message || "Erro ao confirmar cadastro.");
     }
   };
+
+  // 🔹 Redireciona automaticamente após confirmação
+  useEffect(() => {
+    if (confirmado) {
+      console.log("Redirecionando para /login...");
+      const timer = setTimeout(() => navigate("/login"), 2000);
+      return () => clearTimeout(timer); // evita memory leak
+    }
+  }, [confirmado, navigate]);
 
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-indigo-50 p-4">
@@ -82,7 +90,7 @@ export default function ConfirmacaoCadastro() {
               Cadastro confirmado!
             </h1>
             <p className="text-gray-600 mt-2">
-              Redirecionando para a página inicial...
+              Redirecionando para a tela de login...
             </p>
           </>
         )}
