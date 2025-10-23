@@ -1,5 +1,7 @@
 // ./context/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from "react";
+import config from "../data/config.js";
+
 
 const AuthContext = createContext();
 
@@ -65,7 +67,7 @@ export function AuthProvider({ children }) {
   
 async function cadastro({ name, email, password }) {
   try {
-    const resposta = await fetch("http://localhost:3000/api/usuarios/register", {
+    const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
