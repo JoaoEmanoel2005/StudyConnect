@@ -33,7 +33,7 @@ export default function CatalogoInstituicoes() {
   const [paginaAtual, setPaginaAtual] = useState(Number(searchParams.get("page")) || 1);
   const [isLoading, setIsLoading] = useState(true);
 
-  const itensPorPagina = 6;
+  const itensPorPagina = 9;
 
   // Atualiza URL quando filtros mudam
   useEffect(() => {

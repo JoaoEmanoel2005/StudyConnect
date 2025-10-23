@@ -6,6 +6,7 @@ import AuthLayout from "./components/AuthLayout";
 
 import Home from "./pages/Home";
 import PaginaCurso from "./pages/CoursePage";
+import InstitutionInfoPage from "./pages/InstitutionInfoPage";
 import NotFound from "./pages/NotFound";
 import Catalogo from "./pages/CatalogPage";
 import Instituicao from "./pages/InstitutionPage";
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/catalogo" element={<Layout><Catalogo /></Layout>} />
           <Route path="/instituicoes" element={<Layout><Instituicao /></Layout>} />
           <Route path="/perfil" element={<Layout><Perfil /></Layout>} />
+          <Route path="/instituicao/:id" element={<Layout><InstitutionInfoPage /></Layout>} />
           
 
         {/* Páginas de autenticação (sem header/footer) */}

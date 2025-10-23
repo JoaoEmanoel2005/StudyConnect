@@ -16,45 +16,71 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function CatalogoCursos() {
-  // URL Search Params for shareable filters
+  // Helpers
+  const normalize = (str) =>
+    str
+      ?.toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .trim();
+
+  // URL Search Params para filtros compartilháveis
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State
+  // Estado inicial com restauração via URL
   const [filtrosAtivos, setFiltrosAtivos] = useState(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    return Object.keys(params).length ? JSON.parse(params.filters || "{}") : {};
+    try {
+      const filtersParam = searchParams.get("filters");
+      return filtersParam ? JSON.parse(filtersParam) : {};
+    } catch {
+      return {};
+    }
   });
+
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [ordenacao, setOrdenacao] = useState(searchParams.get("sort") || "name-asc");
   const [paginaAtual, setPaginaAtual] = useState(Number(searchParams.get("page")) || 1);
   const [isLoading, setIsLoading] = useState(true);
 
-  const cursosPorPagina = 6;
+  const cursosPorPagina = 9;
 
-  // Update URL when filters change
+  // Atualiza URL quando filtros, busca ou ordenação mudam
   useEffect(() => {
     const params = new URLSearchParams();
+
     if (searchQuery) params.set("q", searchQuery);
     if (ordenacao !== "name-asc") params.set("sort", ordenacao);
+
     if (Object.keys(filtrosAtivos).length) {
-      params.set("filters", JSON.stringify(filtrosAtivos));
+      const filtrosNormalizados = {};
+      Object.entries(filtrosAtivos).forEach(([chave, valor]) => {
+        if (Array.isArray(valor)) {
+          filtrosNormalizados[chave] = valor.map((v) => normalize(v));
+        } else if (typeof valor === "string") {
+          filtrosNormalizados[chave] = normalize(valor);
+        }
+      });
+      params.set("filters", JSON.stringify(filtrosNormalizados));
     }
+
     if (paginaAtual > 1) params.set("page", paginaAtual.toString());
     setSearchParams(params, { replace: true });
   }, [filtrosAtivos, searchQuery, ordenacao, paginaAtual]);
 
-  // Simulate loading
+  // Simula loading ao aplicar filtros
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [filtrosAtivos, searchQuery, ordenacao]);
 
-  // Memoized filtered courses
+  // Filtragem de cursos
   const cursosFiltrados = useMemo(() => {
     let filtered = [...cursos];
 
-    // Price range helper
+    // Conversão de faixa de preço
     const precoParaIntervalo = (label) => {
       const ranges = {
         "Gratuito": [0, 0],
@@ -66,59 +92,73 @@ export default function CatalogoCursos() {
       return ranges[label] || [0, Infinity];
     };
 
-    // Apply filters
-    Object.entries(filtrosAtivos).forEach(([key, valores]) => {
-      if (valores?.length) {
-        if (key === "preco") {
-          const [min, max] = precoParaIntervalo(valores);
-          filtered = filtered.filter((c) => {
-            const custoNum = Number(c.custo.replace(/[^\d]/g, ""));
-            return custoNum >= min && custoNum <= max;
-          });
-        } else {
-          filtered = filtered.filter((c) => valores.includes(c[key]));
-        }
-      }
-    });
+    // 🔹 Aplica filtros ativos
+Object.entries(filtrosAtivos).forEach(([key, valores]) => {
+  if (valores?.length) {
+    if (key === "preco") {
+      const label = Array.isArray(valores) ? valores[0] : valores;
+      const [min, max] = precoParaIntervalo(label);
+      filtered = filtered.filter((c) => {
+        const custoNum =
+          c.custo === "Gratuito"
+            ? 0
+            : Number(c.custo.replace(/[^\d]/g, "")) || 0;
+        return custoNum >= min && custoNum <= max;
+      });
+    } else {
+      // 🧩 Fix: garante que valores é sempre array
+      const valoresArray = Array.isArray(valores) ? valores : [valores];
+      filtered = filtered.filter((c) =>
+        valoresArray.some((v) => normalize(c[key]) === normalize(v))
+      );
+    }
+  }
+});
 
-    // Apply search
+
+    // 🔹 Aplica busca textual
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((c) =>
-        c.nome.toLowerCase().includes(query) ||
-        c.descricao?.toLowerCase().includes(query) ||
-        c.categoria?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (c) =>
+          c.nome.toLowerCase().includes(query) ||
+          c.descricao?.toLowerCase().includes(query) ||
+          c.categoria?.toLowerCase().includes(query)
       );
     }
 
-    // Apply sorting
+    // 🔹 Aplica ordenação
     const sortFunctions = {
       "name-asc": (a, b) => a.nome.localeCompare(b.nome),
       "name-desc": (a, b) => b.nome.localeCompare(a.nome),
-      "price-asc": (a, b) => Number(a.custo.replace(/[^\d]/g, "")) - Number(b.custo.replace(/[^\d]/g, "")),
-      "price-desc": (a, b) => Number(b.custo.replace(/[^\d]/g, "")) - Number(a.custo.replace(/[^\d]/g, "")),
+      "price-asc": (a, b) =>
+        Number(a.custo.replace(/[^\d]/g, "")) -
+        Number(b.custo.replace(/[^\d]/g, "")),
+      "price-desc": (a, b) =>
+        Number(b.custo.replace(/[^\d]/g, "")) -
+        Number(a.custo.replace(/[^\d]/g, "")),
     };
 
     return filtered.sort(sortFunctions[ordenacao] || sortFunctions["name-asc"]);
   }, [filtrosAtivos, searchQuery, ordenacao]);
 
-  // Pagination logic
+  // Paginação
   const totalPaginas = Math.ceil(cursosFiltrados.length / cursosPorPagina);
   const cursosVisiveis = cursosFiltrados.slice(
     (paginaAtual - 1) * cursosPorPagina,
     paginaAtual * cursosPorPagina
   );
 
-  // Filter change handler
+  // Manipula alterações nos filtros
   const handleFiltroChange = (sectionId, value, type = "checkbox") => {
-    setFiltrosAtivos(prev => {
+    setFiltrosAtivos((prev) => {
       if (type === "checkbox") {
         const prevOptions = prev[sectionId] || [];
         return {
           ...prev,
           [sectionId]: prevOptions.includes(value)
-            ? prevOptions.filter(v => v !== value)
-            : [...prevOptions, value]
+            ? prevOptions.filter((v) => v !== value)
+            : [...prevOptions, value],
         };
       }
       return { ...prev, [sectionId]: value };
@@ -167,7 +207,7 @@ export default function CatalogoCursos() {
           </div>
         </div>
 
-        {/* Decorative wave */}
+        {/* Wave decorativa */}
         <div className="absolute bottom-0 left-0 right-0 opacity-20">
           <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -179,13 +219,14 @@ export default function CatalogoCursos() {
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Conteúdo principal */}
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 pt-12 pb-20">
-          {/* Results count + sorting */}
+          {/* Cabeçalho de resultados */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <h2 className="text-lg font-medium text-gray-900">
-              {cursosFiltrados.length} {cursosFiltrados.length === 1 ? 'curso encontrado' : 'cursos encontrados'}
+              {cursosFiltrados.length}{" "}
+              {cursosFiltrados.length === 1 ? "curso encontrado" : "cursos encontrados"}
             </h2>
 
             <div className="flex items-center gap-2">
@@ -206,9 +247,9 @@ export default function CatalogoCursos() {
             </div>
           </div>
 
-          {/* Grid layout */}
+          {/* Layout em grid */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters sidebar */}
+            {/* Sidebar de filtros */}
             <aside className="lg:col-span-1">
               <div className="sticky top-4 space-y-6">
                 <div className="flex items-center justify-between">
@@ -246,7 +287,7 @@ export default function CatalogoCursos() {
               </div>
             </aside>
 
-            {/* Courses grid */}
+            {/* Grid de cursos */}
             <div className="lg:col-span-3">
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -268,11 +309,11 @@ export default function CatalogoCursos() {
                     ))}
                   </div>
 
-                  {/* Pagination */}
+                  {/* Paginação */}
                   {totalPaginas > 1 && (
                     <div className="flex justify-center gap-2 mt-12">
                       <button
-                        onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
+                        onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
                         disabled={paginaAtual === 1}
                         className="px-4 py-2 text-sm font-medium rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                       >
@@ -294,7 +335,7 @@ export default function CatalogoCursos() {
                       ))}
 
                       <button
-                        onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
+                        onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
                         disabled={paginaAtual === totalPaginas}
                         className="px-4 py-2 text-sm font-medium rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                       >

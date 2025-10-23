@@ -1,4 +1,3 @@
-// ./context/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from "react";
 
 const AuthContext = createContext();
@@ -40,6 +39,7 @@ export function AuthProvider({ children }) {
       email,
       password,
       cursosSalvos: [],
+      instituicoesSalvas: [], // novo campo
     };
 
     localStorage.setItem("users", JSON.stringify([...users, newUser]));
@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   };
 
-  // FAVORITAR / DESFAVORITAR
+  // FAVORITAR / DESFAVORITAR CURSO
   const toggleCursoFavorito = (cursoId) => {
     if (!usuario) return;
 
@@ -77,9 +77,39 @@ export function AuthProvider({ children }) {
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   };
 
+  // FAVORITAR / DESFAVORITAR INSTITUIÇÃO
+  const toggleInstituicaoFavorita = (instituicaoId) => {
+    if (!usuario) return;
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUser = { ...usuario };
+
+    if (!updatedUser.instituicoesSalvas) updatedUser.instituicoesSalvas = [];
+
+    const jaSalva = updatedUser.instituicoesSalvas.includes(instituicaoId);
+    updatedUser.instituicoesSalvas = jaSalva
+      ? updatedUser.instituicoesSalvas.filter((id) => id !== instituicaoId)
+      : [...updatedUser.instituicoesSalvas, instituicaoId];
+
+    // Atualiza estado e armazenamento
+    setUsuario(updatedUser);
+    const updatedUsers = users.map((u) =>
+      u.id === updatedUser.id ? updatedUser : u
+    );
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+  };
+
   return (
     <AuthContext.Provider
-      value={{ usuario, login, cadastro, logout, toggleCursoFavorito }}
+      value={{
+        usuario,
+        login,
+        cadastro,
+        logout,
+        toggleCursoFavorito,
+        toggleInstituicaoFavorita, // novo valor exportado
+      }}
     >
       {children}
     </AuthContext.Provider>

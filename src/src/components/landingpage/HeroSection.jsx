@@ -36,36 +36,6 @@ export default function HeroSection() {
               Encontre trilhas, instrutores e instituições que combinam com você.
             </p>
 
-            {/* Search bar */}
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center max-w-2xl"
-              role="search"
-              aria-label="Buscar cursos"
-            >
-              <label htmlFor="hero-search" className="sr-only">
-                Buscar cursos
-              </label>
-              <div className="flex-1 relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-3 h-5 w-5 text-slate-300" />
-                <input
-                  id="hero-search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Pesquisar por curso, área ou instituição"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                />
-              </div>
-
-              <Link
-                to={`/catalogo?q=${encodeURIComponent(query)}`}
-                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-semibold transition"
-              >
-                Buscar
-                <ArrowLongRightIcon className="h-5 w-5" />
-              </Link>
-            </form>
-
             {/* CTAs */}
             <div className="mt-4 flex flex-col sm:flex-row gap-3">
               <Link
@@ -129,6 +99,7 @@ export default function HeroSection() {
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
