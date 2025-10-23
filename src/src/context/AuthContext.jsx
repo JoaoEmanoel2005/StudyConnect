@@ -1,4 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import config from "../data/config.js";
+
 
 const AuthContext = createContext();
 
@@ -12,27 +14,40 @@ export function AuthProvider({ children }) {
   }, []);
 
   // LOGIN
+
+  //login base
+
+  
+  
   const login = ({ email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const user = users.find((u) => u.email === email && u.password === password);
-
+    
     if (user) {
       localStorage.setItem("currentUser", JSON.stringify(user));
       setUsuario(user);
       return { success: true };
     } else {
       return { success: false, message: "Usuário ou senha inválidos" };
-    }
+  }
   };
 
+
+  
+  
+
   // CADASTRO
+
+  //cadastro base
+
+  /*
   const cadastro = ({ name, email, password }) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
-
+    
     if (users.some((u) => u.email === email)) {
       return { success: false, message: "Email já cadastrado" };
     }
-
+    
     const newUser = {
       id: Date.now(),
       name,
@@ -41,13 +56,44 @@ export function AuthProvider({ children }) {
       cursosSalvos: [],
       instituicoesSalvas: [], // novo campo
     };
-
+    
     localStorage.setItem("users", JSON.stringify([...users, newUser]));
     localStorage.setItem("currentUser", JSON.stringify(newUser));
     setUsuario(newUser);
     return { success: true };
   };
+  
+  */
+  
+async function cadastro({ name, email, password }) {
+  try {
+    const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: name,
+        email: email,
+        senha: password
+      })
+    });
 
+    // Verifica se a resposta foi bem-sucedida
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.message || `Erro HTTP ${resposta.status}`);
+    }
+
+    const data = await resposta.json();
+    console.log("Usuário cadastrado:", data);
+    return { success: true };
+
+  } catch (error) {
+    console.error("Erro ao cadastrar usuário:", error.message);
+    return null;
+  }
+}
+
+  
   // LOGOUT
   const logout = () => {
     localStorage.removeItem("currentUser");
