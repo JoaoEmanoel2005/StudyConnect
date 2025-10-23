@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
-
+import ScrollToTop from "./ScrollToTop";
 
 
 import Home from "./pages/Home";
@@ -19,6 +19,7 @@ import ConfirmacaoCadastro from "./pages/login&cadastro/ConfirmCadastro";
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           {/* Páginas com header/footer */}
           <Route path="/" element={<Layout><Home /></Layout>} />

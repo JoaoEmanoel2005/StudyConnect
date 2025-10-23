@@ -9,7 +9,7 @@ export default function Home() {
       <HeroSection />
       <StatusSection />
       <CoursesSection />
-      {/* Futuras seções */}
+
       {/* <TestemunhosSection /> */}
       {/* <ContatoSection /> */}
     </div>

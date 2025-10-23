@@ -19,6 +19,8 @@ import { cursos } from "../data/Courses";
 import { useAuth } from "../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { motion } from "framer-motion";
+const MotionLink = motion(Link);
 
 export default function InstitutionPage() {
   const { id } = useParams();
@@ -70,7 +72,6 @@ export default function InstitutionPage() {
         alert("Não foi possível copiar o link. Tente manualmente.");
       }
     } else {
-      // fallback simple prompt
       window.prompt("Copie a URL abaixo:", url);
     }
   };
@@ -84,10 +85,8 @@ export default function InstitutionPage() {
     }
   };
 
-  // Coordenadas fictícias se não tiver lat/lon
   const lat = inst.latitude ?? -23.2237;
   const lon = inst.longitude ?? -45.9009;
-
   const telHref = inst.telefone ? `tel:${inst.telefone.replace(/\D/g, "")}` : null;
   const mailHref = inst.email_contato ? `mailto:${inst.email_contato}` : null;
 
@@ -95,8 +94,16 @@ export default function InstitutionPage() {
   const fullStars = rating ? Math.floor(rating) : 0;
   const showHalf = rating && rating - fullStars >= 0.5;
 
+  // Exemplo de reviews fictícios
+  const reviews = [
+    { id: 1, nome: "João Silva", nota: 5, comentario: "Excelente instituição, recomendo!" },
+    { id: 2, nome: "Maria Santos", nota: 4, comentario: "Ótimos cursos, professores muito bons." },
+    { id: 3, nome: "Pedro Costa", nota: 4.5, comentario: "Infraestrutura moderna e bem organizada." },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header com banner */}
       <header
         className="relative h-64 sm:h-80 md:h-96 flex items-center z-0"
         role="banner"
@@ -109,7 +116,6 @@ export default function InstitutionPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex items-center justify-between text-white">
-            {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" className="text-sm">
               <Link
                 to="/instituicoes"
@@ -119,8 +125,6 @@ export default function InstitutionPage() {
                 Voltar ao catálogo
               </Link>
             </nav>
-
-            {/* Botões de ação */}
             <div className="flex items-center gap-3">
               <button
                 onClick={handleShare}
@@ -168,15 +172,12 @@ export default function InstitutionPage() {
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
               {inst.nome}
             </h1>
-
             <div className="mt-4 flex flex-wrap justify-center gap-3 items-center">
               <span className="bg-blue-500/80 px-3 py-1 rounded-full text-sm">
                 {inst.tipo ?? "Instituição de Ensino"}
               </span>
               {inst.area && (
-                <span className="bg-indigo-600/80 px-3 py-1 rounded-full text-sm">
-                  {inst.area}
-                </span>
+                <span className="bg-indigo-600/80 px-3 py-1 rounded-full text-sm">{inst.area}</span>
               )}
               {rating !== null && (
                 <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full text-sm">
@@ -195,7 +196,6 @@ export default function InstitutionPage() {
         </div>
       </header>
 
-      {/* Conteúdo */}
       <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
         {/* Infos principais */}
         <section className="grid md:grid-cols-3 gap-6 bg-white rounded-2xl shadow p-6">
@@ -264,7 +264,6 @@ export default function InstitutionPage() {
             ) : (
               <p className="text-gray-500">Não informado</p>
             )}
-
             <p className="text-gray-600 mt-2">
               <strong>Matrícula:</strong> {inst.custo_matricula ?? "Não informado"}
             </p>
@@ -277,23 +276,23 @@ export default function InstitutionPage() {
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Galeria</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {inst.galeria.map((img, i) => (
-                <img
+                <motion.img
                   key={i}
                   src={img}
                   loading="lazy"
                   alt={`${inst.nome} - imagem ${i + 1}`}
-                  className="w-full h-40 object-cover rounded-lg hover:scale-[1.02] transition-transform"
+                  className="w-full h-40 object-cover rounded-lg hover:scale-[1.03] transition-transform"
+                  whileHover={{ scale: 1.05 }}
                 />
               ))}
             </div>
           </section>
         )}
 
-        {/* Descrição */}
+        {/* Sobre a instituição */}
         <section className="bg-white rounded-2xl shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-3">Sobre a instituição</h2>
           <p className="text-gray-600 leading-relaxed">{inst.descricao}</p>
-
           {inst.impacto_social && (
             <p className="mt-4 text-gray-700 italic border-l-4 border-primary pl-3">
               {inst.impacto_social}
@@ -348,24 +347,28 @@ export default function InstitutionPage() {
             </div>
           </section>
         )}
-
-        {/* Cursos relacionados */}
+                {/* Cursos relacionados */}
         <section className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Cursos oferecidos</h2>
-          {cursosRelacionados.length === 0 ? (
+            {cursosRelacionados.length === 0 ? (
             <p className="text-gray-500">Nenhum curso cadastrado ainda.</p>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {cursosRelacionados.map((curso) => (
-                <Link
+                <MotionLink
                   key={curso.id}
                   to={`/curso/${curso.id}`}
-                  className="border rounded-xl p-4 hover:shadow-md transition bg-gray-50"
+                  className="border rounded-xl p-4 hover:shadow-lg transition bg-gray-50"
+                  whileHover={{ scale: 1.03 }}
                 >
                   <h3 className="font-semibold text-gray-800">{curso.nome}</h3>
                   <p className="text-sm text-gray-500 mt-1">{curso.categoria}</p>
+                  <div className="text-sm text-gray-600 mt-2 space-y-1">
+                    {curso.modalidade && <p>Modalidade: {curso.modalidade}</p>}
+                    {curso.turno && <p>Turno: {curso.turno}</p>}
+                    {curso.duracao && <p>Duração: {curso.duracao}</p>}
+                  </div>
                   <p className="text-sm text-gray-600 mt-2 line-clamp-3">{curso.descricao}</p>
-                </Link>
+                </MotionLink>
               ))}
             </div>
           )}
@@ -394,6 +397,41 @@ export default function InstitutionPage() {
               </Marker>
             </MapContainer>
           </div>
+        </section>
+
+        {/* Reviews */}
+        <section className="bg-white rounded-2xl shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">Avaliações de alunos</h2>
+          {reviews.length === 0 ? (
+            <p className="text-gray-500">Nenhuma avaliação ainda.</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((r) => {
+                const full = Math.floor(r.nota);
+                const half = r.nota - full >= 0.5;
+                return (
+                  <motion.div
+                    key={r.id}
+                    className="p-4 border rounded-lg bg-gray-50 hover:shadow-md transition"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-gray-800">{r.nome}</span>
+                      <span className="flex items-center gap-0.5">
+                        {[...Array(full)].map((_, i) => (
+                          <StarSolid key={i} className="h-4 w-4 text-yellow-400" />
+                        ))}
+                        {half && <StarOutline className="h-4 w-4 text-yellow-400" />}
+                        {full === 0 && !half && <StarOutline className="h-4 w-4 text-yellow-400" />}
+                        <span className="text-gray-600 text-sm ml-1">{r.nota.toFixed(1)}</span>
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm">{r.comentario}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </section>
       </main>
     </div>
