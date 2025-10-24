@@ -7,7 +7,11 @@ const UsuarioRepository = require('../repositories/usuarioRepository');
 const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta';
 
 class UsuarioService {
+
   async cadastrar(nome, email, senha) {
+    const existente = await UsuarioRepository.buscarPorEmail(email);
+    if (existente) throw new Error('E-mail já cadastrado, use outro por favor.');
+
     const senhaHash = await bcrypt.hash(senha, 10);
     const token = crypto.randomBytes(32).toString('hex');
 
@@ -30,33 +34,25 @@ class UsuarioService {
     return user.id;
   }
 
-async validarCPF(cpf) {
-  if (!cpf) return false;
+  async validarCPF(cpf) {
+  
+    if (!cpf) return false;
+    cpf = cpf.replace(/[^\d]/g, '');
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
-  cpf = cpf.replace(/[^\d]/g, '');
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+    let resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+    if (resto !== parseInt(cpf[9])) return false;
 
-  if (cpf.length !== 11) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+    return resto === parseInt(cpf[10]);
 
-  if (/^(\d)\1+$/.test(cpf)) return false;
-
-  let soma = 0;
-  for (let i = 0; i < 9; i++) {
-    soma += parseInt(cpf[i]) * (10 - i);
   }
-  let resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-  if (resto !== parseInt(cpf[9])) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) {
-    soma += parseInt(cpf[i]) * (11 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10) resto = 0;
-  if (resto !== parseInt(cpf[10])) return false;
-
-  return true;
-}
 
 
   async verificarEmail(token) {
@@ -69,16 +65,14 @@ async validarCPF(cpf) {
 
   async login(email, senha) {
     const user = await UsuarioRepository.buscarPorEmail(email);
-    if (!user) return null;
-
-    if (!user.emailVerificado) {
-      throw new Error('E-mail não verificado');
-    }
+    if (!user) throw new Error('Usuário não encontrado, verifique se o email esta cadastrado.');
+    if (!user.emailVerificado) throw new Error('O E-mail ainda nao foi validado, por favor valide ele clicando no link que foi enviado para seu email no cadastro.');
+    
 
     const senhaValida = await bcrypt.compare(senha, user.senha);
-    if (!senhaValida) return null;
+    if (!senhaValida) throw new Error('Senha inválida');
 
-     // gerar token JWT
+    // gerar token JWT
     const token = jwt.sign(
       { id: user.id, email: user.email }, // payload
       JWT_SECRET,
@@ -90,6 +84,10 @@ async validarCPF(cpf) {
 
     return { user: userSafe, token };
 
+  }
+
+  async buscarPorId(id) {
+    return await UsuarioRepository.buscarPorId(id);
   }
 
   async enviarCodigoRecuperacao(email) {
@@ -134,20 +132,59 @@ async validarCPF(cpf) {
     });
   }
 
-async alterarSenha(userId, senhaAtual, novaSenha) {
-  const user = await UsuarioRepository.buscarPorId(userId);
-  if (!user) throw new Error('Usuário não encontrado');
+  async alterarSenha(userId, senhaAtual, novaSenha) {
+    const user = await UsuarioRepository.buscarPorId(userId);
+    if (!user) throw new Error('Usuário não encontrado');
 
-  const senhaValida = await bcrypt.compare(senhaAtual, user.senha);
-  if (!senhaValida) throw new Error('Senha atual inválida');
+    const senhaValida = await bcrypt.compare(senhaAtual, user.senha);
+    if (!senhaValida) throw new Error('Senha atual inválida');
 
-  const senhaHash = await bcrypt.hash(novaSenha, 10);
-  await UsuarioRepository.atualizar(userId, { senha: senhaHash });
+    const senhaHash = await bcrypt.hash(novaSenha, 10);
+    await UsuarioRepository.atualizar(userId, { senha: senhaHash });
+    return true;
+  }
 
+  async atualizarDados(userId, dados) {
+    const user = await UsuarioRepository.buscarPorId(userId);
+    if (!user) throw new Error('Usuário não encontrado');
+    return await UsuarioRepository.atualizar(userId, dados);
+
+  }
+
+async deletarConta(userId) {
+    const user = await UsuarioRepository.buscarPorId(userId);
+    if (!user) throw new Error('Usuário não encontrado');
+  await UsuarioRepository.deletar(userId);
   return true;
-}
+  }
 
+   async salvarInstituicao(usuarioId, instituicaoId) {
+    return await UsuarioRepository.salvarInstituicao(usuarioId, instituicaoId);
+  }
 
+  async removerInstituicaoSalva(usuarioId, instituicaoId) {
+    return await UsuarioRepository.removerInstituicaoSalva(usuarioId, instituicaoId);
+  }
+
+  async listarInstituicoesSalvas(usuarioId) {
+    return await UsuarioRepository.listarInstituicoesSalvas(usuarioId);
+  }
+
+  async salvarCurso(usuarioId, cursoId) {
+    return await UsuarioRepository.salvarCurso(usuarioId, cursoId);
+  }
+
+  async removerCursoSalvo(usuarioId, cursoId) {
+    return await UsuarioRepository.removerCursoSalvo(usuarioId, cursoId);
+  }
+
+  async listarCursosSalvos(usuarioId) {
+    return await UsuarioRepository.listarCursosSalvos(usuarioId);
+  }
+
+  async listarTodosUsuarios() {
+    return await UsuarioRepository.listarTodos();
+  }
 
 }
 
