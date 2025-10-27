@@ -1,16 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+// Componentes de Layout
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import ScrollToTop from "./ScrollToTop";
 
-
+// Páginas
 import Home from "./pages/Home";
-import PaginaCurso from "./pages/CoursePage";
-import InstitutionInfoPage from "./pages/InstitutionInfoPage";
+import PaginaCurso from "./pages/catalog/CoursePage";
+import InstitutionInfoPage from "./pages/institution/InstitutionInfoPage";
 import NotFound from "./pages/NotFound";
-import Catalogo from "./pages/CatalogPage";
-import Instituicao from "./pages/InstitutionPage";
-import Perfil from "./pages/UserProfile";
+import Catalogo from "./pages/catalog/CatalogPage";
+import Instituicao from "./pages/institution/InstitutionPage";
+import Perfil from "./pages/profile/UserProfile";
+import EditProfile from "./pages/profile/EditProfile"; 
+
+// Páginas de autenticação
 import Login from "./pages/login&cadastro/Sign-in";
 import Cadastro from "./pages/login&cadastro/Registration";
 import RecuperarSenha from "./pages/login&cadastro/ForgotPassword";
@@ -29,15 +33,17 @@ export default function App() {
           <Route path="/perfil" element={<Layout><Perfil /></Layout>} />
           <Route path="/instituicao/:id" element={<Layout><InstitutionInfoPage /></Layout>} />
           
+          {/* Nova rota para editar perfil */}
+          <Route path="/perfil/editar" element={<Layout><EditProfile /></Layout>} />
 
-        {/* Páginas de autenticação (sem header/footer) */}
-        <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
-        <Route path="/cadastro" element={<AuthLayout><Cadastro /></AuthLayout>} />
-        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-        <Route path="/confirmacao" element={<ConfirmacaoCadastro />} />
+          {/* Páginas de autenticação (sem header/footer) */}
+          <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
+          <Route path="/cadastro" element={<AuthLayout><Cadastro /></AuthLayout>} />
+          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+          <Route path="/confirmacao" element={<ConfirmacaoCadastro />} />
 
-        {/* fallback */}
-        <Route path="*" element={<Layout><NotFound /></Layout>} />
+          {/* fallback */}
+          <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>
     </BrowserRouter>
   );

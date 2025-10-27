@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { cursos } from "../data/Courses";
-import NotFound from "./NotFound";
+import { cursos } from "../../data/Courses";
+import NotFound from "../NotFound";
 import {
   UserGroupIcon,
   ClockIcon,

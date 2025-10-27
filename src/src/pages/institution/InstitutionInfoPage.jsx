@@ -14,9 +14,9 @@ import {
   ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolid, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { instituicao } from "../data/Institution";
-import { cursos } from "../data/Courses";
-import { useAuth } from "../context/AuthContext";
+import { instituicao } from "../../data/Institution";
+import { cursos } from "../../data/Courses";
+import { useAuth } from "../../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { motion } from "framer-motion";

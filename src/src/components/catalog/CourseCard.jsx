@@ -11,6 +11,7 @@ import { StarIcon } from "@heroicons/react/24/solid";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function CourseCard({ curso, className = "" }) {
   const { usuario, toggleCursoFavorito } = useAuth();
@@ -20,10 +21,29 @@ export default function CourseCard({ curso, className = "" }) {
   const handleSalvar = (e) => {
     e.stopPropagation();
     e.preventDefault();
+
     if (!usuario) {
-      setShowModal(true); // abre modal se não logado
+      setShowModal(true);
+      return;
+    }
+
+    // Verifica se o curso já está salvo antes do toggle
+    const jaSalvo = usuario?.cursosSalvos?.includes(curso.id);
+
+    // Executa o toggle
+    toggleCursoFavorito(curso.id);
+
+    // Mensagem visual invertida — pois o toggle acontece depois
+    if (jaSalvo) {
+      toast.success("Curso removido dos favoritos", {
+        icon: "🗑️",
+        duration: 3000,
+      });
     } else {
-      toggleCursoFavorito(curso.id);
+      toast.success("Curso adicionado aos favoritos", {
+        icon: "⭐",
+        duration: 3000,
+      });
     }
   };
 

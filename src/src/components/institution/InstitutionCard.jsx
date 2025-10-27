@@ -14,6 +14,7 @@ import {
 import { BookmarkIcon as BookmarkSolidIcon } from "@heroicons/react/24/solid";
 
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function InstitutionCard({ item }) {
   const { usuario, toggleInstituicaoFavorita } = useAuth();
@@ -23,10 +24,26 @@ export default function InstitutionCard({ item }) {
   const handleSalvar = (e) => {
     e.stopPropagation();
     e.preventDefault();
+
     if (!usuario) {
       setShowModal(true);
+      return;
+    }
+
+    const jaSalvo = usuario?.instituicoesSalvas?.includes(item.id);
+
+    toggleInstituicaoFavorita(item.id);
+
+    if (jaSalvo) {
+      toast.success("Instituição removida dos favoritos", {
+        icon: "🗑️",
+        duration: 3000,
+      });
     } else {
-      toggleInstituicaoFavorita(item.id);
+      toast.success("Instituição adicionada aos favoritos", {
+        icon: "⭐",
+        duration: 3000,
+      });
     }
   };
 

@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import CourseCard from "../components/catalog/CourseCard";
-import SearchBar from "../components/catalog/SearchBar";
-import FilterSection from "../components/catalog/FilterSection";
-import { filtrosCursos } from "../data/FiltersConfig";
-import { cursos } from "../data/Courses";
+import CourseCard from "../../components/catalog/CourseCard";
+import SearchBar from "../../components/catalog/SearchBar";
+import FilterSection from "../../components/catalog/FilterSection";
+import { filtrosCursos } from "../../data/FiltersConfig";
+import { cursos } from "../../data/Courses";
 import {
   FunnelIcon,
   XMarkIcon,

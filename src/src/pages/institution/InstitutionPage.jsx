@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import InstitutionCard from "../components/institution/InstitutionCard";
-import SearchBar from "../components/catalog/SearchBar"; 
-import FilterSection from "../components/catalog/FilterSection"; 
-import { filtrosInstituicoes } from "../data/InstituionFilters";
-import { instituicao } from "../data/Institution";
+import InstitutionCard from "../../components/institution/InstitutionCard";
+import SearchBar from "../../components/catalog/SearchBar"; 
+import FilterSection from "../../components/catalog/FilterSection"; 
+import { filtrosInstituicoes } from "../../data/InstituionFilters";
+import { instituicao } from "../../data/Institution";
 import {
   FunnelIcon,
   XMarkIcon,

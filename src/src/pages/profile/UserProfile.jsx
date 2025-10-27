@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { useAuth } from "../context/AuthContext";
-import { cursos } from "../data/Courses";
-import { instituicao } from "../data/Institution"; // ✅ já importado
-import ProfileHeader from "../components/profile/ProfileHeader";
-import ProfileCard from "../components/profile/ProfileCard";
-import ProfileTabs from "../components/profile/ProfileTabs";
+import { useAuth } from "../../context/AuthContext";
+import { cursos } from "../../data/Courses";
+import { instituicao } from "../../data/Institution"; // ✅ já importado
+import ProfileHeader from "../../components/profile/ProfileHeader";
+import ProfileCard from "../../components/profile/ProfileCard";
+import ProfileTabs from "../../components/profile/ProfileTabs";
 
 export default function Profile() {
   const {
@@ -86,6 +86,7 @@ export default function Profile() {
           savedInstitutions={savedInstitutions} // 🔥 novo
           toggleCursoFavorito={toggleCursoFavorito}
           toggleInstituicaoFavorita={toggleInstituicaoFavorita} // 🔥 novo
+          
         />
       </main>
     </div>
