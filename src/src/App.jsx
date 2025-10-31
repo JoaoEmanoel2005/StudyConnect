@@ -13,6 +13,8 @@ import Catalogo from "./pages/catalog/CatalogPage";
 import Instituicao from "./pages/institution/InstitutionPage";
 import Perfil from "./pages/profile/UserProfile";
 import EditProfile from "./pages/profile/EditProfile"; 
+import AboutUsPage from "./pages/AboutUsPage"
+import ContactPage from "./pages/ContactPage";
 
 // Páginas de autenticação
 import Login from "./pages/login&cadastro/Sign-in";
@@ -32,6 +34,8 @@ export default function App() {
           <Route path="/instituicoes" element={<Layout><Instituicao /></Layout>} />
           <Route path="/perfil" element={<Layout><Perfil /></Layout>} />
           <Route path="/instituicao/:id" element={<Layout><InstitutionInfoPage /></Layout>} />
+          <Route path="/sobre-nos" element={<Layout><AboutUsPage /></Layout>} />
+          <Route path="/contato" element={<Layout><ContactPage /></Layout>} />
           
           {/* Nova rota para editar perfil */}
           <Route path="/perfil/editar" element={<Layout><EditProfile /></Layout>} />

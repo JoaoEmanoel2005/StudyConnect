@@ -8,18 +8,25 @@ import {
   PhoneIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import {
-  BookmarkIcon,
-} from "@heroicons/react/24/outline";
+import { BookmarkIcon } from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookmarkSolidIcon } from "@heroicons/react/24/solid";
 
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
-export default function InstitutionCard({ item }) {
+export default function InstitutionCard({ instituicao }) {
   const { usuario, toggleInstituicaoFavorita } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+
+  // Protege contra props indefinidas
+  if (!instituicao) return null;
+
+  const estaFavorita = Array.isArray(usuario?.instituicoesSalvas)
+    ? usuario.instituicoesSalvas.includes(instituicao.id)
+    : false;
+
+  const rating = typeof instituicao.avaliacao === "number" ? instituicao.avaliacao : 4.5;
 
   const handleSalvar = (e) => {
     e.stopPropagation();
@@ -30,47 +37,38 @@ export default function InstitutionCard({ item }) {
       return;
     }
 
-    const jaSalvo = usuario?.instituicoesSalvas?.includes(item.id);
+    toggleInstituicaoFavorita(instituicao.id);
 
-    toggleInstituicaoFavorita(item.id);
-
-    if (jaSalvo) {
-      toast.success("Instituição removida dos favoritos", {
-        icon: "🗑️",
-        duration: 3000,
-      });
-    } else {
-      toast.success("Instituição adicionada aos favoritos", {
-        icon: "⭐",
-        duration: 3000,
-      });
-    }
+    toast.success(
+      estaFavorita
+        ? "Instituição removida dos favoritos 🗑️"
+        : "Instituição adicionada aos favoritos ⭐",
+      { duration: 3000 }
+    );
   };
-
-  const rating = item.avaliacao ?? 4.5;
 
   return (
     <>
       <Link
-        to={item.id ? `/instituicao/${item.id}` : "#"}
+        to={instituicao.id ? `/instituicao/${instituicao.id}` : "#"}
         className="block group"
-        aria-label={`Abrir ${item.nome}`}
+        aria-label={`Abrir ${instituicao.nome ?? "Instituição"}`}
       >
         <article className="bg-white rounded-2xl shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col min-h-[520px]">
           <div className="relative">
             <img
-              src={item.imagem}
-              alt={item.nome}
+              src={instituicao.imagem ?? "/placeholder.png"}
+              alt={instituicao.nome ?? "Instituição"}
               className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
-            {/* Botão de salvar */}
+            {/* Botão de salvar no topo */}
             <button
               aria-label="Salvar instituição"
               onClick={handleSalvar}
               className="absolute top-3 right-3 p-2 rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 shadow"
             >
-              {usuario?.instituicoesSalvas?.includes(item.id) ? (
+              {estaFavorita ? (
                 <BookmarkSolidIcon className="h-5 w-5 text-white" />
               ) : (
                 <BookmarkIcon className="h-5 w-5 text-white/90" />
@@ -88,50 +86,49 @@ export default function InstitutionCard({ item }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  {item.nome}
-                  {item.verified && (
-                    <CheckBadgeIcon className="h-5 w-5 text-primary" />
-                  )}
+                  {instituicao.nome ?? "Instituição"}
+                  {instituicao.verified && <CheckBadgeIcon className="h-5 w-5 text-accent" />}
                 </h3>
-                <p className="text-sm text-indigo-600 font-medium mt-1">
-                  {item.area}
-                </p>
+                {instituicao.area && (
+                  <p className="text-sm text-indigo-600 font-medium mt-1">{instituicao.area}</p>
+                )}
 
-                <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
-                  <MapPinIcon className="h-4 w-4 text-gray-400" />
-                  <span>{item.cidade}</span>
-                </div>
+                {instituicao.cidade && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+                    <MapPinIcon className="h-4 w-4 text-gray-400" />
+                    <span>{instituicao.cidade}</span>
+                  </div>
+                )}
               </div>
             </div>
 
             <p className="text-sm text-gray-600 mt-3 line-clamp-3 flex-1">
-              {item.descricao ?? "Descrição não disponível."}
+              {instituicao.descricao ?? "Descrição não disponível."}
             </p>
 
             <div className="mt-4 flex items-center justify-between gap-3">
               <Link
-                to={item.id ? `/instituicao/${item.id}` : "#"}
-                className="flex-1 inline-flex items-center justify-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-all duration-300 font-semibold shadow"
+                to={instituicao.id ? `/instituicao/${instituicao.id}` : "#"}
+                className="flex-1 inline-flex items-center justify-center bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-dark transition-all duration-300 font-semibold shadow"
               >
                 Ver cursos
               </Link>
 
-              {/* Botão salvar (versão sólida na parte inferior) */}
               <button
                 onClick={handleSalvar}
                 className="p-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
                 aria-label="Salvar instituição"
               >
-                {usuario?.instituicoesSalvas?.includes(item.id) ? (
-                  <BookmarkSolidIcon className="h-5 w-5 text-primary" />
+                {estaFavorita ? (
+                  <BookmarkSolidIcon className="h-5 w-5 text-accent" />
                 ) : (
                   <BookmarkIcon className="h-5 w-5" />
                 )}
               </button>
 
-              {item.site && (
+              {instituicao.site && (
                 <a
-                  href={item.site}
+                  href={instituicao.site}
                   target="_blank"
                   rel="noreferrer"
                   className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
@@ -145,14 +142,14 @@ export default function InstitutionCard({ item }) {
             <div className="mt-3 pt-3 border-t text-sm text-gray-600 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <PhoneIcon className="h-4 w-4 text-gray-400" />
-                <span>{item.telefone ?? "—"}</span>
+                <span>{instituicao.telefone ?? "—"}</span>
               </div>
             </div>
           </div>
         </article>
       </Link>
 
-      {/* Modal estilizado */}
+      {/* Modal de login */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80 relative">
@@ -163,7 +160,9 @@ export default function InstitutionCard({ item }) {
               <XMarkIcon className="h-5 w-5" />
             </button>
 
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Faça login para salvar instituições</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Faça login para salvar instituições
+            </h2>
             <p className="text-sm text-gray-600 mb-4">
               Crie uma conta ou entre na sua para salvar instituições no seu perfil.
             </p>
@@ -171,13 +170,13 @@ export default function InstitutionCard({ item }) {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate("/login")}
-                className="flex-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-all"
+                className="flex-1 bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-dark transition-all"
               >
                 Login
               </button>
               <button
                 onClick={() => navigate("/cadastro")}
-                className="flex-1 border border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary/10 transition-all"
+                className="flex-1 border border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition-all"
               >
                 Criar conta
               </button>

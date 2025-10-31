@@ -1,296 +1,328 @@
-"use client";
-
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import InstitutionCard from "../../components/institution/InstitutionCard";
-import SearchBar from "../../components/catalog/SearchBar"; 
-import FilterSection from "../../components/catalog/FilterSection"; 
-import { filtrosInstituicoes } from "../../data/InstituionFilters";
-import { instituicao } from "../../data/Institution";
 import {
   FunnelIcon,
   XMarkIcon,
-  BuildingOfficeIcon,
+  BuildingLibraryIcon,
   AcademicCapIcon,
-  GlobeAltIcon,
+  MapPinIcon,
+  AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/outline";
 
+import InstitutionCard from "../../components/institution/InstitutionCard";
+import SearchBar from "../../components/institution/SearchBar"; 
+import FilterSection from "../../components/institution/FilterSection"; 
+import { filtrosInstituicoes } from "../../data/InstituionFilters";
+import { instituicao as sampleInstituicoes } from "../../data/Institution";
+
 export default function CatalogoInstituicoes() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Inicializa filtros a partir da URL
-  const [filtrosAtivos, setFiltrosAtivos] = useState(() => {
-    const params = Object.fromEntries(searchParams.entries());
-    try {
-      return Object.keys(params).length ? JSON.parse(params.filters || "{}") : {};
-    } catch {
-      return {};
-    }
-  });
-
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [ordenacao, setOrdenacao] = useState(searchParams.get("sort") || "name-asc");
-  const [paginaAtual, setPaginaAtual] = useState(Number(searchParams.get("page")) || 1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [ordenacao, setOrdenacao] = useState("name-asc");
+  const [filtrosAtivos, setFiltrosAtivos] = useState({});
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const itensPorPagina = 9;
 
-  // Atualiza URL quando filtros mudam
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("q", searchQuery);
-    if (ordenacao !== "name-asc") params.set("sort", ordenacao);
-    if (Object.keys(filtrosAtivos).length) {
-      params.set("filters", JSON.stringify(filtrosAtivos));
-    }
-    if (paginaAtual > 1) params.set("page", paginaAtual.toString());
-    setSearchParams(params, { replace: true });
-  }, [filtrosAtivos, searchQuery, ordenacao, paginaAtual]);
+  // Sempre resetar página ao alterar filtros ou busca
+  useEffect(() => setPaginaAtual(1), [searchQuery, filtrosAtivos]);
 
-  // Simula carregamento
+  // Simulação de loading (opcional)
   useEffect(() => {
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 800);
+    const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
-  }, [filtrosAtivos, searchQuery, ordenacao]);
+  }, [searchQuery, filtrosAtivos, ordenacao]);
 
-  // Filtragem e ordenação
+  // Filtragem, busca e ordenação
   const instituicoesFiltradas = useMemo(() => {
-    let filtered = [...instituicao];
+  let filtered = [...sampleInstituicoes];
 
-    Object.entries(filtrosAtivos).forEach(([key, valores]) => {
-      if (valores?.length) {
-        filtered = filtered.filter((inst) =>
-          Array.isArray(valores)
-            ? valores.includes(inst[key])
-            : inst[key] === valores
-        );
-      }
-    });
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (inst) =>
-          inst.nome?.toLowerCase().includes(query) ||
-          inst.area?.toLowerCase().includes(query) ||
-          inst.cidade?.toLowerCase().includes(query) ||
-          inst.tipo?.toLowerCase().includes(query)
+  // Filtros ativos (tipo, estado, cidade, etc.)
+  Object.entries(filtrosAtivos).forEach(([key, valores]) => {
+    if (valores?.length) {
+      filtered = filtered.filter((inst) =>
+        valores.some((v) => inst[key]?.toLowerCase() === v.toLowerCase())
       );
     }
+  });
 
-    const sortFunctions = {
-      "name-asc": (a, b) => a.nome.localeCompare(b.nome),
-      "name-desc": (a, b) => b.nome.localeCompare(a.nome),
-      "city-asc": (a, b) => a.cidade.localeCompare(b.cidade),
-      "state-asc": (a, b) => a.estado.localeCompare(b.estado),
-    };
+  // Pesquisa
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(
+      (inst) =>
+        inst.nome.toLowerCase().includes(query) ||
+        inst.sigla?.toLowerCase().includes(query) ||
+        inst.cidade?.toLowerCase().includes(query) ||
+        inst.tipo?.toLowerCase().includes(query)
+    );
+  }
 
-    return filtered.sort(sortFunctions[ordenacao] || sortFunctions["name-asc"]);
-  }, [filtrosAtivos, searchQuery, ordenacao]);
+  // Ordenação
+  const sortFunctions = {
+    "name-asc": (a, b) => a.nome.localeCompare(b.nome),
+    "name-desc": (a, b) => b.nome.localeCompare(a.nome),
+    "city-asc": (a, b) => a.cidade.localeCompare(b.cidade),
+    "courses-desc": (a, b) => b.cursosDisponiveis - a.cursosDisponiveis,
+  };
 
+  return filtered.sort(sortFunctions[ordenacao]);
+}, [filtrosAtivos, searchQuery, ordenacao]);
+
+  // Paginação
   const totalPaginas = Math.ceil(instituicoesFiltradas.length / itensPorPagina);
   const visiveis = instituicoesFiltradas.slice(
     (paginaAtual - 1) * itensPorPagina,
     paginaAtual * itensPorPagina
   );
 
-  const handleFiltroChange = (sectionId, value, type = "checkbox") => {
+  const handleFiltroChange = (sectionId, value) => {
     setFiltrosAtivos((prev) => {
-      if (type === "checkbox") {
-        const prevOptions = prev[sectionId] || [];
-        return {
-          ...prev,
-          [sectionId]: prevOptions.includes(value)
-            ? prevOptions.filter((v) => v !== value)
-            : [...prevOptions, value],
-        };
-      }
-      return { ...prev, [sectionId]: value };
+      const prevOptions = prev[sectionId] || [];
+      return {
+        ...prev,
+        [sectionId]: prevOptions.includes(value)
+          ? prevOptions.filter((v) => v !== value)
+          : [...prevOptions, value],
+      };
     });
-    setPaginaAtual(1);
   };
 
+  const totalFiltrosAtivos = Object.values(filtrosAtivos).flat().length;
+
   return (
-    <main>
-      <div className="relative w-full bg-gradient-to-r from-textprimary via-primary to-indigo-600 text-white py-20 px-6">
-        <div className="relative z-10 max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl md:text-4xl font-bold mb-4 drop-shadow-lg">
-            Instituições de Ensino Parceiras
-          </h1>
-          <p className="text-base mb-8 text-gray-100 max-w-2xl mx-auto">
-            Juntas, promovemos a educação científica e tecnológica em todo o Brasil.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-white">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-amber-600 via-amber-500 to-orange-600 text-white overflow-hidden">
+        {/* Padrão decorativo */}
+        <div className="absolute inset-0">
+          <svg className="w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+                <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dots)" />
+          </svg>
+        </div>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <BuildingOfficeIcon className="h-6 w-6" />
-              <span>+10 Instituições Parceiras</span>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-700/20 rounded-full blur-3xl"></div>
+
+        <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-20">
+          <div className="text-center max-w-3xl mx-auto mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full mb-6">
+              <BuildingLibraryIcon className="h-4 w-4" />
+              <span className="text-sm font-semibold tracking-wide">Instituições Parceiras</span>
             </div>
 
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <AcademicCapIcon className="h-6 w-6" />
-              <span>+5000 Estudantes Impactados</span>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Conheça nossas <span className="text-amber-900">instituições de excelência</span>
+            </h1>
+            <p className="text-lg text-amber-50 mb-8">
+              Universidades e faculdades reconhecidas pelo MEC, comprometidas com educação de qualidade
+            </p>
 
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-xl">
-              <GlobeAltIcon className="h-6 w-6" />
-              <span>Atuação em 15 Estados Brasileiros</span>
+            {/* Search bar */}
+            <div className="relative max-w-2xl mx-auto">
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
           </div>
 
-          <div className="mt-8 max-w-xl mx-auto">
-            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <BuildingLibraryIcon className="h-5 w-5 text-white" />
+              <div className="text-sm">+10 Instituições</div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <AcademicCapIcon className="h-5 w-5 text-white" />
+              <div className="text-sm">+10 Cursos Ofertados</div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <MapPinIcon className="h-5 w-5 text-white" />
+              <div className="text-sm">26 Estados e um Distrito Federal</div>
+            </div>
           </div>
         </div>
 
-        {/* Decorative wave */}
-        <div className="absolute bottom-0 left-0 right-0 opacity-20">
-          <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
-            <path
-              fill="white"
-              fillOpacity="1"
-              d="M0,224L60,208C120,192,240,160,360,144C480,128,600,128,720,149.3C840,171,960,213,1080,213.3C1200,213,1320,171,1380,149.3L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
-            />
+        {/* Onda decorativa */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 30C240 10 480 50 720 30C960 10 1200 50 1440 30V60H0V30Z" fill="white" fillOpacity="0.3"/>
+            <path d="M0 45C240 25 480 65 720 45C960 25 1200 65 1440 45V60H0V45Z" fill="white"/>
           </svg>
         </div>
       </div>
 
       {/* Conteúdo principal */}
-      <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 pt-12 pb-20">
-          {/* Results count + sorting */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <h2 className="text-lg font-medium text-gray-900">
-              {instituicoesFiltradas.length} {instituicoesFiltradas.length === 1 ? 'instituição encontrada' : 'instituições encontradas'}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-6 border-b-2 border-amber-200">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-1">
+              {instituicoesFiltradas.length} {instituicoesFiltradas.length === 1 ? "instituição" : "instituições"}
             </h2>
+            <p className="text-sm text-slate-600">
+              {totalFiltrosAtivos > 0 && `${totalFiltrosAtivos} filtro(s) aplicado(s)`}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border-2 border-amber-200 rounded-lg hover:border-amber-400 transition-colors"
+            >
+              <FunnelIcon className="h-5 w-5 text-amber-600" />
+              <span className="font-semibold text-amber-900">Filtros</span>
+              {totalFiltrosAtivos > 0 && (
+                <span className="px-2 py-0.5 bg-amber-600 text-white text-xs font-bold rounded-full">
+                  {totalFiltrosAtivos}
+                </span>
+              )}
+            </button>
 
             <div className="flex items-center gap-2">
-              <label htmlFor="sort" className="text-sm font-medium text-gray-700">
-                Ordenar por:
-              </label>
+              <AdjustmentsHorizontalIcon className="h-5 w-5 text-amber-600" />
               <select
-                id="sort"
                 value={ordenacao}
                 onChange={(e) => setOrdenacao(e.target.value)}
-                className="border border-gray-300 rounded-lg text-sm p-2 focus:ring-2 focus:ring-primary/20"
+                className="px-4 py-2 bg-white border-2 border-amber-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
                 <option value="name-asc">Nome (A-Z)</option>
                 <option value="name-desc">Nome (Z-A)</option>
-                <option value="price-asc">Menor Preço</option>
-                <option value="price-desc">Maior Preço</option>
+                <option value="city-asc">Cidade (A-Z)</option>
+                <option value="courses-desc">Mais Cursos</option>
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <aside className="lg:col-span-1">
-              <div className="sticky top-4 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-lg font-medium text-gray-900">
-                    <FunnelIcon className="h-5 w-5 text-primary" />
-                    Filtros
-                  </h3>
-                  {Object.keys(filtrosAtivos).length > 0 && (
-                    <button
-                      onClick={() => {
-                        setFiltrosAtivos({});
-                        setPaginaAtual(1);
-                      }}
-                      className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <XMarkIcon className="h-4 w-4" />
-                      Limpar
-                    </button>
-                  )}
-                </div>
+        </div>
 
-                <div className="space-y-4">
-                  {filtrosInstituicoes.map((section) => (
-                    <FilterSection
-                      key={section.id}
-                      section={section}
-                      filtrosAtivos={filtrosAtivos}
-                      handleFiltroChange={(id, value) =>
-                        handleFiltroChange(id, value, section.type)
-                      }
-                    />
-                  ))}
-                </div>
+        {/* Layout principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <aside className={`lg:block ${showMobileFilters ? 'block' : 'hidden'}`}>
+            <div className="sticky top-4 bg-white rounded-2xl border-2 border-amber-200 p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+                  <FunnelIcon className="h-5 w-5 text-amber-600" />
+                  Filtros
+                </h3>
+
+                {totalFiltrosAtivos > 0 && (
+                  <button
+                    onClick={() => {
+                      setFiltrosAtivos({});
+                      setPaginaAtual(1);
+                    }}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                    Limpar
+                  </button>
+                )}
               </div>
-            </aside>
 
-            <div className="lg:col-span-3">
-              {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="h-64 bg-gray-200 rounded-xl mb-4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="space-y-6">
+                {filtrosInstituicoes.map((section) => (
+                  <FilterSection
+                    key={section.id}
+                    section={section}
+                    filtrosAtivos={filtrosAtivos}
+                    handleFiltroChange={handleFiltroChange}
+                  />
+                ))}
+              </div>
+            </div>
+          </aside>
+
+
+          {/* Grid de instituições */}
+          <div className="lg:col-span-3">
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-48 bg-amber-100 rounded-t-2xl" />
+                    <div className="p-6 space-y-3 bg-white rounded-b-2xl border-2 border-amber-100">
+                      <div className="h-4 bg-amber-100 rounded w-3/4" />
+                      <div className="h-4 bg-amber-100 rounded w-1/2" />
                     </div>
+                  </div>
+                ))}
+              </div>
+            ) : visiveis.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {visiveis.map((inst) => (
+                    <InstitutionCard key={inst.id} instituicao={inst} />
                   ))}
                 </div>
-              ) : visiveis.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {visiveis.map((item) => (
-                    <InstitutionCard key={item.id} item={item} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 mb-4">
-                    Nenhuma instituição encontrada com os filtros atuais.
+
+                {/* Paginação */}
+                {totalPaginas > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-12">
+                    <button
+                      onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
+                      disabled={paginaAtual === 1}
+                      className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border-2 border-amber-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:border-amber-400 hover:bg-amber-50 transition-all"
+                    >
+                      Anterior
+                    </button>
+
+                    {[...Array(totalPaginas)].map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setPaginaAtual(i + 1)}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                          paginaAtual === i + 1
+                            ? "bg-amber-600 text-white shadow-lg"
+                            : "bg-white text-slate-700 border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50"
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
+                      disabled={paginaAtual === totalPaginas}
+                      className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border-2 border-amber-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:border-amber-400 hover:bg-amber-50 transition-all"
+                    >
+                      Próxima
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-amber-300">
+                <div className="max-w-md mx-auto">
+                  <div className="inline-flex p-4 bg-amber-50 rounded-full mb-4">
+                    <BuildingLibraryIcon className="h-10 w-10 text-amber-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                    Nenhuma instituição encontrada
+                  </h3>
+                  <p className="text-slate-600 mb-6">
+                    Tente ajustar seus filtros ou termos de busca
                   </p>
                   <button
                     onClick={() => {
-                      setSearchQuery("");
                       setFiltrosAtivos({});
+                      setSearchQuery("");
+                      setPaginaAtual(1);
                     }}
-                    className="text-primary hover:text-primary-dark"
+                    className="inline-flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors"
                   >
                     Limpar filtros
                   </button>
                 </div>
-              )}
-
-              {/* Pagination */}
-                  {totalPaginas > 1 && (
-                    <div className="flex justify-center gap-2 mt-12">
-                      <button
-                        onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
-                        disabled={paginaAtual === 1}
-                        className="px-4 py-2 text-sm font-medium rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                      >
-                        Anterior
-                      </button>
-
-                      {[...Array(totalPaginas)].map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setPaginaAtual(i + 1)}
-                          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                            paginaAtual === i + 1
-                              ? "bg-primary text-white"
-                              : "border hover:bg-gray-50"
-                          }`}
-                        >
-                          {i + 1}
-                        </button>
-                      ))}
-
-                      <button
-                        onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
-                        disabled={paginaAtual === totalPaginas}
-                        className="px-4 py-2 text-sm font-medium rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                      >
-                        Próxima
-                      </button>
-                    </div>
-                  )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

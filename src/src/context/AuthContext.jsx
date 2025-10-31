@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import config from "../data/config.js";
-import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -82,30 +81,31 @@ export function AuthProvider({ children }) {
 
   // 🔹 CADASTRO (API)
   async function cadastro({ name, email, password }) {
-    try {
-      const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome: name,
-          email: email,
-          senha: password,
-        }),
-      });
+  try {
+    const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: name,
+        email,
+        senha: password,
+      }),
+    });
 
-      if (!resposta.ok) {
-        const erro = await resposta.json();
-        throw new Error(erro.message || `Erro HTTP ${resposta.status}`);
-      }
+    const data = await resposta.json();
 
-      const data = await resposta.json();
-      console.log("Usuário cadastrado:", data);
-      return { success: true };
-    } catch (error) {
-      console.error("Erro ao cadastrar usuário:", error.message);
-      return { success: false, message: error.message };
+    if (!resposta.ok) {
+      throw new Error(data.message || `Erro HTTP ${resposta.status}`);
     }
+
+    console.log("Usuário cadastrado:", data);
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao cadastrar usuário:", error.message);
+    return { success: false, message: error.message };
   }
+}
+
 
   // 🔹 LOGOUT
   const logout = () => {

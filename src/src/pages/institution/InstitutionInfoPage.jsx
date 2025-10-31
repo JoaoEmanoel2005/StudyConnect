@@ -9,9 +9,14 @@ import {
   BuildingLibraryIcon,
   ArrowLeftIcon,
   EnvelopeIcon,
-  StarIcon as StarOutline,
-  HeartIcon as HeartOutline,
-  ClipboardDocumentIcon,
+  StarIcon,
+  HeartIcon,
+  CheckBadgeIcon,
+  SparklesIcon,
+  UserGroupIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolid, HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import { instituicao } from "../../data/Institution";
@@ -20,6 +25,9 @@ import { useAuth } from "../../context/AuthContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+
+const MotionDiv = motion.div;
 const MotionLink = motion(Link);
 
 export default function InstitutionPage() {
@@ -30,17 +38,29 @@ export default function InstitutionPage() {
   const cursosRelacionados = cursos.filter((c) => c.instituicao_id === Number(id));
 
   const [isFavorited, setIsFavorited] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const favs = usuario?.instituicoesFavoritas ?? usuario?.favoritas ?? [];
-    setIsFavorited(Array.isArray(favs) ? favs.includes(inst?.id) : false);
+    if (inst && usuario) {
+      const favs = usuario?.instituicoesFavoritas ?? usuario?.favoritas ?? [];
+      setIsFavorited(Array.isArray(favs) ? favs.includes(inst.id) : false);
+    }
   }, [usuario, inst]);
 
   if (!inst) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-20 text-gray-500">
-        Instituição não encontrada.
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <BuildingLibraryIcon className="h-20 w-20 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Instituição não encontrada</h2>
+          <p className="text-gray-600 mb-6">A instituição que você procura não existe.</p>
+          <Link
+            to="/instituicoes"
+            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition"
+          >
+            <ArrowLeftIcon className="h-5 w-5" />
+            Voltar ao catálogo
+          </Link>
+        </div>
       </div>
     );
   }
@@ -65,23 +85,32 @@ export default function InstitutionPage() {
     } else if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        toast.success("Link copiado para a área de transferência!", { icon: "🔗" });
       } catch (err) {
-        console.error("Erro ao copiar link:", err);
-        alert("Não foi possível copiar o link. Tente manualmente.");
+        console.error("Erro ao copiar:", err);
       }
-    } else {
-      window.prompt("Copie a URL abaixo:", url);
     }
   };
 
   const handleToggleFavorite = () => {
-    setIsFavorited((s) => !s);
+    if (!usuario) {
+      toast.error("Faça login para favoritar instituições");
+      return;
+    }
+    const wasAlreadyFavorited = isFavorited;
+    setIsFavorited(!isFavorited);
+    
     try {
-      if (typeof toggleInstituicaoFavorita === "function") toggleInstituicaoFavorita(inst.id);
+      if (typeof toggleInstituicaoFavorita === "function") {
+        toggleInstituicaoFavorita(inst.id);
+      }
+      toast.success(
+        wasAlreadyFavorited ? "Removido dos favoritos" : "Adicionado aos favoritos",
+        { icon: wasAlreadyFavorited ? "💔" : "❤️" }
+      );
     } catch (err) {
       console.error("Erro ao alternar favorito:", err);
+      setIsFavorited(wasAlreadyFavorited);
     }
   };
 
@@ -92,348 +121,444 @@ export default function InstitutionPage() {
 
   const rating = typeof inst.avaliacao === "number" ? inst.avaliacao : null;
   const fullStars = rating ? Math.floor(rating) : 0;
-  const showHalf = rating && rating - fullStars >= 0.5;
-
-  // Exemplo de reviews fictícios
-  const reviews = [
-    { id: 1, nome: "João Silva", nota: 5, comentario: "Excelente instituição, recomendo!" },
-    { id: 2, nome: "Maria Santos", nota: 4, comentario: "Ótimos cursos, professores muito bons." },
-    { id: 3, nome: "Pedro Costa", nota: 4.5, comentario: "Infraestrutura moderna e bem organizada." },
-  ];
+  const emptyStars = 5 - fullStars;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header com banner */}
-      <header
-        className="relative h-64 sm:h-80 md:h-96 flex items-center z-0"
-        role="banner"
-        aria-label={`Banner da instituição ${inst.nome}`}
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url(${inst.imagem ?? "/images/default-institution.jpg"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="flex items-center justify-between text-white">
-            <nav aria-label="Breadcrumb" className="text-sm">
-              <Link
-                to="/instituicoes"
-                className="inline-flex items-center gap-2 text-white/80 hover:text-white transition"
-              >
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+      {/* Hero Section com imagem e overlay */}
+      <div className="relative">
+        {/* Imagem de fundo */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${inst.imagem ?? "/images/default-institution.jpg"})`,
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/90" />
+        </div>
+
+        {/* Conteúdo do Hero */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
+          {/* Navegação superior */}
+          <div className="flex items-center justify-between mb-12">
+            <Link
+              to="/instituicoes"
+              className="inline-flex items-center gap-2 text-white/90 hover:text-white transition group"
+            >
+              <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/20 transition">
                 <ArrowLeftIcon className="h-4 w-4" />
-                Voltar ao catálogo
-              </Link>
-            </nav>
-            <div className="flex items-center gap-3">
+              </div>
+              <span className="font-medium">Voltar</span>
+            </Link>
+
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleShare}
-                className="inline-flex items-center gap-2 bg-white/10 px-3 py-2 rounded-full text-sm hover:bg-white/20 transition"
-                aria-label="Compartilhar instituição"
-                title="Compartilhar"
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg text-white hover:bg-white/20 transition"
               >
                 <ShareIcon className="h-4 w-4" />
-                {copied ? "Link copiado" : "Compartilhar"}
+                <span className="hidden sm:inline">Compartilhar</span>
               </button>
 
               <button
                 onClick={handleToggleFavorite}
-                className="inline-flex items-center gap-2 bg-white/10 px-3 py-2 rounded-full text-sm hover:bg-white/20 transition"
-                aria-pressed={isFavorited}
-                aria-label={isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                title={isFavorited ? "Favorito" : "Adicionar aos favoritos"}
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg text-white hover:bg-white/20 transition"
               >
                 {isFavorited ? (
-                  <HeartSolid className="h-4 w-4 text-red-400" />
+                  <HeartSolid className="h-5 w-5 text-red-400" />
                 ) : (
-                  <HeartOutline className="h-4 w-4" />
+                  <HeartIcon className="h-5 w-5" />
                 )}
-                {isFavorited ? "Favorito" : "Favoritar"}
+                <span className="hidden sm:inline">{isFavorited ? "Salvo" : "Salvar"}</span>
               </button>
+            </div>
+          </div>
 
+          {/* Informações principais */}
+          <div className="max-w-4xl">
+            {/* Badges */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+                inst.tipo === "Público" 
+                  ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                  : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+              }`}>
+                <BuildingLibraryIcon className="h-4 w-4" />
+                {inst.tipo}
+              </span>
+              {inst.area && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  <AcademicCapIcon className="h-4 w-4" />
+                  {inst.area}
+                </span>
+              )}
+              {inst.verified && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-primary/20 text-blue-300 border border-primary/30">
+                  <CheckBadgeIcon className="h-4 w-4" />
+                  Verificado
+                </span>
+              )}
+            </div>
+
+            {/* Título */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+              {inst.nome}
+            </h1>
+
+            {/* Localização e avaliação */}
+            <div className="flex flex-wrap items-center gap-4 text-white/90">
+              <div className="flex items-center gap-2">
+                <MapPinIcon className="h-5 w-5" />
+                <span>{inst.cidade}, {inst.estado}</span>
+              </div>
+              {rating !== null && (
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {[...Array(fullStars)].map((_, i) => (
+                      <StarSolid key={`full-${i}`} className="h-5 w-5 text-yellow-400" />
+                    ))}
+                    {[...Array(emptyStars)].map((_, i) => (
+                      <StarIcon key={`empty-${i}`} className="h-5 w-5 text-yellow-400/40" />
+                    ))}
+                  </div>
+                  <span className="font-semibold">{rating.toFixed(1)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Descrição curta */}
+            <p className="mt-6 text-lg text-white/80 leading-relaxed max-w-2xl">
+              {inst.descricao?.substring(0, 200)}...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Conteúdo principal */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 pb-16">
+        {/* Cards de informação rápida */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-xl shadow-md p-6 border-t-4 border-green-500"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <CurrencyDollarIcon className="h-8 w-8 text-green-500" />
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Matrícula</p>
+            <p className="text-xl font-bold text-gray-900">{inst.custo_matricula ?? "Consultar"}</p>
+          </MotionDiv>
+
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-xl shadow-md p-6 border-t-4 border-blue-500"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <AcademicCapIcon className="h-8 w-8 text-blue-500" />
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Cursos disponíveis</p>
+            <p className="text-xl font-bold text-gray-900">{cursosRelacionados.length}</p>
+          </MotionDiv>
+
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-xl shadow-md p-6 border-t-4 border-purple-500"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <UserGroupIcon className="h-8 w-8 text-purple-500" />
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Parcerias</p>
+            <p className="text-xl font-bold text-gray-900">{inst.parcerias?.length ?? 0}</p>
+          </MotionDiv>
+
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-xl shadow-md p-6 border-t-4 border-yellow-500"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <SparklesIcon className="h-8 w-8 text-yellow-500" />
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Especializações</p>
+            <p className="text-xl font-bold text-gray-900">{inst.especializacoes?.length ?? 0}</p>
+          </MotionDiv>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Coluna principal (2/3) */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Sobre */}
+            <MotionDiv
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-md p-6"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <BuildingLibraryIcon className="h-6 w-6 text-primary" />
+                Sobre a Instituição
+              </h2>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                {inst.descricao}
+              </p>
+              {inst.impacto_social && (
+                <div className="mt-6 p-4 bg-blue-50 border-l-4 border-primary rounded-r-lg">
+                  <p className="text-sm font-semibold text-primary mb-2">Impacto Social</p>
+                  <p className="text-gray-700 italic">{inst.impacto_social}</p>
+                </div>
+              )}
+            </MotionDiv>
+
+            {/* Especializações */}
+            {inst.especializacoes && inst.especializacoes.length > 0 && (
+              <MotionDiv
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-xl shadow-md p-6"
+              >
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <AcademicCapIcon className="h-6 w-6 text-primary" />
+                  Áreas de Especialização
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {inst.especializacoes.map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                    >
+                      <CheckBadgeIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-700">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </MotionDiv>
+            )}
+
+            {/* Cursos relacionados */}
+            <MotionDiv
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-md p-6"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <AcademicCapIcon className="h-6 w-6 text-primary" />
+                Cursos Disponíveis
+                <span className="text-sm font-normal text-gray-500">({cursosRelacionados.length})</span>
+              </h2>
+              {cursosRelacionados.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <AcademicCapIcon className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <p>Nenhum curso cadastrado ainda.</p>
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {cursosRelacionados.map((curso) => (
+                    <MotionLink
+                      key={curso.id}
+                      to={`/curso/${curso.id}`}
+                      className="group border-2 border-gray-100 rounded-xl p-4 hover:border-primary hover:shadow-md transition bg-gradient-to-br from-white to-gray-50"
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <h3 className="font-bold text-gray-900 group-hover:text-primary transition mb-2">
+                        {curso.nome}
+                      </h3>
+                      <span className="inline-block px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded mb-3">
+                        {curso.categoria}
+                      </span>
+                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                        {curso.modalidade && (
+                          <p className="flex items-center gap-2">
+                            <ClockIcon className="h-4 w-4" />
+                            {curso.modalidade}
+                          </p>
+                        )}
+                        {curso.duracao && (
+                          <p className="flex items-center gap-2">
+                            <ClockIcon className="h-4 w-4" />
+                            {curso.duracao}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-2">{curso.descricao}</p>
+                    </MotionLink>
+                  ))}
+                </div>
+              )}
+            </MotionDiv>
+
+            {/* Mapa */}
+            <MotionDiv
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-md p-6"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <MapPinIcon className="h-6 w-6 text-primary" />
+                Localização
+              </h2>
+              <div className="h-96 rounded-xl overflow-hidden border-2 border-gray-100">
+                <MapContainer center={[lat, lon]} zoom={13} style={{ height: "100%", width: "100%" }}>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  />
+                  <Marker position={[lat, lon]}>
+                    <Popup>
+                      <div className="p-2">
+                        <p className="font-semibold mb-1">{inst.nome}</p>
+                        <p className="text-sm text-gray-600 mb-2">{inst.endereco}</p>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary hover:underline text-sm font-medium"
+                        >
+                          Abrir no Google Maps →
+                        </a>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Endereço completo:</p>
+                <p className="text-gray-900 font-medium">{inst.endereco}</p>
+                <p className="text-gray-700">{inst.cidade}, {inst.estado}</p>
+              </div>
+            </MotionDiv>
+          </div>
+
+          {/* Sidebar (1/3) */}
+          <div className="space-y-6">
+            {/* Contato */}
+            <MotionDiv
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-xl shadow-md p-6 top-6"
+            >
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Informações de Contato</h3>
+              <div className="space-y-4">
+                {telHref && (
+                  <a
+                    href={telHref}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition group"
+                  >
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition">
+                      <PhoneIcon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500">Telefone</p>
+                      <p className="font-medium text-gray-900 truncate">{inst.telefone}</p>
+                    </div>
+                  </a>
+                )}
+
+                {mailHref && (
+                  <a
+                    href={mailHref}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition group"
+                  >
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition">
+                      <EnvelopeIcon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500">Email</p>
+                      <p className="font-medium text-gray-900 truncate">{inst.email_contato}</p>
+                    </div>
+                  </a>
+                )}
+
+                {inst.site && (
+                  <a
+                    href={safeLink(inst.site)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition group"
+                  >
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition">
+                      <GlobeAltIcon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500">Site oficial</p>
+                      <p className="font-medium text-gray-900 truncate flex items-center gap-1">
+                        Visitar site
+                        <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                      </p>
+                    </div>
+                  </a>
+                )}
+              </div>
+
+              {/* CTA Button */}
               {inst.site && (
                 <a
                   href={safeLink(inst.site)}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 bg-white/10 px-3 py-2 rounded-full text-sm hover:bg-white/20 transition"
-                  aria-label="Abrir site da instituição"
-                  title="Abrir site da instituição"
+                  className="mt-6 w-full flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3 px-6 rounded-lg hover:from-primary-dark hover:to-indigo-700 transition shadow-md hover:shadow-md"
                 >
-                  <GlobeAltIcon className="h-4 w-4" />
-                  Site oficial
+                  Visitar Site Oficial
+                  <ArrowTopRightOnSquareIcon className="h-5 w-5" />
                 </a>
               )}
-            </div>
-          </div>
+            </MotionDiv>
 
-          {/* Título e categorias */}
-          <div className="mt-8 text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
-              {inst.nome}
-            </h1>
-            <div className="mt-4 flex flex-wrap justify-center gap-3 items-center">
-              <span className="bg-blue-500/80 px-3 py-1 rounded-full text-sm">
-                {inst.tipo ?? "Instituição de Ensino"}
-              </span>
-              {inst.area && (
-                <span className="bg-indigo-600/80 px-3 py-1 rounded-full text-sm">{inst.area}</span>
-              )}
-              {rating !== null && (
-                <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full text-sm">
-                  <span className="flex -space-x-1">
-                    {[...Array(fullStars)].map((_, i) => (
-                      <StarSolid key={i} className="h-4 w-4 text-yellow-400" />
-                    ))}
-                    {showHalf && <StarOutline className="h-4 w-4 text-yellow-400" />}
-                    {fullStars === 0 && !showHalf && <StarOutline className="h-4 w-4 text-yellow-400" />}
-                  </span>
-                  <span className="text-white/90 text-sm">{rating.toFixed(1)}</span>
-                </span>
-              )}
-            </div>
+            {/* Parcerias */}
+            {inst.parcerias && inst.parcerias.length > 0 && (
+              <MotionDiv
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white rounded-xl shadow-md p-6"
+              >
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <UserGroupIcon className="h-5 w-5 text-primary" />
+                  Parcerias
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {inst.parcerias.map((p, i) => (
+                    <span
+                      key={i}
+                      className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition"
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </MotionDiv>
+            )}
+
+            {/* Projetos em andamento */}
+            {inst.projetos_em_andamento && inst.projetos_em_andamento.length > 0 && (
+              <MotionDiv
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-white rounded-xl shadow-md p-6"
+              >
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <SparklesIcon className="h-5 w-5 text-primary" />
+                  Projetos Ativos
+                </h3>
+                <ul className="space-y-2">
+                  {inst.projetos_em_andamento.map((p, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </MotionDiv>
+            )}
           </div>
         </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
-        {/* Infos principais */}
-        <section className="grid md:grid-cols-3 gap-6 bg-white rounded-2xl shadow p-6">
-          <div className="space-y-2">
-            <h2 className="font-semibold text-gray-800">Localização</h2>
-            <p className="text-gray-600 flex items-center gap-2">
-              <MapPinIcon className="h-5 w-5 text-primary" />
-              {inst.endereco} - {inst.cidade}/{inst.estado}
-            </p>
-            <p className="mt-2">
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  `${inst.endereco} ${inst.cidade} ${inst.estado}`
-                )}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-primary hover:underline inline-flex items-center gap-2"
-              >
-                <ClipboardDocumentIcon className="h-4 w-4" />
-                Abrir no Google Maps
-              </a>
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="font-semibold text-gray-800">Contato</h2>
-            {telHref ? (
-              <p className="flex items-center gap-2 text-gray-600">
-                <PhoneIcon className="h-5 w-5 text-primary" />
-                <a href={telHref} className="hover:underline">
-                  {inst.telefone}
-                </a>
-              </p>
-            ) : (
-              <p className="text-gray-600 flex items-center gap-2">
-                <PhoneIcon className="h-5 w-5 text-primary" /> Não informado
-              </p>
-            )}
-
-            {mailHref && (
-              <p>
-                <a
-                  href={mailHref}
-                  className="text-primary hover:underline inline-flex items-center gap-2"
-                >
-                  <EnvelopeIcon className="h-5 w-5" />
-                  {inst.email_contato}
-                </a>
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="font-semibold text-gray-800">Site / Custo</h2>
-            {inst.site ? (
-              <a
-                href={safeLink(inst.site)}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-primary hover:underline"
-                title="Abrir site da instituição"
-              >
-                <GlobeAltIcon className="h-5 w-5" />
-                {inst.site}
-              </a>
-            ) : (
-              <p className="text-gray-500">Não informado</p>
-            )}
-            <p className="text-gray-600 mt-2">
-              <strong>Matrícula:</strong> {inst.custo_matricula ?? "Não informado"}
-            </p>
-          </div>
-        </section>
-
-        {/* Galeria */}
-        {inst.galeria && inst.galeria.length > 0 && (
-          <section className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Galeria</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {inst.galeria.map((img, i) => (
-                <motion.img
-                  key={i}
-                  src={img}
-                  loading="lazy"
-                  alt={`${inst.nome} - imagem ${i + 1}`}
-                  className="w-full h-40 object-cover rounded-lg hover:scale-[1.03] transition-transform"
-                  whileHover={{ scale: 1.05 }}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Sobre a instituição */}
-        <section className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Sobre a instituição</h2>
-          <p className="text-gray-600 leading-relaxed">{inst.descricao}</p>
-          {inst.impacto_social && (
-            <p className="mt-4 text-gray-700 italic border-l-4 border-primary pl-3">
-              {inst.impacto_social}
-            </p>
-          )}
-        </section>
-
-        {/* Especializações e projetos */}
-        <section className="grid md:grid-cols-2 gap-6">
-          {inst.especializacoes && (
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <AcademicCapIcon className="h-5 w-5 text-primary" />
-                Áreas de especialização
-              </h2>
-              <ul className="list-disc list-inside text-gray-600 space-y-1">
-                {inst.especializacoes.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {inst.projetos_em_andamento && (
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <BuildingLibraryIcon className="h-5 w-5 text-primary" />
-                Projetos em andamento
-              </h2>
-              <ul className="list-disc list-inside text-gray-600 space-y-1">
-                {inst.projetos_em_andamento.map((p, i) => (
-                  <li key={i}>{p}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
-
-        {/* Parcerias */}
-        {inst.parcerias && (
-          <section className="bg-white rounded-2xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">Parcerias</h2>
-            <div className="flex flex-wrap gap-2">
-              {inst.parcerias.map((p, i) => (
-                <span
-                  key={i}
-                  className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium"
-                >
-                  {p}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-                {/* Cursos relacionados */}
-        <section className="bg-white rounded-2xl shadow p-6">
-            {cursosRelacionados.length === 0 ? (
-            <p className="text-gray-500">Nenhum curso cadastrado ainda.</p>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cursosRelacionados.map((curso) => (
-                <MotionLink
-                  key={curso.id}
-                  to={`/curso/${curso.id}`}
-                  className="border rounded-xl p-4 hover:shadow-lg transition bg-gray-50"
-                  whileHover={{ scale: 1.03 }}
-                >
-                  <h3 className="font-semibold text-gray-800">{curso.nome}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{curso.categoria}</p>
-                  <div className="text-sm text-gray-600 mt-2 space-y-1">
-                    {curso.modalidade && <p>Modalidade: {curso.modalidade}</p>}
-                    {curso.turno && <p>Turno: {curso.turno}</p>}
-                    {curso.duracao && <p>Duração: {curso.duracao}</p>}
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">{curso.descricao}</p>
-                </MotionLink>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Mapa */}
-        <section className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Localização no mapa</h2>
-          <div className="h-80 rounded-xl overflow-hidden">
-            <MapContainer center={[lat, lon]} zoom={12} style={{ height: "100%", width: "100%" }}>
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Marker position={[lat, lon]}>
-                <Popup>
-                  <div className="space-y-2">
-                    <div className="font-semibold">{inst.nome}</div>
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-primary hover:underline text-sm"
-                    >
-                      Abrir no Google Maps
-                    </a>
-                  </div>
-                </Popup>
-              </Marker>
-            </MapContainer>
-          </div>
-        </section>
-
-        {/* Reviews */}
-        <section className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Avaliações de alunos</h2>
-          {reviews.length === 0 ? (
-            <p className="text-gray-500">Nenhuma avaliação ainda.</p>
-          ) : (
-            <div className="space-y-4">
-              {reviews.map((r) => {
-                const full = Math.floor(r.nota);
-                const half = r.nota - full >= 0.5;
-                return (
-                  <motion.div
-                    key={r.id}
-                    className="p-4 border rounded-lg bg-gray-50 hover:shadow-md transition"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-gray-800">{r.nome}</span>
-                      <span className="flex items-center gap-0.5">
-                        {[...Array(full)].map((_, i) => (
-                          <StarSolid key={i} className="h-4 w-4 text-yellow-400" />
-                        ))}
-                        {half && <StarOutline className="h-4 w-4 text-yellow-400" />}
-                        {full === 0 && !half && <StarOutline className="h-4 w-4 text-yellow-400" />}
-                        <span className="text-gray-600 text-sm ml-1">{r.nota.toFixed(1)}</span>
-                      </span>
-                    </div>
-                    <p className="text-gray-600 text-sm">{r.comentario}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      </main>
+      </div>
     </div>
   );
 }
