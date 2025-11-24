@@ -11,6 +11,33 @@ datasource db {
 // Tabelas de Domínio/Lookup
 // ============================================
 
+model Endereco {
+  id         Int      @id @default(autoincrement()) @map("id_endereco")
+  logradouro String?  @db.VarChar(255)
+  numero     String?  @db.VarChar(20)
+  complemento String? @db.VarChar(100)
+  bairro     String?  @db.VarChar(100)
+  cep        String?  @db.VarChar(15)
+
+  cidadeId   Int?     @map("id_cidade")
+  cidade     Cidade?  @relation(fields: [cidadeId], references: [id])
+
+  estadoId   Int?     @map("id_estado")
+  estado     Estado?  @relation(fields: [estadoId], references: [id])
+
+  // Relações 1:1
+  usuario     Usuario?
+  instituicao Instituicao?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cidadeId])
+  @@index([estadoId])
+  @@map("endereco")
+}
+
+
 model Estado {
   id      Int      @id @default(autoincrement()) @map("id_estado")
   nome    String   @db.VarChar(100)
@@ -97,11 +124,12 @@ model Usuario {
   tokenVerificado    String?  @map("token_verificado") @db.VarChar(255)
   codigoReset        String?  @map("codigo_reset") @db.VarChar(255)
   codigoExpira       DateTime? @map("codigo_expira")
-  
+  enderecoId         Int?     @map("id_endereco")
+  endereco           Endereco? @relation(fields: [enderecoId], references: [id], onDelete: SetNull)
+
   createdAt          DateTime @default(now()) @map("createdat")
   updatedAt          DateTime @updatedAt @map("updateat")
 
-  // 🔗 Relações
   instituicoesSalvas InstiSalvo[]
   cursosSalvos       CursoSalvo[]
 
@@ -110,6 +138,7 @@ model Usuario {
   @@map("usuario")
 }
 
+
 // ============================================
 // Tabela Principal: Instituicao
 // ============================================
@@ -117,12 +146,9 @@ model Usuario {
 model Instituicao {
   id              Int              @id @default(autoincrement()) @map("id_instituicao")
   nome            String           @db.VarChar(200)
-  cidade          String?          @db.VarChar(100)
-  estado          String?          @db.VarChar(100)
   email           String?          @db.VarChar(200)
   senha           String?          @db.VarChar(255)
   telefone        String?          @db.VarChar(20)
-  endereco        String?          @db.Text
   descricao       String?          @db.Text
   area            String?          @db.VarChar(100)
   tipo            Int?
@@ -131,11 +157,12 @@ model Instituicao {
   custoMatricula  Decimal?         @map("custo_matricula") @db.Decimal(10,2)
   latitude        Decimal?         @db.Decimal(10,8)
   longitude       Decimal?         @db.Decimal(11,8)
+  enderecoId      Int?             @map("id_endereco")
+  endereco        Endereco?        @relation(fields: [enderecoId], references: [id], onDelete: SetNull)
   
   createdAt       DateTime         @default(now()) @map("createdat")
   updatedAt       DateTime         @updatedAt @map("updateat")
 
-  // 🔗 Relações
   cursos          Curso[]
   salvaPor        InstiSalvo[]
 
@@ -143,6 +170,7 @@ model Instituicao {
   @@index([tipo])
   @@map("instituicao")
 }
+
 
 // ============================================
 // Tabela Principal: Curso

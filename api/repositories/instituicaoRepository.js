@@ -3,7 +3,7 @@ const prisma = require('../config/prisma');
 class InstituicaoRepository {
 
     async criar(dados) {
-        return await prisma.Instituicao.create({
+        return await prisma.instituicao.create({
             data: dados
         });
     }
