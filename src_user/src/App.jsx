@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import ScrollToTop from "./ScrollToTop";
-import CookieConsent from "./components/CookieConsent"; // 👈 importa aqui
+import CookieConsent from "./components/CookieConsent";
 
 // Páginas
 import Home from "./pages/Home";
