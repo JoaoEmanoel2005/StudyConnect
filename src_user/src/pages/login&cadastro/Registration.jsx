@@ -9,7 +9,7 @@ export default function Cadastro() {
   const handleCadastro = (formData) => {
     // Armazena temporariamente os dados (sem criar o usuário ainda)
     localStorage.setItem("pendingUser", JSON.stringify(formData));
-    navigate("/confirmacao"); // redireciona para a página de confirmação
+    navigate("/confirmacao"); 
   };
 
   return <AuthForm type="cadastro" onSubmit={handleCadastro} />;

@@ -8,12 +8,14 @@ export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
-  const handleLogin = (formData) => {
-    const result = login(formData);
+  const handleLogin = async (formData) => {
+    setError(null); // limpa erros anteriores
+    const result = await login(formData); // ⚡ precisa do await aqui
+
     if (result.success) {
-      navigate("/"); // redireciona pra home
+      navigate("/"); // redireciona após login
     } else {
-      setError(result.message);
+      setError(result.message); // mostra mensagem de erro
     }
   };
 

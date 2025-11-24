@@ -1,226 +1,185 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando seed...');
+  console.log("🌱 Iniciando seed...");
 
-  // ==============================
-  // 1️⃣ Estados e Cidades
-  // ==============================
-  const sp = await prisma.estado.create({
-    data: {
-      nome: 'São Paulo',
-      sigla: 'SP',
-      cidades: {
-        create: [
-          { nome: 'São Paulo', regiao: 'Sudeste' },
-          { nome: 'Campinas', regiao: 'Sudeste' },
-          { nome: 'Santos', regiao: 'Sudeste' },
-        ],
-      },
-    },
+  // ===============================
+  // ESTADOS
+  // ===============================
+  console.log("→ Inserindo estados...");
+
+  const estadosData = [
+    { nome: "Acre", sigla: "AC" },
+    { nome: "Alagoas", sigla: "AL" },
+    { nome: "Amapá", sigla: "AP" },
+    { nome: "Amazonas", sigla: "AM" },
+    { nome: "Bahia", sigla: "BA" },
+    { nome: "Ceará", sigla: "CE" },
+    { nome: "Distrito Federal", sigla: "DF" },
+    { nome: "Espírito Santo", sigla: "ES" },
+    { nome: "Goiás", sigla: "GO" },
+    { nome: "Maranhão", sigla: "MA" },
+    { nome: "Mato Grosso", sigla: "MT" },
+    { nome: "Mato Grosso do Sul", sigla: "MS" },
+    { nome: "Minas Gerais", sigla: "MG" },
+    { nome: "Pará", sigla: "PA" },
+    { nome: "Paraíba", sigla: "PB" },
+    { nome: "Paraná", sigla: "PR" },
+    { nome: "Pernambuco", sigla: "PE" },
+    { nome: "Piauí", sigla: "PI" },
+    { nome: "Rio de Janeiro", sigla: "RJ" },
+    { nome: "Rio Grande do Norte", sigla: "RN" },
+    { nome: "Rio Grande do Sul", sigla: "RS" },
+    { nome: "Rondônia", sigla: "RO" },
+    { nome: "Roraima", sigla: "RR" },
+    { nome: "Santa Catarina", sigla: "SC" },
+    { nome: "São Paulo", sigla: "SP" },
+    { nome: "Sergipe", sigla: "SE" },
+    { nome: "Tocantins", sigla: "TO" }
+  ];
+
+  await prisma.estado.createMany({
+    data: estadosData,
+    skipDuplicates: true,
   });
 
-  const rj = await prisma.estado.create({
-    data: {
-      nome: 'Rio de Janeiro',
-      sigla: 'RJ',
-      cidades: {
-        create: [
-          { nome: 'Rio de Janeiro', regiao: 'Sudeste' },
-          { nome: 'Niterói', regiao: 'Sudeste' },
-        ],
-      },
-    },
-  });
+  // Buscar estados usados depois
+  const sp = await prisma.estado.findFirst({ where: { sigla: "SP" } });
+  const rj = await prisma.estado.findFirst({ where: { sigla: "RJ" } });
 
-  // ==============================
-  // 2️⃣ Tipos de Instituição
-  // ==============================
-  const tiposInstituicao = await prisma.tipoInstituicao.createMany({
+  // ===============================
+  // CIDADES
+  // ===============================
+  console.log("→ Inserindo cidades...");
+
+  await prisma.cidade.createMany({
     data: [
-      { nome: 'Universidade' },
-      { nome: 'Centro Universitário' },
-      { nome: 'Faculdade' },
-      { nome: 'Instituto Federal' },
+      { nome: "São Paulo", estadoId: sp.id },
+      { nome: "Campinas", estadoId: sp.id },
+      { nome: "Santos", estadoId: sp.id },
+      { nome: "Rio de Janeiro", estadoId: rj.id },
+      { nome: "Niterói", estadoId: rj.id },
+      { nome: "Volta Redonda", estadoId: rj.id },
     ],
+    skipDuplicates: true,
   });
 
-  // ==============================
-  // 3️⃣ Categorias, Modalidades e Tipos de Curso
-  // ==============================
-  const [catTec, catGrad, catPos] = await prisma.$transaction([
-    prisma.categoria.create({ data: { nome: 'Técnico' } }),
-    prisma.categoria.create({ data: { nome: 'Graduação' } }),
-    prisma.categoria.create({ data: { nome: 'Pós-Graduação' } }),
-  ]);
+  const cidadeSP = await prisma.cidade.findFirst({ where: { nome: "São Paulo" } });
 
-  const [presencial, ead, hibrido] = await prisma.$transaction([
-    prisma.modalidade.create({ data: { nome: 'Presencial' } }),
-    prisma.modalidade.create({ data: { nome: 'EAD' } }),
-    prisma.modalidade.create({ data: { nome: 'Híbrido' } }),
-  ]);
+  // ===============================
+  // TIPOS DE INSTITUIÇÃO
+  // ===============================
+  console.log("→ Inserindo tipos de instituição...");
 
-  const [bacharelado, licenciatura, tecnologo] = await prisma.$transaction([
-    prisma.tipoCurso.create({ data: { nome: 'Bacharelado' } }),
-    prisma.tipoCurso.create({ data: { nome: 'Licenciatura' } }),
-    prisma.tipoCurso.create({ data: { nome: 'Tecnólogo' } }),
-  ]);
+  await prisma.tipoInstituicao.createMany({
+    data: [
+      { nome: "Universidade" },
+      { nome: "Faculdade" },
+      { nome: "Escola Técnica" },
+      { nome: "Centro Universitário" },
+      { nome: "Instituto Federal" },
+    ],
+    skipDuplicates: true,
+  });
 
-  // ==============================
-  // 4️⃣ Instituições
-  // ==============================
-  const usp = await prisma.instituicao.create({
+  // ===============================
+  // MODALIDADES
+  // ===============================
+  console.log("→ Inserindo modalidades...");
+
+  await prisma.modalidade.createMany({
+    data: [
+      { nome: "Presencial" },
+      { nome: "Semipresencial" },
+      { nome: "EAD" },
+    ],
+    skipDuplicates: true,
+  });
+
+  // ===============================
+  // CATEGORIAS
+  // ===============================
+  console.log("→ Inserindo categorias...");
+
+  await prisma.categoria.createMany({
+    data: [
+      { nome: "Tecnologia" },
+      { nome: "Saúde" },
+      { nome: "Ciências Humanas" },
+      { nome: "Engenharia" },
+      { nome: "Administração" },
+    ],
+    skipDuplicates: true,
+  });
+
+  // ===============================
+  // TIPO DE CURSO
+  // ===============================
+  console.log("→ Inserindo tipos de curso...");
+
+  await prisma.tipoCurso.createMany({
+    data: [
+      { nome: "Bacharelado" },
+      { nome: "Licenciatura" },
+      { nome: "Tecnólogo" },
+      { nome: "Curso Técnico" },
+      { nome: "Pós-graduação" },
+    ],
+    skipDuplicates: true,
+  });
+
+  // ===============================
+  // ENDEREÇO
+  // ===============================
+  console.log("→ Inserindo endereço...");
+
+  const endereco1 = await prisma.endereco.create({
     data: {
-      nome: 'Universidade de São Paulo (USP)',
-      cidade: 'São Paulo',
-      estado: 'São Paulo',
-      email: 'contato@usp.br',
-      senha: await bcrypt.hash('123456', 10),
-      telefone: '(11) 3091-0000',
-      endereco: 'Av. Prof. Luciano Gualberto, 374 - Butantã, São Paulo - SP',
-      descricao: 'A USP é uma das mais prestigiadas universidades do Brasil.',
-      area: 'Educação Superior',
-      tipo: 1, // Universidade
-      imagem: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Logo_usp.svg',
-      custoMatricula: 0,
-      latitude: -23.561399,
-      longitude: -46.730789,
+      logradouro: "Av. Paulista",
+      numero: "1000",
+      bairro: "Bela Vista",
+      cep: "01310-000",
+      cidadeId: cidadeSP.id,
+      estadoId: sp.id,
     },
   });
 
-  const unip = await prisma.instituicao.create({
+  // ===============================
+  // USUÁRIO TESTE
+  // ===============================
+  console.log("→ Inserindo usuário...");
+
+  await prisma.usuario.create({
     data: {
-      nome: 'Universidade Paulista (UNIP)',
-      cidade: 'Campinas',
-      estado: 'São Paulo',
-      email: 'contato@unip.br',
-      senha: await bcrypt.hash('123456', 10),
-      telefone: '(19) 3343-5000',
-      endereco: 'Av. Comendador Enzo Ferrari, 280 - Swift, Campinas - SP',
-      descricao: 'A UNIP é uma instituição privada com foco em ensino acessível e de qualidade.',
-      area: 'Educação Superior',
-      tipo: 2, // Centro Universitário
-      imagem: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Unip_logo.png',
-      custoMatricula: 250.00,
-      latitude: -22.9243,
-      longitude: -47.0626,
+      nome: "Usuário Teste",
+      email: "teste@example.com",
+      senha: "123456",
+      enderecoId: endereco1.id,
     },
   });
 
-  // ==============================
-  // 5️⃣ Cursos
-  // ==============================
-  const cursoSI = await prisma.curso.create({
+  // ===============================
+  // INSTITUIÇÃO TESTE
+  // ===============================
+  console.log("→ Inserindo instituição...");
+
+  await prisma.instituicao.create({
     data: {
-      nome: 'Sistemas de Informação',
-      tipoId: tecnologo.id,
-      categoriaId: catGrad.id,
-      modalidadeId: presencial.id,
-      vagas: 50,
-      horario: 'Noturno',
-      turno: 'Noite',
-      duracao: '4 anos',
-      custo: 980.00,
-      descricao: 'Curso voltado para o desenvolvimento e gestão de sistemas de informação empresariais.',
-      instituicaoId: usp.id,
-      ondeTrabalhar: 'Empresas de tecnologia, bancos, startups, órgãos públicos.',
-      imagem: 'https://img.freepik.com/free-photo/software-developer-coding-office_53876-127806.jpg',
-      preRequisitos: {
-        create: [
-          { descricao: 'Ensino médio completo' },
-          { descricao: 'Conhecimentos básicos de informática' },
-        ],
-      },
-      matrizCurricular: {
-        create: [
-          {
-            semestre: 1,
-            disciplina: 'Fundamentos de Computação',
-            disciplinas: {
-              create: [
-                { nome: 'Lógica de Programação' },
-                { nome: 'Matemática Discreta' },
-              ],
-            },
-          },
-          {
-            semestre: 2,
-            disciplina: 'Desenvolvimento Web',
-            disciplinas: {
-              create: [
-                { nome: 'HTML e CSS' },
-                { nome: 'JavaScript' },
-              ],
-            },
-          },
-        ],
-      },
-      links: {
-        create: {
-          siteOficial: 'https://www5.usp.br/',
-          paginaCurso: 'https://www.ime.usp.br/graduacao/sistemas-de-informacao/',
-          inscricao: 'https://uspdigital.usp.br/jupiterweb/',
-        },
-      },
+      nome: "Universidade XPTO",
+      tipo: 1,
+      email: "contato@xpto.edu",
+      descricao: "A maior universidade fictícia do Brasil.",
+      enderecoId: endereco1.id,
     },
   });
 
-  const cursoADM = await prisma.curso.create({
-    data: {
-      nome: 'Administração de Empresas',
-      tipoId: bacharelado.id,
-      categoriaId: catGrad.id,
-      modalidadeId: hibrido.id,
-      vagas: 60,
-      horario: 'Matutino',
-      turno: 'Manhã',
-      duracao: '4 anos',
-      custo: 890.00,
-      descricao: 'Forma profissionais capazes de planejar, gerenciar e otimizar recursos empresariais.',
-      instituicaoId: unip.id,
-      ondeTrabalhar: 'Empresas privadas, órgãos públicos e startups.',
-      imagem: 'https://img.freepik.com/free-photo/business-meeting-office_23-2148894151.jpg',
-    },
-  });
-
-  // ==============================
-  // 6️⃣ Usuários
-  // ==============================
-  const user1 = await prisma.usuario.create({
-    data: {
-      nome: 'Ana Souza',
-      email: 'ana@example.com',
-      senha: await bcrypt.hash('123456', 10),
-      cpf: '123.456.789-00',
-      emailVerificado: true,
-      instituicoesSalvas: {
-        create: { instituicaoId: usp.id },
-      },
-      cursosSalvos: {
-        create: { cursoId: cursoSI.id },
-      },
-    },
-  });
-
-  const user2 = await prisma.usuario.create({
-    data: {
-      nome: 'Carlos Pereira',
-      email: 'carlos@example.com',
-      senha: await bcrypt.hash('123456', 10),
-      cpf: '987.654.321-00',
-      emailVerificado: false,
-    },
-  });
-
-  console.log('✅ Seed concluída com sucesso!');
+  console.log("🌱 SEED FINALIZADO!");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ ERRO NO SEED:", e);
     process.exit(1);
   })
   .finally(async () => {

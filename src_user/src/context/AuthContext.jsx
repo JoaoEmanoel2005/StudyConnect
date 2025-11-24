@@ -10,7 +10,6 @@ export function AuthProvider({ children }) {
 
     const parsedUser = JSON.parse(storedUser);
 
-    // ✅ Garante que areasInteresse sempre seja um array
     if (parsedUser && !Array.isArray(parsedUser.areasInteresse)) {
       parsedUser.areasInteresse = parsedUser.areasInteresse
         ? [parsedUser.areasInteresse]
@@ -20,7 +19,6 @@ export function AuthProvider({ children }) {
     return parsedUser;
   });
 
-  // 🔹 Sincroniza sempre que `usuario` muda
   useEffect(() => {
     if (usuario) {
       localStorage.setItem("currentUser", JSON.stringify(usuario));
@@ -29,13 +27,12 @@ export function AuthProvider({ children }) {
     }
   }, [usuario]);
 
-  // 🔹 ATUALIZAR PERFIL
+  // 🔹 FUNÇÃO CENTRAL DE ATUALIZAÇÃO
   const atualizarPerfil = (novosDados) => {
     setUsuario((prev) => {
       const atualizado = {
         ...prev,
         ...novosDados,
-        // ✅ Garante que areasInteresse sempre seja um array
         areasInteresse: Array.isArray(novosDados.areasInteresse)
           ? novosDados.areasInteresse
           : novosDados.areasInteresse
@@ -45,7 +42,6 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem("currentUser", JSON.stringify(atualizado));
 
-      // Atualiza também a lista completa de usuários, se existir
       const users = JSON.parse(localStorage.getItem("users") || "[]");
       const updatedUsers = users.map((u) =>
         u.id === atualizado.id ? atualizado : u
@@ -56,56 +52,88 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // 🔹 LOGIN
-  const login = ({ email, password }) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (user) {
-      // ✅ Garante formato consistente
-      if (!Array.isArray(user.areasInteresse)) {
-        user.areasInteresse = user.areasInteresse
-          ? [user.areasInteresse]
-          : [];
-      }
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      setUsuario(user);
-      return { success: true };
-    } else {
-      return { success: false, message: "Usuário ou senha inválidos" };
-    }
-  };
-
-  // 🔹 CADASTRO (API)
-  async function cadastro({ name, email, password }) {
+  // 🔹 FUNÇÃO PARA ATUALIZAR USUÁRIO VIA API
+  const refreshUser = async () => {
   try {
-    const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nome: name,
-        email,
-        senha: password,
-      }),
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Usuário não autenticado");
+
+    const resposta = await fetch(`${config.API_URL}/api/usuarios/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
     });
 
     const data = await resposta.json();
+    if (!resposta.ok) throw new Error(data.message || "Erro ao buscar usuário");
 
-    if (!resposta.ok) {
-      throw new Error(data.message || `Erro HTTP ${resposta.status}`);
+    if (!Array.isArray(data.areasInteresse)) {
+      data.areasInteresse = data.areasInteresse ? [data.areasInteresse] : [];
     }
 
-    console.log("Usuário cadastrado:", data);
-    return { success: true };
+    setUsuario(data);
+    localStorage.setItem("currentUser", JSON.stringify(data));
+    return data;
   } catch (error) {
-    console.error("Erro ao cadastrar usuário:", error.message);
-    return { success: false, message: error.message };
+    console.error("Erro ao atualizar usuário:", error);
+    return null;
   }
-}
+};
 
+
+  // 🔹 LOGIN
+  const login = async ({ email, password }) => {
+    try {
+      const resposta = await fetch(`${config.API_URL}/api/usuarios/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha: password }),
+      });
+
+      const data = await resposta.json();
+
+      localStorage.setItem("token", data.token); // se você usa JWT
+
+
+      if (!resposta.ok) throw new Error(data.message || `Erro HTTP ${resposta.status}`);
+
+      if (!Array.isArray(data.areasInteresse)) {
+        data.areasInteresse = data.areasInteresse
+          ? [data.areasInteresse]
+          : [];
+      }
+
+      setUsuario(data);
+      localStorage.setItem("currentUser", JSON.stringify(data));
+
+      console.log("Usuário logado:", data);
+      return { success: true };
+    } catch (error) {
+      console.error("Erro ao fazer login:", error.message);
+      return { success: false, message: error.message };
+    }
+  };
+
+  // 🔹 CADASTRO
+  const cadastro = async ({ name, email, password }) => {
+    try {
+      const resposta = await fetch(`${config.API_URL}/api/usuarios/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: name, email, senha: password }),
+      });
+
+      const data = await resposta.json();
+      if (!resposta.ok) throw new Error(data.message || `Erro HTTP ${resposta.status}`);
+
+      console.log("Usuário cadastrado:", data);
+      return { success: true };
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error.message);
+      return { success: false, message: error.message };
+    }
+  };
 
   // 🔹 LOGOUT
   const logout = () => {
@@ -116,63 +144,45 @@ export function AuthProvider({ children }) {
   // 🔹 FAVORITAR / DESFAVORITAR CURSO
   const toggleCursoFavorito = (cursoId) => {
     if (!usuario) return;
-
     const updatedUser = { ...usuario };
-    if (!updatedUser.cursosSalvos) updatedUser.cursosSalvos = [];
-
-    const jaSalvo = updatedUser.cursosSalvos.includes(cursoId);
-    updatedUser.cursosSalvos = jaSalvo
+    updatedUser.cursosSalvos = updatedUser.cursosSalvos || [];
+    updatedUser.cursosSalvos = updatedUser.cursosSalvos.includes(cursoId)
       ? updatedUser.cursosSalvos.filter((id) => id !== cursoId)
       : [...updatedUser.cursosSalvos, cursoId];
-
-    atualizarPerfil(updatedUser); // ✅ usa a função central de atualização
+    atualizarPerfil(updatedUser);
   };
 
   // 🔹 FAVORITAR / DESFAVORITAR INSTITUIÇÃO
   const toggleInstituicaoFavorita = (instituicaoId) => {
     if (!usuario) return;
-
     const updatedUser = { ...usuario };
-    if (!updatedUser.instituicoesSalvas)
-      updatedUser.instituicoesSalvas = [];
-
-    const jaSalva = updatedUser.instituicoesSalvas.includes(instituicaoId);
-    updatedUser.instituicoesSalvas = jaSalva
+    updatedUser.instituicoesSalvas = updatedUser.instituicoesSalvas || [];
+    updatedUser.instituicoesSalvas = updatedUser.instituicoesSalvas.includes(instituicaoId)
       ? updatedUser.instituicoesSalvas.filter((id) => id !== instituicaoId)
       : [...updatedUser.instituicoesSalvas, instituicaoId];
-
-    atualizarPerfil(updatedUser); // ✅ centralizado
+    atualizarPerfil(updatedUser);
   };
 
-  // 🔹 ADICIONAR ARQUIVO DO USUÁRIO
+  // 🔹 ADD / REMOVE ARQUIVO DO USUÁRIO
   const addUserFile = (file) => {
     if (!usuario || !file || !file.name) return;
 
     const reader = new FileReader();
     reader.onload = (e) => {
       const fileDataUrl = e.target.result;
-
       const updatedUser = {
         ...usuario,
-        arquivos: [
-          ...(usuario.arquivos || []),
-          { name: file.name, type: file.type, dataUrl: fileDataUrl },
-        ],
+        arquivos: [...(usuario.arquivos || []), { name: file.name, type: file.type, dataUrl: fileDataUrl }],
       };
-
       atualizarPerfil(updatedUser);
     };
-
     reader.readAsDataURL(file);
   };
 
-  // 🔹 REMOVER ARQUIVO
   const removeUserFile = (index) => {
     if (!usuario?.arquivos) return;
-
     const updatedUser = { ...usuario };
     updatedUser.arquivos.splice(index, 1);
-
     atualizarPerfil(updatedUser);
   };
 
@@ -188,6 +198,7 @@ export function AuthProvider({ children }) {
         toggleInstituicaoFavorita,
         addUserFile,
         removeUserFile,
+        refreshUser, // 🔹 agora incluído
       }}
     >
       {children}
@@ -195,7 +206,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Hook personalizado
 export function useAuth() {
   return useContext(AuthContext);
 }

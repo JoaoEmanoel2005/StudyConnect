@@ -12,37 +12,38 @@ datasource db {
 // ============================================
 
 model Endereco {
-  id         Int      @id @default(autoincrement()) @map("id_endereco")
-  logradouro String?  @db.VarChar(255)
-  numero     String?  @db.VarChar(20)
-  complemento String? @db.VarChar(100)
-  bairro     String?  @db.VarChar(100)
-  cep        String?  @db.VarChar(15)
+  id          Int        @id @default(autoincrement()) @map("id_endereco")
+  logradouro  String?    @db.VarChar(255)
+  numero      String?    @db.VarChar(20)
+  complemento String?    @db.VarChar(100)
+  bairro      String?    @db.VarChar(100)
+  cep         String?    @db.VarChar(15)
 
-  cidadeId   Int?     @map("id_cidade")
-  cidade     Cidade?  @relation(fields: [cidadeId], references: [id])
+  cidadeId    Int?       @map("id_cidade")
+  cidade      Cidade?    @relation(fields: [cidadeId], references: [id])
 
-  estadoId   Int?     @map("id_estado")
-  estado     Estado?  @relation(fields: [estadoId], references: [id])
+  estadoId    Int?       @map("id_estado")
+  estado      Estado?    @relation(fields: [estadoId], references: [id])
 
   // Relações 1:1
   usuario     Usuario?
   instituicao Instituicao?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([cidadeId])
   @@index([estadoId])
   @@map("endereco")
 }
 
-
 model Estado {
-  id      Int      @id @default(autoincrement()) @map("id_estado")
-  nome    String   @db.VarChar(100)
-  sigla   String?  @db.Char(2)
-  cidades Cidade[]
+  id        Int        @id @default(autoincrement()) @map("id_estado")
+  nome      String     @db.VarChar(100)
+  sigla     String?    @db.Char(2)
+
+  cidades   Cidade[]
+  enderecos Endereco[]   // 🔥 relação inversa adicionada
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -51,14 +52,16 @@ model Estado {
 }
 
 model Cidade {
-  id       Int    @id @default(autoincrement()) @map("id_cidade")
-  nome     String @db.VarChar(100)
-  regiao   String? @db.VarChar(50)
-  estadoId Int    @map("id_estado")
-  estado   Estado @relation(fields: [estadoId], references: [id])
+  id        Int       @id @default(autoincrement()) @map("id_cidade")
+  nome      String    @db.VarChar(100)
+  regiao    String?   @db.VarChar(50)
+  estadoId  Int       @map("id_estado")
+  estado    Estado    @relation(fields: [estadoId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  enderecos Endereco[]   // 🔥 relação inversa adicionada
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([estadoId])
   @@map("cidade")
@@ -124,7 +127,8 @@ model Usuario {
   tokenVerificado    String?  @map("token_verificado") @db.VarChar(255)
   codigoReset        String?  @map("codigo_reset") @db.VarChar(255)
   codigoExpira       DateTime? @map("codigo_expira")
-  enderecoId         Int?     @map("id_endereco")
+
+  enderecoId         Int?     @unique @map("id_endereco")   // 🔥 1:1 corrigido
   endereco           Endereco? @relation(fields: [enderecoId], references: [id], onDelete: SetNull)
 
   createdAt          DateTime @default(now()) @map("createdat")
@@ -138,7 +142,6 @@ model Usuario {
   @@map("usuario")
 }
 
-
 // ============================================
 // Tabela Principal: Instituicao
 // ============================================
@@ -151,15 +154,18 @@ model Instituicao {
   telefone        String?          @db.VarChar(20)
   descricao       String?          @db.Text
   area            String?          @db.VarChar(100)
+
   tipo            Int?
   tipoInstituicao TipoInstituicao? @relation(fields: [tipo], references: [id])
+
   imagem          String?          @db.VarChar(255)
   custoMatricula  Decimal?         @map("custo_matricula") @db.Decimal(10,2)
   latitude        Decimal?         @db.Decimal(10,8)
   longitude       Decimal?         @db.Decimal(11,8)
-  enderecoId      Int?             @map("id_endereco")
+
+  enderecoId      Int?             @unique @map("id_endereco")   // 🔥 1:1 corrigido
   endereco        Endereco?        @relation(fields: [enderecoId], references: [id], onDelete: SetNull)
-  
+
   createdAt       DateTime         @default(now()) @map("createdat")
   updatedAt       DateTime         @updatedAt @map("updateat")
 
@@ -171,7 +177,6 @@ model Instituicao {
   @@map("instituicao")
 }
 
-
 // ============================================
 // Tabela Principal: Curso
 // ============================================
@@ -179,25 +184,32 @@ model Instituicao {
 model Curso {
   id              Int           @id @default(autoincrement()) @map("id_curso")
   nome            String        @db.VarChar(200)
+
   tipoId          Int?          @map("tipo_id")
   tipoCurso       TipoCurso?    @relation(fields: [tipoId], references: [id])
+
   categoriaId     Int?          @map("categoria_id")
   categoria       Categoria?    @relation(fields: [categoriaId], references: [id])
+
   vagas           Int?
+
   modalidadeId    Int?          @map("modalidade_id")
   modalidade      Modalidade?   @relation(fields: [modalidadeId], references: [id])
+
   horario         String?       @db.VarChar(100)
   turno           String?       @db.VarChar(50)
   duracao         String?       @db.VarChar(100)
   custo           Decimal?      @db.Decimal(10,2)
   descricao       String?       @db.Text
+
   instituicaoId   Int           @map("instituicao_id")
   instituicao     Instituicao   @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+
   ondeTrabalhar   String?       @map("onde_trabalhar") @db.Text
   imagem          String?       @db.VarChar(255)
   latitude        Decimal?      @db.Decimal(10,8)
   longitude       Decimal?      @db.Decimal(11,8)
-  
+
   createdAt       DateTime      @default(now()) @map("createdat")
   updatedAt       DateTime      @updatedAt @map("updateat")
 
@@ -223,6 +235,7 @@ model InstiSalvo {
   id             Int         @id @default(autoincrement())
   usuarioId      Int         @map("id_usuario")
   usuario        Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
   instituicaoId  Int         @map("id_instituicao")
   instituicao    Instituicao @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
   
@@ -238,6 +251,7 @@ model CursoSalvo {
   id        Int      @id @default(autoincrement())
   usuarioId Int      @map("id_usuario")
   usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
   cursoId   Int      @map("id_curso")
   curso     Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   
@@ -298,6 +312,7 @@ model Link {
   id           Int      @id @default(autoincrement()) @map("id_link")
   cursoId      Int      @map("curso_id")
   curso        Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
   siteOficial  String?  @map("site_oficial") @db.VarChar(500)
   paginaCurso  String?  @map("pagina_curso") @db.VarChar(500)
   inscricao    String?  @db.VarChar(500)
