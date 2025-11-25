@@ -18,102 +18,38 @@ export default function AboutSection() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const cardsRef = useRef([]);
-  const pillarsRef = useRef([]);
-  const statsRef = useRef(null);
 
+  // ✨ GSAP Animations
   useEffect(() => {
-    if (!sectionRef.current) return;
-
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      // 1️⃣ Título
-      if (titleRef.current) {
-        tl.from(titleRef.current.children, {
-          opacity: 0,
-          y: 40,
-          duration: 0.6,
-          stagger: 0.15,
+      // Title Animation
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
           ease: "power3.out",
-        });
-      }
-
-      // 2️⃣ Cards (Desafio + Solução)
-      if (cardsRef.current.every(Boolean)) {
-        tl.from(cardsRef.current, {
-          opacity: 0,
-          y: 50,
-          duration: 0.6,
-          stagger: 0.2,
+        }
+      );
+      // Cards Animation
+      gsap.fromTo(
+        cardsRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
           ease: "power3.out",
-          immediateRender: false,
-        }, "=0.2");
-      }
-
-      // 3️⃣ Pilares
-      if (pillarsRef.current.every(Boolean)) {
-        tl.from(pillarsRef.current, {
-          opacity: 0,
-          x: -40,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: "power2.out",
-          immediateRender: false,
-        }, "-=0.3");
-      }
-
-      // 4️⃣ Estatísticas
-      if (statsRef.current) {
-        tl.from(statsRef.current.children, {
-          opacity: 0,
-          scale: 0.9,
-          duration: 0.5,
-          stagger: 0.1,
-          ease: "back.out(1.4)",
-          immediateRender: false,
-        }, "-=0.2");
-      }
+        }
+      );
     }, sectionRef);
-
     return () => ctx.revert();
   }, []);
 
-  const pillars = [
-    {
-      icon: MagnifyingGlassIcon,
-      title: "Busca Inteligente",
-      description: "Acesso centralizado a informações relevantes sobre cursos de graduação e pós-graduação",
-      color: "blue-600",
-    },
-    {
-      icon: SparklesIcon,
-      title: "Recomendações Personalizadas",
-      description: "Sugestões de cursos baseadas no perfil e objetivos acadêmicos de cada estudante",
-      color: "amber-500",
-    },
-    {
-      icon: ChatBubbleLeftRightIcon,
-      title: "Conexão Direta",
-      description: "Comunicação facilitada entre estudantes e instituições de ensino superior",
-      color: "emerald-500",
-    },
-    {
-      icon: ArrowPathIcon,
-      title: "Processo Simplificado",
-      description: "Integração eficiente que elimina barreiras no processo de escolha educacional",
-      color: "violet-500",
-    },
-  ];
-
   return (
-    <section ref={sectionRef} className="relative bg-white py-20 md:py-28 overflow-hidden">
+   <section ref={sectionRef} className="relative bg-white py-20 md:py-28 overflow-hidden">
       {/* Fundo suave */}
       <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white"></div>
 
@@ -142,7 +78,7 @@ export default function AboutSection() {
         </div>
 
         {/* Problema e Solução */}
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 gap-8">
           <div
             ref={(el) => (cardsRef.current[0] = el)}
             className="group relative bg-slate-800 rounded-2xl p-8 border border-slate-600"
@@ -179,45 +115,6 @@ export default function AboutSection() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Pilares */}
-        <div>
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
-              Como Funcionamos
-            </h3>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              Quatro pilares fundamentais que tornam o StudyConnect a melhor escolha para sua jornada acadêmica
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {pillars.map((pillar, index) => (
-              <div
-                key={index}
-                ref={(el) => (pillarsRef.current[index] = el)}
-                className="group relative bg-white rounded-xl p-6 border-2 border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`flex-shrink-0 p-3 rounded-xl bg-${pillar.color} group-hover:scale-110 transition-transform duration-300`}>
-                    <pillar.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {pillar.title}
-                    </h4>
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                      {pillar.description}
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4 text-5xl font-bold text-slate-100 group-hover:text-blue-50 transition-colors">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

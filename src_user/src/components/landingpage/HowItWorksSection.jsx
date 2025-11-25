@@ -131,31 +131,6 @@ export default function HowItWorksSection() {
             ))}
           </div>
         </div>
-
-        {/* Call-to-action de segurança */}
-        <div className="mt-16 bg-white rounded-2xl border-2 border-slate-200 p-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-start gap-4 flex-1">
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                <ShieldCheckIcon className="h-8 w-8 text-emerald-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  Seus dados estão seguros
-                </h3>
-                <p className="text-slate-600 leading-relaxed">
-                  Utilizamos criptografia de ponta e seguimos as melhores práticas de segurança. 
-                  Seu cadastro é <strong className="text-slate-900">100% gratuito, seguro e confiável</strong>.
-                </p>
-              </div>
-            </div>
-            
-            <Link to="/cadastro" className="group flex-shrink-0 inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-lsm hover:shadow-md transition-all duration-300 hover:scale-105">
-              Começar Agora
-              <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-        </div>
       </div>
     </section>
     

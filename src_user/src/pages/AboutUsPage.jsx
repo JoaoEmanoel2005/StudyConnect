@@ -1,6 +1,5 @@
 import HeroSection from "../components/about/HeroSection";
 import MissionSection from "../components/about/MissionSection";
-import TimelineSection from "../components/about/TimelineSection";
 import TeamSection from "../components/about/TeamSection"
 
 export default function AboutUsPage() {
@@ -8,7 +7,6 @@ export default function AboutUsPage() {
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50">
       <HeroSection />
       <MissionSection />
-      <TimelineSection />
       <TeamSection />
 
       {/* CTA Final */}

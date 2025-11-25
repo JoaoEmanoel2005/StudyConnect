@@ -136,6 +136,22 @@ export default function ContactPage() {
         </motion.div>
 
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      
+        {/* Onda inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M0 30C240 10 480 50 720 30C960 10 1200 50 1440 30V60H0V30Z"
+              fill="white"
+              fillOpacity="0.3"
+            />
+            <path
+              d="M0 45C240 25 480 65 720 45C960 25 1200 65 1440 45V60H0V45Z"
+              fill="white"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* Cards de Contato */}
