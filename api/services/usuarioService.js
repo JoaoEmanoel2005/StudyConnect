@@ -74,7 +74,7 @@ class UsuarioService {
 
     // gerar token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email }, // payload
+      { id: user.id, email: user.email, tipo: 'usuario' }, // payload
       JWT_SECRET,
       { expiresIn: "1d" } // expira em 1 dia
     );

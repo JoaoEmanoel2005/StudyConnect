@@ -11,7 +11,14 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // agora temos req.user = { id, email }
+
+    // Verifica se é usuário ou instituição
+    if (decoded.tipo === 'instituicao') {
+      req.instituicao = decoded; // { id, email, tipo }
+    } else {
+      req.user = decoded; // { id, email, tipo }
+    }
+
     next();
   } catch (err) {
     return res.status(403).json({ error: 'Token expirado ou inválido' });
