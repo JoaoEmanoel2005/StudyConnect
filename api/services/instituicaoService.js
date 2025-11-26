@@ -93,6 +93,10 @@ class InstituicaoService {
     return CursoRepository.buscarPorInstituicao(instituicaoId);
   }
 
+  async buscarPerfil(id) {
+    return InstituicaoRepository.buscarPorId(id);
+  }
+
   // ============================
   // 🔹 Listar todas instituições (público)
   // ============================

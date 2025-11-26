@@ -27,6 +27,23 @@ class InstituicaoController {
     }
   }
 
+// controllers/InstituicaoController.js
+  async perfil(req, res) {
+    try {
+      if (req.user.userType !== "instituicao") {
+        return res.status(403).json({ error: "Apenas instituições podem acessar este recurso." });
+      }
+
+      const instituicaoId = req.user.id;
+      const perfil = await InstituicaoService.buscarPerfil(instituicaoId);
+
+      res.json(perfil);
+    } catch (error) {
+      console.error("Erro ao buscar perfil da instituição:", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   // ============================
   // 🔹 Atualizar instituição logada
   // ============================

@@ -11,6 +11,7 @@ class InstituicaoRepository {
       include: {
         tipoInstituicao: true,
         endereco: { include: { cidade: true, estado: true } },
+        cursos: true
       },
     });
   }

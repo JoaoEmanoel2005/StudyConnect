@@ -10,6 +10,7 @@ router.post('/login', InstituicaoController.login);
 // protegidas (necessitam Authorization: Bearer <token>)
 router.put('/update', authMiddleware, InstituicaoController.atualizar);
 router.delete('/delete', authMiddleware, InstituicaoController.deletar);
+router.get('/perfil', authMiddleware, InstituicaoController.perfil);
 
 // Cursos da própria instituição
 router.post('/curso', authMiddleware, InstituicaoController.criarCurso);
