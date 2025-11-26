@@ -1,19 +1,46 @@
 const prisma = require('../config/prisma');
 
 class CursoRepository {
-  async criar(dados) {
-    return await prisma.curso.create({
-      data: dados,
-      include: {
-        tipoCurso: true,
-        categoria: true,
-        modalidade: true,
-        instituicao: {
-          include: { endereco: { include: { cidade: true, estado: true } }, tipoInstituicao: true },
+  async criar(dados, instituicaoId) {
+      
+    if (!instituicaoId) throw new Error('InstituiçãoId é obrigatório para criar um curso.');
+
+      return await prisma.curso.create({
+        data: {
+          nome: dados.nome,
+          descricao: dados.descricao,
+          imagem: dados.imagem,
+          tipoCurso: { connect: { id: dados.tipoCursoId } },
+          categoria: { connect: { id: dados.categoriaId } },
+          modalidade: { connect: { id: dados.modalidadeId } },
+          instituicao: { connect: { id: instituicaoId } },
+          preRequisitos: {
+            create: dados.preRequisitos || []
+          },
+          matrizCurricular: {
+            create: dados.matrizCurricular || []
+          },
+          links: {
+            create: dados.links || []
+          }
         },
-      },
-    });
-  }
+        include: {
+          tipoCurso: true,
+          categoria: true,
+          modalidade: true,
+          instituicao: {
+            include: {
+              endereco: { include: { cidade: true, estado: true } },
+              tipoInstituicao: true
+            },
+          },
+          preRequisitos: true,
+          matrizCurricular: { include: { disciplinas: true } },
+          links: true
+        },
+      });
+    }
+
 
   async buscarPorId(id) {
     return await prisma.curso.findUnique({
