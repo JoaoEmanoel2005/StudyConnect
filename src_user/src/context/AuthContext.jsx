@@ -53,11 +53,12 @@ export function AuthProvider({ children }) {
   };
 
   // 🔹 FUNÇÃO PARA ATUALIZAR USUÁRIO VIA API
-  const refreshUser = async () => {
+ const refreshUser = async () => {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Usuário não autenticado");
 
+    // 1️⃣ Buscar dados básicos do usuário
     const resposta = await fetch(`${config.API_URL}/api/usuarios/me`, {
       headers: {
         "Content-Type": "application/json",
@@ -68,18 +69,46 @@ export function AuthProvider({ children }) {
     const data = await resposta.json();
     if (!resposta.ok) throw new Error(data.message || "Erro ao buscar usuário");
 
+    // 2️⃣ Garantir que areasInteresse seja array
     if (!Array.isArray(data.areasInteresse)) {
       data.areasInteresse = data.areasInteresse ? [data.areasInteresse] : [];
     }
 
-    setUsuario(data);
-    localStorage.setItem("currentUser", JSON.stringify(data));
-    return data;
+    // 3️⃣ Buscar lista de instituições salvas
+    const instResponse = await fetch(
+      `${config.API_URL}/api/usuarios/instituicoes-salvas`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+
+    const instData = await instResponse.json();
+    if (!instResponse.ok)
+      throw new Error(instData.message || "Erro ao buscar instituições salvas");
+
+    // 4️⃣ Transformar o retorno da API ( [{ instituicaoId: X }] ) em array de IDs
+    const instituicoesSalvas = instData.map((item) => item.instituicaoId);
+
+    // 5️⃣ Finalizar usuário unindo tudo
+    const usuarioAtualizado = {
+      ...data,
+      instituicoesSalvas,
+    };
+
+    // 6️⃣ Salvar no contexto + localStorage
+    setUsuario(usuarioAtualizado);
+    localStorage.setItem("currentUser", JSON.stringify(usuarioAtualizado));
+
+    return usuarioAtualizado;
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     return null;
   }
 };
+
 
 
   // 🔹 LOGIN

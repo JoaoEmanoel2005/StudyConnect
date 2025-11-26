@@ -1,9 +1,6 @@
 const prisma = require('../config/prisma');
 
 class CursoRepository {
-  // ==============================
-  // 🔹 Criar curso
-  // ==============================
   async criar(dados) {
     return await prisma.curso.create({
       data: dados,
@@ -11,14 +8,13 @@ class CursoRepository {
         tipoCurso: true,
         categoria: true,
         modalidade: true,
-        instituicao: true,
+        instituicao: {
+          include: { endereco: { include: { cidade: true, estado: true } }, tipoInstituicao: true },
+        },
       },
     });
   }
 
-  // ==============================
-  // 🔹 Buscar curso por ID
-  // ==============================
   async buscarPorId(id) {
     return await prisma.curso.findUnique({
       where: { id },
@@ -26,80 +22,73 @@ class CursoRepository {
         tipoCurso: true,
         categoria: true,
         modalidade: true,
-        instituicao: true,
-        preRequisitos: true,
-        matrizCurricular: {
-          include: {
-            disciplinas: true,
-          },
+        instituicao: {
+          include: { endereco: { include: { cidade: true, estado: true } }, tipoInstituicao: true },
         },
+        preRequisitos: true,
+        matrizCurricular: { include: { disciplinas: true } },
         links: true,
       },
     });
   }
 
-  // ==============================
-  // 🔹 Buscar todos os cursos
-  // ==============================
-  async listarTodos() {
+  async listarTodos({ skip = 0, take = 20, ordem = 'asc' } = {}) {
     return await prisma.curso.findMany({
       include: {
         categoria: true,
         tipoCurso: true,
         modalidade: true,
         instituicao: {
-          select: { id: true, nome: true, cidade: true, estado: true },
+          include: { endereco: { include: { cidade: true, estado: true } }, tipoInstituicao: true },
         },
       },
-      orderBy: { nome: 'asc' },
+      orderBy: { nome: ordem },
+      skip,
+      take,
     });
   }
 
-  // ==============================
-  // 🔹 Buscar cursos por Instituição
-  // ==============================
-  async buscarPorInstituicao(idInstituicao) {
+  async buscarPorInstituicao(instituicaoId, { skip = 0, take = 20, ordem = 'asc' } = {}) {
     return await prisma.curso.findMany({
-      where: { instituicaoId: idInstituicao },
+      where: { instituicaoId },
       include: {
         categoria: true,
         tipoCurso: true,
         modalidade: true,
       },
-      orderBy: { nome: 'asc' },
+      orderBy: { nome: ordem },
+      skip,
+      take,
     });
   }
 
-  // ==============================
-  // 🔹 Buscar cursos por Categoria
-  // ==============================
-  async buscarPorCategoria(categoriaId) {
+  async buscarPorCategoria(categoriaId, { skip = 0, take = 20, ordem = 'asc' } = {}) {
     return await prisma.curso.findMany({
       where: { categoriaId },
       include: {
         tipoCurso: true,
-        instituicao: true,
+        instituicao: { include: { endereco: { include: { cidade: true, estado: true } } } },
       },
+      orderBy: { nome: ordem },
+      skip,
+      take,
     });
   }
 
-  // ==============================
-  // 🔹 Buscar cursos por Modalidade
-  // ==============================
-  async buscarPorModalidade(modalidadeId) {
+  async buscarPorModalidade(modalidadeId, { skip = 0, take = 20, ordem = 'asc' } = {}) {
     return await prisma.curso.findMany({
       where: { modalidadeId },
       include: {
         tipoCurso: true,
         categoria: true,
-        instituicao: true,
+        instituicao: { include: { endereco: { include: { cidade: true, estado: true } } } },
       },
+      orderBy: { nome: ordem },
+      skip,
+      take,
     });
   }
 
-  // ==============================
-  // 🔹 Atualizar curso
-  // ==============================
   async atualizar(id, dados) {
     return await prisma.curso.update({
       where: { id },
@@ -108,37 +97,27 @@ class CursoRepository {
         categoria: true,
         tipoCurso: true,
         modalidade: true,
-        instituicao: true,
+        instituicao: { include: { endereco: { include: { cidade: true, estado: true } } } },
       },
     });
   }
 
-  // ==============================
-  // 🔹 Deletar curso
-  // ==============================
   async deletar(id) {
-    return await prisma.curso.delete({
-      where: { id },
-    });
+    return await prisma.curso.delete({ where: { id } });
   }
 
-  // ==============================
-  // 🔹 Buscar cursos por nome (busca parcial)
-  // ==============================
-  async buscarPorNome(nome) {
+  async buscarPorNome(nome, { skip = 0, take = 20, ordem = 'asc' } = {}) {
     return await prisma.curso.findMany({
-      where: {
-        nome: {
-          contains: nome,
-          mode: 'insensitive',
-        },
-      },
+      where: { nome: { contains: nome, mode: 'insensitive' } },
       include: {
         categoria: true,
         tipoCurso: true,
         modalidade: true,
-        instituicao: true,
+        instituicao: { include: { endereco: { include: { cidade: true, estado: true } } } },
       },
+      orderBy: { nome: ordem },
+      skip,
+      take,
     });
   }
 }
