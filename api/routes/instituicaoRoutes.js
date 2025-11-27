@@ -3,6 +3,8 @@ const router = express.Router();
 const InstituicaoController = require('../controllers/instituicaoController');
 const authMiddleware = require('../middlewares/auth'); // pega id da instituição logada
 
+router.get('/', InstituicaoController.listar); // <-- rota pública que o front precisa
+
 // públicas
 router.post('/register', InstituicaoController.criar);
 router.post('/login', InstituicaoController.login);
